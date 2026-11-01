@@ -2,7 +2,7 @@
   "application": {
     "name": "SiteIQ",
     "version": "0.4.7",
-    "assessment_date": "2026-10-16",
+    "assessment_date": "2026-11-01",
     "profile_status": "partial; selected tables transcribed; not a consolidated code"
   },
   "project": "Nandi Housing - preliminary feasibility test",
@@ -176,7 +176,12 @@
     "status": "below_configured_high_rise_threshold",
     "threshold_m": 21,
     "maximum_scenario_height_m": 18.0,
-    "message": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed.",
+    "is_high_rise": false,
+    "fire_noc_required": false,
+    "minimum_fire_driveway_width_m": null,
+    "fire_turning_radius_inner_m": null,
+    "fire_turning_radius_outer_m": null,
+    "message": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed. [Below 21m high-rise threshold; check low-rise fire safety and access requirements].",
     "source": {
       "id": "kff_act_2023",
       "title": "Karnataka Fire Force (Amendment) Act, 2023",
@@ -413,7 +418,7 @@
     {
       "item": "Fire NOC trigger",
       "status": "below_configured_high_rise_threshold",
-      "note": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed."
+      "note": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed. [Below 21m high-rise threshold; check low-rise fire safety and access requirements]."
     }
   ],
   "sources": [

@@ -519,13 +519,22 @@ def _envelope_result(env, site_poly, method, message, setback_m=None) -> dict:
     if env.geom_type not in {"Polygon", "MultiPolygon"}:
         return {"status":"unexpected_geometry", "message":"Setback operation did not result in a polygon. Review geometry manually.", "geometry":None, "area_m2":None, "method":method}
     polygons = [env] if env.geom_type == "Polygon" else list(env.geoms)
+    component_count = len(polygons)
+    warnings = []
+    if component_count > 1:
+        warnings.append(f"Setbacks split the envelope into {component_count} disjoint parts.")
+    if env.area > 50 and env.buffer(-3.0).is_empty:
+        warnings.append("Calculated envelope has narrow sections under 6.0 m in width.")
     return {
         "status": "calculated_preliminary",
         "message": message,
         "area_m2": float(env.area),
         "perimeter_m": float(env.length),
         "geometry_type": env.geom_type,
-        "component_count": len(polygons),
+        "component_count": component_count,
+        "warnings": warnings,
+        "is_split": component_count > 1,
+        "has_narrow_neck": bool(env.area > 50 and env.buffer(-3.0).is_empty),
         "setback_m": setback_m,
         "method": method,
         "geometry": mapping(env),

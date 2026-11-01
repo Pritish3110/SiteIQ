@@ -45,9 +45,13 @@ def _coords_from_text(text: str) -> Optional[tuple[float, float]]:
     # coordinates when both are present in a Google Maps URL.
     patterns = [
         r"!3d\s*(-?\d{1,2}(?:\.\d+)?)!4d\s*(-?\d{1,3}(?:\.\d+)?)",
+        r"(?:[?&](?:q|query|ll|center|destination|origin|loc|location)=)(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
         r"@\s*(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)",
-        r"(?:[?&](?:q|query|ll|center|destination|origin)=)(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
         r"(?:/search/)(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
+        r"(?:/place/)(?:[^/@]+/)?@?(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
+        r"(?:ll|center|q)%3D(-?\d{1,2}(?:\.\d+)?)(?:%2C|,)(-?\d{1,3}(?:\.\d+)?)",
+        r"(?:center=|center%3D)(-?\d{1,2}(?:\.\d+)?)(?:%2C|,)(-?\d{1,3}(?:\.\d+)?)",
+        r"\[\s*(-?\d{1,2}\.\d{4,})\s*,\s*(-?\d{1,3}\.\d{4,})\s*\]",
     ]
     for pattern in patterns:
         m = re.search(pattern, text, flags=re.I)
@@ -249,20 +253,51 @@ def _locality_candidate(reverse: dict) -> dict:
     if "anekal" in text:
         return {"key": "anekal_planning_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
                 "reason": "The geocoder labels this location with Anekal. Anekal Planning Authority is a candidate to investigate; confirm the notified boundary and current operative rules."}
-    # Check outer local planning areas before broad Bengaluru/Bangalore district labels.
-    # This remains a geocoder candidate unless an official authority polygon matches.
     if "hoskote" in text or "hosakote" in text:
         return {"key": "hoskote_planning_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
                 "reason": "The geocoder labels this point with Hoskote/Hosakote. Hoskote Planning Authority is a candidate to investigate; a locality label or KML centroid does not prove the parcel is inside its notified planning boundary."}
-    if any(x in text for x in ("bengaluru", "bangalore")):
-        return {"key": "bengaluru_rmp2015", "status": "provisional_geocoder_candidate", "confidence": "low",
-                "reason": "The mapped locality is labelled Bengaluru/Bangalore, but this does not prove the parcel's current Greater Bengaluru, BDA or BMRDA planning boundary. SiteIQ will show official map sources to check."}
+    if "tumakuru" in text or "tumkur" in text:
+        return {"key": "tumakuru_uda", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The geocoder labels this point with Tumakuru/Tumkur. Tumakuru Urban Development Authority (TUDA) is a candidate to investigate; confirm the notified boundary and operative master plan."}
+    if "doddaballapura" in text or "doddaballapur" in text or "dodballapur" in text:
+        return {"key": "doddaballapura_planning_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The geocoder labels this point with Doddaballapura. Doddaballapura Planning Authority is a candidate to investigate; confirm the notified planning boundary."}
+    if "ramanagara" in text or "ramanagaram" in text:
+        return {"key": "ramanagara_urban_development_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The geocoder labels this point with Ramanagara. Ramanagara Urban Development Authority (RUDA) is a candidate to investigate; confirm the notified boundary."}
+    if "channapatna" in text:
+        return {"key": "channapatna_planning_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The geocoder labels this point with Channapatna. Channapatna Planning Authority is a candidate to investigate; confirm the notified boundary."}
+    if "magadi" in text:
+        return {"key": "magadi_planning_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The geocoder labels this point with Magadi. Magadi Planning Authority is a candidate to investigate; confirm the notified boundary."}
+    if "devanahalli" in text or "biaapa" in text or "kempegowda international airport" in text:
+        return {"key": "biaapa", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The geocoder labels this point in the vicinity of Devanahalli / Airport corridor. BIAAPA is a candidate to investigate; confirm the notified LPA boundary."}
     if any(x in text for x in ("mysuru", "mysore")):
         return {"key": "mysuru_development_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
                 "reason": "The mapped locality is labelled Mysuru/Mysore. Confirm the notified planning area and operative local authority."}
+    if any(x in text for x in ("mangaluru", "mangalore")):
+        return {"key": "mangaluru_uda", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The mapped locality is labelled Mangaluru/Mangalore. Mangaluru Urban Development Authority is a candidate to investigate."}
+    if any(x in text for x in ("belagavi", "belgaum")):
+        return {"key": "belagavi_uda", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The mapped locality is labelled Belagavi/Belgaum. Belagavi Urban Development Authority is a candidate to investigate."}
+    if any(x in text for x in ("kalaburagi", "gulbarga")):
+        return {"key": "kalaburagi_uda", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The mapped locality is labelled Kalaburagi/Gulbarga. Kalaburagi Urban Development Authority is a candidate to investigate."}
+    if any(x in text for x in ("davanagere", "davangere")):
+        return {"key": "davanagere_uda", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The mapped locality is labelled Davanagere. Davanagere Urban Development Authority is a candidate to investigate."}
+    if any(x in text for x in ("shivamogga", "shimoga")):
+        return {"key": "shivamogga_uda", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The mapped locality is labelled Shivamogga/Shimoga. Shivamogga Urban Development Authority is a candidate to investigate."}
     if any(x in text for x in ("hubballi", "hubli", "dharwad")):
         return {"key": "hubballi_dharwad_udau", "status": "provisional_geocoder_candidate", "confidence": "low",
                 "reason": "The mapped locality is labelled Hubballi/Dharwad. Confirm the notified planning area and operative local authority."}
+    if any(x in text for x in ("bengaluru", "bangalore")):
+        return {"key": "bengaluru_rmp2015", "status": "provisional_geocoder_candidate", "confidence": "low",
+                "reason": "The mapped locality is labelled Bengaluru/Bangalore, but this does not prove the parcel's current Greater Bengaluru, BDA or BMRDA planning boundary. SiteIQ will show official map sources to check."}
     if "karnataka" in text:
         return {"key": "other_karnataka", "status": "state_only_candidate", "confidence": "low",
                 "reason": "The location appears to be in Karnataka, but an exact planning authority cannot be inferred from locality text alone."}
@@ -394,9 +429,20 @@ def auto_identify_site(address: str = "", map_url: str = "", coordinates_text: s
     if authority_result.get("status") == "matched_polygon_layer":
         raw_key = authority_result["match"]["value"]
         # layer value can be an authority registry key or an authority label
-        authority_key = raw_key if raw_key in {
-            "bengaluru_rmp2015", "bda_lpa", "bmrda", "kanakapura_planning_authority", "hoskote_planning_authority", "anekal_planning_authority", "nelamangala_planning_authority", "mysuru_development_authority", "hubballi_dharwad_udau", "other_karnataka"
-        } else None
+        try:
+            from .engine import load_authority_registry
+            _reg = load_authority_registry()
+            known_keys = {a["key"] for a in _reg.get("authorities", [])}
+        except Exception:
+            known_keys = {
+                "bengaluru_rmp2015", "bda_lpa", "bmrda", "kanakapura_planning_authority", "hoskote_planning_authority",
+                "anekal_planning_authority", "nelamangala_planning_authority", "mysuru_development_authority",
+                "hubballi_dharwad_udau", "other_karnataka", "tumakuru_uda", "doddaballapura_planning_authority",
+                "ramanagara_urban_development_authority", "channapatna_planning_authority", "magadi_planning_authority",
+                "biaapa", "strr_planning_authority", "mangaluru_uda", "belagavi_uda", "kalaburagi_uda", "davanagere_uda",
+                "shivamogga_uda", "ballari_uda", "udupi_planning_area"
+            }
+        authority_key = raw_key if raw_key in known_keys else None
         if authority_key:
             authority_candidate = {"key": authority_key, "label": authority_result["match"].get("label") or authority_key, "status": "matched_polygon_layer", "confidence": "medium_high",
                                   "reason": "Point matched the installed authority boundary layer. Validate layer date and the distinction between municipal corporation and planning authority.",

@@ -112,6 +112,16 @@ SOURCE_CATALOG = [
         "queryable_geometry": False,
         "note": "Authority reference link only; no SiteIQ-compatible current zoning layer is assumed.",
     },
+    {
+        "id": "tumakuru_tuda_portal",
+        "title": "Tumakuru Urban Development Authority (TUDA) — official portal",
+        "url": "https://tuda.karnataka.gov.in/",
+        "hosts": ["tuda.karnataka.gov.in"],
+        "areas": ["tumakuru_uda", "other_karnataka"],
+        "types": ["authority_portal", "master_plan_reference"],
+        "queryable_geometry": False,
+        "note": "Official TUDA portal and master plan reference. Confirm parcel inclusion and operative zoning regulations.",
+    },
 ]
 
 
@@ -141,6 +151,8 @@ def official_sources_for_context(authority_key: str | None, locality_text: str =
         ids.extend(["karnataka_urban_development", "bda_rmp2015"])
     elif key == "mysuru_development_authority" or any(t in text for t in ("mysuru", "mysore")):
         ids.extend(["mysuru_authority", "karnataka_urban_development"])
+    elif key == "tumakuru_uda" or "tumakuru" in text or "tumkur" in text:
+        ids.extend(["tumakuru_tuda_portal", "karnataka_urban_development"])
     else:
         ids.extend(["karnataka_urban_development"])
 

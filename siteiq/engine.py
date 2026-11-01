@@ -149,7 +149,7 @@ def _coverage_result(profile: dict, category: dict, site_area_m2: float, road_wi
     }
 
 
-def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road_width_m: float, surrounding_zone: str | None = None, proposed_use: str | None = None) -> dict:
+def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road_width_m: float, surrounding_zone: str | None = None, proposed_use: str | None = None, statutory_deduction_pct: float | None = None) -> dict:
     """Select the best configured FAR rule for a land-use category, with no interpolation.
 
     Every positive result is labelled a candidate from the configured source profile. It is
@@ -217,7 +217,7 @@ def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road
     if method == "inherit_surrounding_zone":
         if not surrounding_zone or surrounding_zone in {zone, "Not verified", "Not selected"}:
             return {**base, "status": "surrounding_zone_required", "message": "Commercial Axes inherits FAR from the officially verified surrounding zone. Select that surrounding zone before SiteIQ can look up FAR.", "matched_rule": None, "candidate_rules": [], "maximum_far": None}
-        inherited = match_far_rule(profile, surrounding_zone, site_area_m2, road_width_m, proposed_use=proposed_use)
+        inherited = match_far_rule(profile, surrounding_zone, site_area_m2, road_width_m, proposed_use=proposed_use, statutory_deduction_pct=statutory_deduction_pct)
         inherited["inherited_from_zone"] = surrounding_zone
         inherited["category"] = cat.get("label")
         inherited["table"] = cat.get("table") + f" (inherits {surrounding_zone})"
@@ -272,18 +272,19 @@ def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road
 
     area_basis = cat.get("far_area_basis", {"type": "gross_site_area"}) or {"type": "gross_site_area"}
     calculation_area = float(site_area_m2)
-    deduction_pct = 0.0
-    if area_basis.get("type") == "net_after_deduction_pct":
-        deduction_pct = float(area_basis.get("deduct_pct", 0) or 0)
-        calculation_area = float(site_area_m2) * (1.0 - deduction_pct / 100.0)
+    table_deduction = float(area_basis.get("deduct_pct", 0) or 0) if area_basis.get("type") == "net_after_deduction_pct" else 0.0
+    user_deduction = float(statutory_deduction_pct or 0.0)
+    deduction_pct = max(table_deduction, user_deduction)
+    if deduction_pct > 0:
+        calculation_area = max(0.0, float(site_area_m2) * (1.0 - deduction_pct / 100.0))
         details.update({
             "gross_site_area_m2": round(float(site_area_m2), 2),
             "far_calculation_area_m2": round(calculation_area, 2),
             "excluded_area_m2": round(float(site_area_m2) - calculation_area, 2),
             "deduction_pct": deduction_pct,
-            "area_basis_note": area_basis.get("reason", "FAR uses the net site area as configured in the selected table."),
+            "area_basis_note": area_basis.get("reason", f"FAR uses net site area after {deduction_pct:g}% statutory reservation deduction (e.g. 15% park/open space + 5% civic amenity)."),
         })
-        message += f" FAR capacity is calculated on {calculation_area:,.2f} m² after the configured {deduction_pct:g}% deduction; verify that the stated deduction and reservation basis match the operative plan."
+        message += f" FAR capacity is calculated on net area {calculation_area:,.2f} m² after {deduction_pct:g}% statutory reservation deduction; verify that the stated deduction and reservation basis match the operative plan."
     capacity = calculation_area * float(far_value)
     matched = {
         "id": cat.get("key"), "far": float(far_value), "maximum_far": float(far_value),
@@ -565,7 +566,8 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
     # The selected regulatory land-use category is distinct from an auto-identified official map zone.
     selected_zone = site.get("land_use_category") or site.get("zone", "Not verified")
     official_zone = site.get("official_zone", site.get("zone", "Not verified"))
-    far_result = match_far_rule(profile, selected_zone, site_area, road_width, surrounding_zone=site.get("surrounding_zone"), proposed_use=site.get("proposed_use"))
+    statutory_deduction_pct = site.get("statutory_deduction_pct")
+    far_result = match_far_rule(profile, selected_zone, site_area, road_width, surrounding_zone=site.get("surrounding_zone"), proposed_use=site.get("proposed_use"), statutory_deduction_pct=statutory_deduction_pct)
     max_far_benchmark = far_result.get("maximum_far") if far_result.get("status") == "candidate_match_requires_verification" else None
     max_far_capacity = far_result.get("maximum_far_area_m2") if max_far_benchmark is not None else None
     far_calculation_area = far_result.get("far_calculation_area_m2", site_area) if max_far_benchmark is not None else site_area
@@ -650,7 +652,19 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
     maximum_height = max([float(h) for h in proposed_heights], default=site.get("height_for_setback_m"))
     fire_check = {"status": "not_configured", "message": "Authority-specific fire review remains pending."}
     if fire_rule and maximum_height is not None:
-        fire_check = {"status": "triggered_by_height_scenario" if float(maximum_height) >= fire_rule["height_min_m_inclusive"] else "below_configured_high_rise_threshold", "threshold_m": fire_rule["height_min_m_inclusive"], "maximum_scenario_height_m": float(maximum_height), "message": fire_rule["condition"], "source": source_by_id(profile, fire_rule["source_id"])}
+        is_high_rise = float(maximum_height) >= fire_rule["height_min_m_inclusive"]
+        fire_check = {
+            "status": "triggered_by_height_scenario" if is_high_rise else "below_configured_high_rise_threshold",
+            "threshold_m": fire_rule["height_min_m_inclusive"],
+            "maximum_scenario_height_m": float(maximum_height),
+            "is_high_rise": is_high_rise,
+            "fire_noc_required": is_high_rise,
+            "minimum_fire_driveway_width_m": 6.0 if is_high_rise else None,
+            "fire_turning_radius_inner_m": 9.0 if is_high_rise else None,
+            "fire_turning_radius_outer_m": 12.0 if is_high_rise else None,
+            "message": fire_rule["condition"] + (" [HIGH-RISE TRIGGERED: Mandatory Fire Department NOC and 6.0m clear all-round motorable driveway required with 9.0m/12.0m turning radii under Karnataka Fire Force Act 2023]." if is_high_rise else " [Below 21m high-rise threshold; check low-rise fire safety and access requirements]."),
+            "source": source_by_id(profile, fire_rule["source_id"])
+        }
 
     checks = [
         {"item":"Planning jurisdiction and boundary", "status":"pending_confirmation", "note":"Map pin does not establish the notified planning boundary or sanctioning authority."},

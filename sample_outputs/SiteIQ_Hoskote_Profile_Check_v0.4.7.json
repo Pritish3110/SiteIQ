@@ -2,7 +2,7 @@
   "application": {
     "name": "SiteIQ",
     "version": "0.4.7",
-    "assessment_date": "2026-10-16",
+    "assessment_date": "2026-11-01",
     "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance."
   },
   "project": "Hoskote LPA FAR Profile Check — illustrative, not a design",
@@ -83,7 +83,7 @@
     "rule_source_quality": "secondary_copy_pending_official_validation",
     "selected_path": "hoskote_table5",
     "status": "candidate_match_requires_verification",
-    "message": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on 19,649.94 m² after the configured 5% deduction; verify that the stated deduction and reservation basis match the operative plan.",
+    "message": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after 5% statutory reservation deduction; verify that the stated deduction and reservation basis match the operative plan.",
     "matched_rule": {
       "id": "residential",
       "far": 2.75,
@@ -204,7 +204,7 @@
     {
       "item": "Maximum FAR lookup",
       "status": "candidate_match_requires_verification",
-      "note": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on 19,649.94 m² after the configured 5% deduction; verify that the stated deduction and reservation basis match the operative plan."
+      "note": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after 5% statutory reservation deduction; verify that the stated deduction and reservation basis match the operative plan."
     },
     {
       "item": "Survey geometry / boundary",
