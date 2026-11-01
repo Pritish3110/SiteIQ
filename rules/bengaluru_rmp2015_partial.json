@@ -1,0 +1,1133 @@
+{
+  "profile_key": "bengaluru_rmp2015_partial",
+  "profile_name": "Bengaluru / Greater Bengaluru RMP 2015 - selected rules, 2026 update",
+  "profile_status": "partial; selected tables transcribed; not a consolidated code",
+  "last_reviewed": "2026-10-16",
+  "important_note": "Only selected provisions from user-supplied RMP 2015 and amendments are configured. The FAR engine uses the table structure: road width determines the road-based FAR candidate and, where the table also states plot-area bands, the plot-area FAR limit caps that candidate; this follows Regulation 3.4(iii)-(iv) in the supplied RMP. Every result is a rule-based candidate subject to zone/jurisdiction and current-notification verification. For a category without a configured operative table, no maximum FAR is invented.",
+  "sources": [
+    {
+      "id": "rmp2015_table10",
+      "title": "Revised Master Plan 2015 - Zoning of Land Use and Regulations, Table 10 (Residential Main)",
+      "document": "BBMP 2015.pdf (provided by user)",
+      "document_page": "PDF page 28; printed page 27",
+      "clause": "Chapter 4, Regulation 4.1.2, Table 10",
+      "status": "provided_source; older base document; applicability must be checked against amendments",
+      "url": "https://eng.bdabangalore.org/masterplan.html"
+    },
+    {
+      "id": "udd235_setbacks",
+      "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
+      "notification": "UDD 235 MNJ 2025(E)",
+      "date": "2026-01-05",
+      "document": "Amendment 01.pdf (provided by user)",
+      "document_page": "PDF pages 2-6; printed pages 2-6",
+      "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
+      "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
+      "url": "https://gba.karnataka.gov.in/"
+    },
+    {
+      "id": "udd272_single_plot",
+      "title": "Zonal Regulations of Revised Master Plan 2015 of Bengaluru (Amendment) Regulations 2025 - Single Plot Approval / Chapter 6-A",
+      "notification": "UDD 272 MNJ 2025(E)",
+      "date": "2025-07-16",
+      "document": "Amendment 05.pdf (provided by user)",
+      "document_page": "PDF pages 2-5; printed pages 2-5",
+      "clause": "Definitions, Regulation 3.9 basement setback and Chapter 6-A",
+      "status": "final notification in user-supplied document; applicability and grandfather clause must be checked",
+      "url": "https://eng.bdabangalore.org/acts-rules-amendments.html"
+    },
+    {
+      "id": "kff_act_2023",
+      "title": "Karnataka Fire Force (Amendment) Act, 2023",
+      "notification": "Karnataka Act No. 24 of 2023",
+      "date": "2023-07-27",
+      "document": "Amendment 03.pdf (provided by user)",
+      "document_page": "PDF pages 1-3",
+      "clause": "Section 13: high-rise definition / Fire NOC trigger at 21 metres or above",
+      "status": "provided primary legislation; current administrative procedure and other fire provisions need review",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_587_000010_196442_1551090039403&filename=42_of_1964_%28e%29.pdf&type=actfile"
+    },
+    {
+      "id": "rmp2015_tables10_19",
+      "title": "Revised Master Plan 2015 - Zoning of Land Use and Regulations, Tables 10-19",
+      "document": "BBMP 2015.pdf (provided by user)",
+      "document_page": "PDF pages 28-37; printed pages 27-36",
+      "clause": "Chapter 4, Regulations 4.1-4.10, Tables 10-19; Chapter 3, Regulation 3.4(iii)-(iv)",
+      "status": "provided base source; apply supplied subsequent amendments and verify current operative text",
+      "url": "https://eng.bdabangalore.org/masterplan.html"
+    }
+  ],
+  "far_table_residential_main": [
+    {
+      "id": "r1",
+      "plot_min_exclusive": false,
+      "plot_min": 0,
+      "plot_max": 360,
+      "road_min_exclusive": false,
+      "road_min": 0,
+      "road_max": 12,
+      "far": 1.75,
+      "coverage_pct_legacy": 75,
+      "source_id": "rmp2015_table10",
+      "source_note": "Table entry is transcribed from supplied base RMP. Current coverage treatment for small sites is not automated."
+    },
+    {
+      "id": "r2",
+      "plot_min_exclusive": true,
+      "plot_min": 360,
+      "plot_max": 1000,
+      "road_min_exclusive": true,
+      "road_min": 12,
+      "road_max": 18,
+      "far": 2.25,
+      "coverage_pct_legacy": 65,
+      "source_id": "rmp2015_table10",
+      "source_note": "Table entry is transcribed from supplied base RMP. Row selected only if both area and road bands match."
+    },
+    {
+      "id": "r3",
+      "plot_min_exclusive": true,
+      "plot_min": 1000,
+      "plot_max": 2000,
+      "road_min_exclusive": true,
+      "road_min": 18,
+      "road_max": 24,
+      "far": 2.5,
+      "coverage_pct_legacy": 60,
+      "source_id": "rmp2015_table10",
+      "source_note": "Table entry is transcribed from supplied base RMP. Row selected only if both area and road bands match."
+    },
+    {
+      "id": "r4",
+      "plot_min_exclusive": true,
+      "plot_min": 2000,
+      "plot_max": 4000,
+      "road_min_exclusive": true,
+      "road_min": 24,
+      "road_max": 30,
+      "far": 3.0,
+      "coverage_pct_legacy": 55,
+      "source_id": "rmp2015_table10",
+      "source_note": "Table entry is transcribed from supplied base RMP. Row selected only if both area and road bands match."
+    },
+    {
+      "id": "r5",
+      "plot_min_exclusive": true,
+      "plot_min": 4000,
+      "plot_max": 20000,
+      "road_min_exclusive": true,
+      "road_min": 30,
+      "road_max": null,
+      "far": 3.25,
+      "coverage_pct_legacy": 50,
+      "source_id": "rmp2015_table10",
+      "source_note": "Table entry is transcribed from supplied base RMP. Row selected only if both area and road bands match."
+    }
+  ],
+  "setback_table8_percentages": {
+    "condition": "plot area above 250 and up to 4000 sq.m; height for setback determination up to 12.0 m excluding stilt floor",
+    "front_pct_of_depth": 12,
+    "rear_pct_of_depth": 8,
+    "left_pct_of_width": 8,
+    "right_pct_of_width": 8,
+    "source_id": "udd235_setbacks",
+    "status": "selected provision from provided amendment; do not use as a full envelope for an irregular site without surveyed geometry"
+  },
+  "setback_table9_height_bands": [
+    {
+      "height_min_exclusive": 12,
+      "height_max": 15,
+      "stilt": true,
+      "front_min_m": 1.5,
+      "rear_min_m": 1.0,
+      "side_min_m": 1.0,
+      "source_id": "udd235_setbacks",
+      "note": "For plot size up to 4000 sq.m; use the greater of stated minimum and applicable Table 8 setback, subject to verification of the exact height definition."
+    },
+    {
+      "height_min_exclusive": 12,
+      "height_max": 15,
+      "stilt": false,
+      "all_round_m": 5.0,
+      "source_id": "udd235_setbacks",
+      "note": "Height-band reading from the supplied Table 9; confirm the applicable row and definition with the authority."
+    },
+    {
+      "height_min_exclusive": 15,
+      "height_max": 18,
+      "all_round_m": 6.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 18,
+      "height_max": 21,
+      "all_round_m": 7.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 21,
+      "height_max": 24,
+      "all_round_m": 8.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 24,
+      "height_max": 27,
+      "all_round_m": 9.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 27,
+      "height_max": 30,
+      "all_round_m": 10.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 30,
+      "height_max": 35,
+      "all_round_m": 11.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 35,
+      "height_max": 40,
+      "all_round_m": 12.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 40,
+      "height_max": 45,
+      "all_round_m": 13.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 45,
+      "height_max": 50,
+      "all_round_m": 14.0,
+      "source_id": "udd235_setbacks"
+    },
+    {
+      "height_min_exclusive": 50,
+      "height_max": null,
+      "all_round_m": 16.0,
+      "source_id": "udd235_setbacks"
+    }
+  ],
+  "single_plot_chapter_6a": {
+    "trigger_min_exclusive_sq_m": 2000,
+    "trigger_max_sq_m": 4000,
+    "park_reservation_pct": 10,
+    "alternative_guidance_value_charge_pct": 10,
+    "condition": "Only if this is an eligible single-plot approval under Chapter 6-A and the provision is applicable; check property-record identity, registered deed history and prior approval/grandfather provisions.",
+    "source_id": "udd272_single_plot"
+  },
+  "fire_noc_trigger": {
+    "height_min_m_inclusive": 21,
+    "condition": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed.",
+    "source_id": "kff_act_2023"
+  },
+  "land_use_categories": [
+    {
+      "key": "residential_main",
+      "label": "Residential (Main)",
+      "table": "Table 10",
+      "source_id": "rmp2015_tables10_19",
+      "method": "area_cap_and_road_width",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 360,
+          "min_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 360,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 4000,
+          "max": 20000,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "min_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 360,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 75
+        },
+        {
+          "min": 360,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 65
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 60
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 55
+        },
+        {
+          "min": 4000,
+          "max": 20000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        }
+      ],
+      "coverage_method": "plot_area",
+      "eligibility": {
+        "plot_area_max_m2": 20000
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Confirm exact Residential (Main) zoning from the notified land-use map.",
+        "For apartment eligibility, check the current ring-specific plot-size/unit-count conditions and minimum access-road requirements."
+      ],
+      "far_interpretation": "Road-width FAR candidate capped by the FAR limit for the plot-area band; if the road is narrower than a FAR band requires, use the FAR corresponding to the actual road width, subject to the plot-area cap. Derived from RMP 2015 Regulation 3.4(iii)-(iv)."
+    },
+    {
+      "key": "residential_mixed",
+      "label": "Residential (Mixed)",
+      "table": "Table 12",
+      "source_id": "rmp2015_tables10_19",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "min_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 70
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 65
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 60
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 55
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        }
+      ],
+      "coverage_method": "road_width",
+      "eligibility": {
+        "plot_area_max_m2": 20000
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Profile applies to Residential (Mixed) zone and plots up to 20,000 m² as stated in Table 12.",
+        "Check Table 11 for conditions governing ancillary uses as main use."
+      ],
+      "far_interpretation": "FAR selected by actual road-width band, within Table 12's stated plot-area limit."
+    },
+    {
+      "key": "commercial_central",
+      "label": "Commercial (Central)",
+      "table": "Table 13",
+      "source_id": "rmp2015_tables10_19",
+      "method": "fixed",
+      "fixed_far": 2.5,
+      "coverage_fixed_pct": 75,
+      "coverage_method": "fixed",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Only applies if the property is officially classified Commercial (Central).",
+        "Table 13 includes small-site setback exceptions; verify the applicable size band and front-side treatment."
+      ],
+      "far_interpretation": "Table 13 states maximum FAR 2.50 and ground coverage 75%; confirm zone and applicable amendments."
+    },
+    {
+      "key": "commercial_business",
+      "label": "Commercial (Business)",
+      "table": "Table 14",
+      "source_id": "rmp2015_tables10_19",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "min_exclusive": false,
+          "far": 1.5,
+          "upper_label": "Less than 9 m",
+          "max_exclusive": true
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "far": 1.75
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 55,
+          "max_exclusive": true,
+          "upper_label": "Less than 9 m"
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 45
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 40
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 40
+        }
+      ],
+      "coverage_method": "road_width",
+      "eligibility": {
+        "plot_area_max_m2": 12000
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Table 14 is stated for plot areas up to 12,000 m².",
+        "At exactly 9.0 m road width the supplied table wording leaves a boundary ambiguity between 'less than 9' and 'above 9 to 12'; authority interpretation is required."
+      ],
+      "far_interpretation": "FAR is selected from Table 14 by road-width band, subject to the stated 12,000 m² table scope."
+    },
+    {
+      "key": "mutation_corridors_commercial",
+      "label": "Mutation Corridors (Commercial)",
+      "table": "Table 15",
+      "source_id": "rmp2015_tables10_19",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 30,
+          "min_exclusive": false,
+          "far": 2.75
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 30,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 55
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        }
+      ],
+      "coverage_method": "road_width",
+      "eligibility": {
+        "plot_area_max_m2": 10000,
+        "frontage_min_m": 12
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Amendment UDD 235 MNJ 2025(E) changes Table 15 plot-size limit from 12,000 to 10,000 m².",
+        "Must be officially designated Mutation Corridor and satisfy frontage/depth/access eligibility; SiteIQ cannot determine that from road width alone."
+      ],
+      "far_interpretation": "Road-width FAR candidate only if the Mutation Corridor designation and Table 15 eligibility are confirmed."
+    },
+    {
+      "key": "commercial_axes",
+      "label": "Commercial Axes (inherits surrounding zone)",
+      "table": "Regulation 4.6.2(ii)",
+      "source_id": "rmp2015_tables10_19",
+      "method": "inherit_surrounding_zone",
+      "setback_method": "table8_9",
+      "conditions": [
+        "FAR/coverage are the same as the surrounding main zone; user must select the officially verified surrounding zone."
+      ],
+      "far_interpretation": "No independent FAR; inherits from the surrounding zone."
+    },
+    {
+      "key": "industrial_general",
+      "label": "Industrial (General)",
+      "table": "Table 16 (as amended by UDD 235 MNJ 2025(E))",
+      "source_id": "udd235_setbacks",
+      "method": "plot_area",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 500,
+          "min_exclusive": false,
+          "far": 1.5
+        },
+        {
+          "min": 500,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": 1.25
+        },
+        {
+          "min": 1000,
+          "max": 3000,
+          "min_exclusive": true,
+          "far": 1.0
+        },
+        {
+          "min": 3000,
+          "max": null,
+          "min_exclusive": true,
+          "far": 1.0
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 500,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 75
+        },
+        {
+          "min": 500,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 60
+        },
+        {
+          "min": 1000,
+          "max": 3000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        },
+        {
+          "min": 3000,
+          "max": null,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 45
+        }
+      ],
+      "coverage_method": "plot_area",
+      "setback_method": "industrial_table16",
+      "industrial_setbacks": [
+        {
+          "min": 0,
+          "max": 500,
+          "min_exclusive": false,
+          "far": null,
+          "front": "12% of site depth",
+          "rear_side": "8% of site depth/width"
+        },
+        {
+          "min": 500,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": null,
+          "front": "4.50 m",
+          "rear_side": "4.50 m"
+        },
+        {
+          "min": 1000,
+          "max": 3000,
+          "min_exclusive": true,
+          "far": null,
+          "front": "6.00 m",
+          "rear_side": "6.00 m"
+        },
+        {
+          "min": 3000,
+          "max": null,
+          "min_exclusive": true,
+          "far": null,
+          "front": "10.00 m",
+          "rear_side": "8.00 m"
+        }
+      ],
+      "conditions": [
+        "Table 16 FAR and special setbacks apply only after Industrial (General) classification is confirmed.",
+        "For buildings where the specified special setbacks do not leave a meaningful building area, the authority may require Table 8/9 setbacks.",
+        "T3 as a main use is subject to road-width condition in the source text."
+      ],
+      "far_interpretation": "FAR is selected by plot-area band under Table 16; no road-width band is stated in that FAR table."
+    },
+    {
+      "key": "industrial_hitech",
+      "label": "Industrial (Hi-Tech)",
+      "table": "Table 17",
+      "source_id": "rmp2015_tables10_19",
+      "method": "area_cap_and_road_width",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 1000,
+          "min_exclusive": false,
+          "far": 2.0
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 4000,
+          "max": 6000,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 6000,
+          "max": 12000,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "min_exclusive": false,
+          "far": 2.0
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 1000,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 55
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        },
+        {
+          "min": 4000,
+          "max": 6000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 45
+        },
+        {
+          "min": 6000,
+          "max": 12000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 45
+        }
+      ],
+      "coverage_method": "plot_area",
+      "eligibility": {
+        "plot_area_max_m2": 12000
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Confirm the official Industrial (Hi-Tech) zone and any permitted residential-main-use exception noted in the source."
+      ],
+      "far_interpretation": "Road-width FAR candidate capped by Table 17 plot-area band."
+    },
+    {
+      "key": "public_semi_public",
+      "label": "Public and Semi-public (P&SP)",
+      "table": "Table 18",
+      "source_id": "rmp2015_tables10_19",
+      "method": "plot_area",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 500,
+          "min_exclusive": false,
+          "far": 1.5
+        },
+        {
+          "min": 500,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": 1.75
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": 2.0
+        },
+        {
+          "min": 2000,
+          "max": null,
+          "min_exclusive": true,
+          "far": 2.25
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 500,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 60
+        },
+        {
+          "min": 500,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 55
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        },
+        {
+          "min": 2000,
+          "max": null,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 45
+        }
+      ],
+      "coverage_method": "plot_area",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Confirm P&SP classification and proposed use; ancillary use is separately limited by the source regulation."
+      ],
+      "far_interpretation": "Table 18 FAR is selected by plot-area band."
+    },
+    {
+      "key": "traffic_transportation",
+      "label": "Traffic and Transportation (T&T)",
+      "table": "Table 19",
+      "source_id": "rmp2015_tables10_19",
+      "method": "plot_area",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 500,
+          "min_exclusive": false,
+          "far": 1.0
+        },
+        {
+          "min": 500,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": 1.25
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": 1.5
+        },
+        {
+          "min": 2000,
+          "max": null,
+          "min_exclusive": true,
+          "far": 1.5
+        }
+      ],
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 500,
+          "min_exclusive": false,
+          "far": null,
+          "coverage_pct": 60
+        },
+        {
+          "min": 500,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 55
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 50
+        },
+        {
+          "min": 2000,
+          "max": null,
+          "min_exclusive": true,
+          "far": null,
+          "coverage_pct": 45
+        }
+      ],
+      "coverage_method": "plot_area",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Table 19's independent Multi-Level Car Parking provision is a special case and is not automatically calculated as generic FAR."
+      ],
+      "far_interpretation": "Table 19 FAR is selected by plot-area band for the general Traffic and Transportation zone; MLCP needs a separate authority/fire/airport check."
+    },
+    {
+      "key": "public_utilities",
+      "label": "Public Utilities (PU)",
+      "table": "Regulation 4.11.2",
+      "source_id": "rmp2015_tables10_19",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "Utility buffers and development rules are determined by competent authority; no generic FAR is configured."
+      ],
+      "far_interpretation": "No generic FAR can be calculated from the configured source; authority decision required."
+    },
+    {
+      "key": "park_open_space",
+      "label": "Park and Open Space (P)",
+      "table": "Regulation 4.12.2",
+      "source_id": "rmp2015_tables10_19",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "This category includes environmental conservation features and reservations. New development is highly restricted; verify lake/drain/valley overlays and any existing permission."
+      ],
+      "far_interpretation": "No generic building FAR; the source specifies permitted uses and limited special cases rather than a general FAR table."
+    },
+    {
+      "key": "agricultural_land",
+      "label": "Agricultural Land Zone (AG)",
+      "table": "Regulation 4.13",
+      "source_id": "rmp2015_tables10_19",
+      "method": "special_no_generic_far",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Coverage and height depend on the proposed use; rural development within 250 m of Gramathana has a separate FAR 1.0 / G+1 condition if eligibility is established."
+      ],
+      "far_interpretation": "No generic FAR for all agricultural uses; choose and verify the applicable use-specific provision."
+    },
+    {
+      "key": "unclassified_use",
+      "label": "Unclassified Use (UC)",
+      "table": "Regulation 4.14",
+      "source_id": "rmp2015_tables10_19",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "Discrepancies in boundaries/land use and development decisions are referred to the authority/government under the source text."
+      ],
+      "far_interpretation": "No generic FAR; authority decision required."
+    },
+    {
+      "key": "residential_development_plan",
+      "label": "Residential Development Plan (>10,000 m² pathway)",
+      "table": "Chapter 7 (Development Plan)",
+      "source_id": "rmp2015_tables10_19",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "The 2025 amendment redefines Development Plan for a single plot over 10,000 m². Chapter 7 requires a separate fully checked rule path."
+      ],
+      "far_interpretation": "The standard small/medium plot FAR tables are not used for this approval pathway; Chapter 7 configuration is incomplete."
+    },
+    {
+      "key": "nonresidential_development_plan",
+      "label": "Non-residential Development Plan / Flatted Factory (>10,000 m² pathway)",
+      "table": "Chapter 7 (Development Plan)",
+      "source_id": "rmp2015_tables10_19",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "Use Chapter 7 and current amended definition/threshold. The complete specific FAR table for the applicable pathway is not configured in this MVP."
+      ],
+      "far_interpretation": "The standard zone tables are not enough; Chapter 7 review is required."
+    }
+  ],
+  "setback_table8_area_bands": [
+    {
+      "site_area_min": 0,
+      "site_area_max": 60,
+      "max_exclusive": false,
+      "front_m": 0.75,
+      "rear_m": null,
+      "side_m": 0.6,
+      "note": "Table 8: site area up to 60 m²; side setback of 0.60 m on any one side."
+    },
+    {
+      "site_area_min": 60,
+      "site_area_max": 150,
+      "max_exclusive": false,
+      "min_exclusive": true,
+      "front_m": 0.9,
+      "rear_m": 0.7,
+      "side_m": 0.7,
+      "note": "Table 8: above 60 m² up to 150 m²; side setback of 0.70 m on any one side."
+    },
+    {
+      "site_area_min": 150,
+      "site_area_max": 250,
+      "min_exclusive": true,
+      "max_exclusive": false,
+      "front_m": 1.0,
+      "rear_m": 0.8,
+      "left_m": 0.8,
+      "right_m": 0.8,
+      "note": "Table 8: above 150 m² up to 250 m²."
+    },
+    {
+      "site_area_min": 250,
+      "site_area_max": 4000,
+      "min_exclusive": true,
+      "max_exclusive": false,
+      "front_pct_of_depth": 12,
+      "rear_pct_of_depth": 8,
+      "left_pct_of_width": 8,
+      "right_pct_of_width": 8,
+      "note": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope."
+    },
+    {
+      "site_area_min": 4000,
+      "site_area_max": null,
+      "min_exclusive": true,
+      "all_round_m": 5.0,
+      "note": "Amended Table 8: for site area above 4,000 m², minimum setback of 5.0 m on all sides."
+    }
+  ],
+  "coverage_amendment": {
+    "site_area_max_m2": 4000,
+    "applies_to": "Chapter 4 main land-use zone ground-coverage regulations",
+    "status": "coverage provisions mentioned in Chapter 4 shall not be considered for plots up to 4,000 m² under the supplied 5 January 2026 amendment; do not present legacy coverage percentages as a hard cap for these plots.",
+    "source_id": "udd235_setbacks"
+  },
+  "basement_setback_rule": {
+    "source_id": "udd235_setbacks",
+    "up_to_4000": {
+      "max_site_area_m2": 4000,
+      "front_side_uses_building_setback": true,
+      "other_sides_max_m": 2.0,
+      "logic": "For plots up to 4,000 m², basement setback is the building setback under Table 8/9 or 2.0 m, whichever is less; when the minimum building setback is more than 2.0 m, basement may extend on all sides except the road-abutting side, while retaining at least 2.0 m from the boundary on non-road sides.",
+      "note": "Apply only where the option's building setback is based on Table 8/9 and road-facing edge(s) have been identified; confirm any special-zone provision and interpretive questions with the authority."
+    },
+    "above_4000": [
+      {
+        "min_area_exclusive": 4000,
+        "max_area": 20000,
+        "setback_m": 3.0,
+        "source_id": "udd272_single_plot"
+      },
+      {
+        "min_area_exclusive": 20000,
+        "max_area": 40000,
+        "setback_m": 4.0,
+        "source_id": "udd272_single_plot"
+      },
+      {
+        "min_area_exclusive": 40000,
+        "max_area": null,
+        "setback_m": 5.0,
+        "source_id": "udd272_single_plot"
+      }
+    ]
+  },
+  "industrial_table16_amended_note": "Table 16 was substituted by UDD 235 MNJ 2025(E), dated 05.01.2026. For up to 500 m² the front setback is 12% of site depth and rear/sides 8% of site depth/width; remaining area bands retain specified fixed distances. Verify applicability and current consolidated text."
+}

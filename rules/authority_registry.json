@@ -1,0 +1,601 @@
+{
+  "registry_version": "0.4.7",
+  "last_reviewed": "2026-10-16",
+  "authorities": [
+    {
+      "key": "bengaluru_rmp2015",
+      "name": "Bengaluru / Greater Bengaluru - RMP 2015 profile",
+      "region": "Bengaluru, Karnataka",
+      "rule_profile": "bengaluru_rmp2015_partial",
+      "status": "partial_rules_configured",
+      "scope_note": "Selected provisions from the user-supplied RMP 2015 and amendments are configured. Greater Bengaluru Authority and BDA planning boundaries have changed; the exact jurisdiction and current land-use map must be verified for each parcel before the configured clauses are applied.",
+      "sources": [
+        {
+          "title": "Greater Bengaluru Authority (official portal; land-use maps and corporation tools)",
+          "url": "https://gba.karnataka.gov.in/",
+          "source_type": "official_portal"
+        },
+        {
+          "title": "BDA Master Plan portal (RMP 2015 resources)",
+          "url": "https://eng.bdabangalore.org/masterplan.html",
+          "source_type": "official_authority_page"
+        },
+        {
+          "title": "BDA acts, rules and amendments",
+          "url": "https://eng.bdabangalore.org/acts-rules-amendments.html",
+          "source_type": "official_authority_page"
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 (India Code copy)",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963_%28e%29.pdf&type=actfile",
+          "source_type": "official_law_repository"
+        }
+      ]
+    },
+    {
+      "key": "bda_lpa",
+      "name": "Bangalore Development Authority Local Planning Area",
+      "region": "Bengaluru Metropolitan Area, Karnataka",
+      "rule_profile": null,
+      "status": "registry_only_not_configured",
+      "scope_note": "The amended Karnataka Town and Country Planning Act text indicates BDA is the planning authority for the Bengaluru Metropolitan Area excluding the Greater Bengaluru Area. Confirm the parcel against current notified boundaries. No automatic rules are configured in this MVP.",
+      "sources": [
+        {
+          "title": "BDA Master Plan portal",
+          "url": "https://eng.bdabangalore.org/masterplan.html",
+          "source_type": "official_authority_page"
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963_%28e%29.pdf&type=actfile",
+          "source_type": "official_law_repository"
+        }
+      ]
+    },
+    {
+      "key": "bmrda",
+      "name": "Bengaluru Metropolitan Region Development Authority / regional planning area",
+      "region": "Bengaluru Metropolitan Region, Karnataka",
+      "rule_profile": null,
+      "status": "registry_only_not_configured",
+      "scope_note": "Regional planning jurisdiction does not by itself identify the operative local planning area or building control regulations. Confirm the notified planning authority and current master plan for the parcel.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963_%28e%29.pdf&type=actfile",
+          "source_type": "official_law_repository"
+        }
+      ]
+    },
+    {
+      "key": "kanakapura_planning_authority",
+      "name": "Planning Authority Kanakapura (provisional candidate)",
+      "region": "Kanakapura, Karnataka",
+      "rule_profile": "kanakapura_lpa2031_candidate",
+      "status": "provisional_rules_profile_enabled_secondary_source",
+      "scope_note": "Kanakapura LPA 2031 candidate rules are transcribed from secondary/tribunal-hosted copies. FAR is provisional only; verify the precise planning boundary, operative final notification and later amendments before reliance. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
+      "sources": [
+        {
+          "title": "Planning Authority Kanakapura — official district administration directory",
+          "url": "https://bengalurusouth.nic.in/en/whoswho/nagaratna/",
+          "source_type": "official_authority_directory",
+          "status": "authority_contact_verified; does not itself establish a parcel boundary or FAR rule"
+        },
+        {
+          "title": "Kanakapura LPA Master Plan 2031 Final Report and Zoning Regulations — secondary copy",
+          "url": "https://www.scribd.com/document/403292547/Kanakapura-LPA-Final-Report-pdf",
+          "source_type": "secondary_document_mirror",
+          "status": "candidate_source_only; official final notification, current amendments and continuing legal applicability need confirmation; used only as provisional source lead and not proof of current operative rule"
+        },
+        {
+          "title": "Kanakapura LPA Master Plan 2031 Zoning Regulations — copy hosted by National Green Tribunal",
+          "url": "https://www.greentribunal.gov.in/sites/default/files/news_updates/3_15.pdf",
+          "source_type": "court_or_tribunal_hosted_copy",
+          "status": "supporting copy; not treated as current operative consolidated law without official verification"
+        },
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        }
+      ],
+      "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "secondary_copy_pending_official_validation"
+    },
+    {
+      "key": "mysuru_development_authority",
+      "name": "Mysuru Development Authority",
+      "region": "Mysuru, Karnataka",
+      "rule_profile": null,
+      "status": "registry_only_not_configured",
+      "scope_note": "No operative Mysuru zoning/building rule tables have been validated in this MVP. Do not reuse Bengaluru FAR or setback rules. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "sources": [
+        {
+          "title": "Mysuru Development Authority Act, 2024 (India Code)",
+          "url": "https://www.indiacode.nic.in/bitstream/123456789/21669/1/39_of_2025_%28e%29.pdf",
+          "source_type": "official_law_repository"
+        }
+      ]
+    },
+    {
+      "key": "hubballi_dharwad_udau",
+      "name": "Hubballi-Dharwad Urban Development Authority",
+      "region": "Hubballi-Dharwad, Karnataka",
+      "rule_profile": null,
+      "status": "registry_only_not_configured",
+      "scope_note": "No operative Hubballi-Dharwad rule tables are validated in the MVP. The Master Plan 2031 Revision-II material found online requires authority/version and final-notification verification before it is configured. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963_%28e%29.pdf&type=actfile",
+          "source_type": "official_law_repository"
+        }
+      ]
+    },
+    {
+      "key": "other_karnataka",
+      "name": "Other Karnataka planning authority (enter name / verify jurisdiction)",
+      "region": "Karnataka",
+      "rule_profile": null,
+      "status": "registry_only_not_configured",
+      "scope_note": "Manual review remains the default until the relevant authority-specific current master plan and amendments are identified. Final notification UDD 17 TTP 2025(E), dated 22.05.2026, standardises selected land-use classifications and certain industrial-area rules for approved Master Plans outside the Bengaluru Metropolitan Region (including GBA/BDA/all BMR authorities) and outside Mangaluru LPA. It does not provide one universal residential FAR table; no generic residential FAR is inferred from it.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963_%28e%29.pdf&type=actfile",
+          "source_type": "official_law_repository"
+        },
+        {
+          "title": "UDD 17 TTP 2025(E), 22 May 2026 — Amendment to zonal regulations of approved Master Plans outside BMR and Mangaluru LPA",
+          "url": "https://policyindex.ai/in/gazette/amendment-to-zonal-regulations-of-all-approved-master-plans-of-the-local-planning-areas-except-the-master-plans-within-bengaluru-metropolitan-region-including-gba-bda-and-all-13e7fq",
+          "source_type": "gazette_transcript_mirror",
+          "status": "Final notification reference. Applies by stated scope, but only selected common classifications/special tables are encoded in the source; not a universal residential FAR rule."
+        }
+      ]
+    },
+    {
+      "key": "anekal_planning_authority",
+      "name": "Anekal Planning Authority",
+      "region": "Anekal, Karnataka",
+      "rule_profile": "anekal_lpa2031_candidate",
+      "status": "provisional_rules_profile_enabled_secondary_source",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "secondary_copy_pending_official_validation",
+      "scope_note": "Anekal LPA 2031 candidate rules are transcribed from a secondary Master Plan copy. General table FARs are provisional; the group-housing FAR pathway is deliberately not auto-calculated because secondary copies conflict. Verify the operative approved plan and amendments. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
+      "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "biaapa",
+      "name": "Bengaluru International Airport Area Planning Authority (BIAAPA)",
+      "region": "Bengaluru International Airport area, Karnataka",
+      "rule_profile": null,
+      "status": "draft_uniform_rules_source_found_final_notification_not_verified",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "draft_only_not_enabled_for_calculations",
+      "scope_note": "A 24 March 2026 draft of Uniform Zonal Regulations lists this authority/local planning area. The text states the rules would commence after final notification by the individual authority. No operative rule profile is enabled; use the currently applicable approved master plan and final amendments only after verification.",
+      "next_action": "Obtain current approved master plan/zoning regulations and all Gazette amendments; verify any final notification/commencement of UDD 559 BMR 2025(E).",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "channapatna_planning_authority",
+      "name": "Channapatna Planning Authority",
+      "region": "Channapatna, Karnataka",
+      "rule_profile": null,
+      "status": "draft_uniform_rules_source_found_final_notification_not_verified",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "draft_only_not_enabled_for_calculations",
+      "scope_note": "A 24 March 2026 draft of Uniform Zonal Regulations lists this authority/local planning area. The text states the rules would commence after final notification by the individual authority. No operative rule profile is enabled; use the currently applicable approved master plan and final amendments only after verification.",
+      "next_action": "Obtain current approved master plan/zoning regulations and all Gazette amendments; verify any final notification/commencement of UDD 559 BMR 2025(E).",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "doddaballapura_planning_authority",
+      "name": "Doddaballapura Planning Authority",
+      "region": "Doddaballapura, Karnataka",
+      "rule_profile": null,
+      "status": "draft_uniform_rules_source_found_final_notification_not_verified",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "draft_only_not_enabled_for_calculations",
+      "scope_note": "A 24 March 2026 draft of Uniform Zonal Regulations lists this authority/local planning area. The text states the rules would commence after final notification by the individual authority. No operative rule profile is enabled; use the currently applicable approved master plan and final amendments only after verification.",
+      "next_action": "Obtain current approved master plan/zoning regulations and all Gazette amendments; verify any final notification/commencement of UDD 559 BMR 2025(E).",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "hoskote_planning_authority",
+      "name": "Hoskote Planning Authority (provisional candidate; rules not configured)",
+      "region": "Hoskote, Karnataka",
+      "rule_profile": "hoskote_lpa2031_candidate",
+      "status": "provisional_rules_profile_enabled_secondary_source",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "secondary_copy_pending_official_validation",
+      "scope_note": "Hoskote LPA 2031 candidate rules are transcribed from secondary copies of the final-plan zoning document. FAR can be shown as a provisional candidate, not an operative entitlement, until the exact Hoskote LPA boundary, current approved plan and amendments are verified. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
+      "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "magadi_planning_authority",
+      "name": "Magadi Planning Authority",
+      "region": "Magadi, Karnataka",
+      "rule_profile": null,
+      "status": "draft_uniform_rules_source_found_final_notification_not_verified",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "draft_only_not_enabled_for_calculations",
+      "scope_note": "A 24 March 2026 draft of Uniform Zonal Regulations lists this authority/local planning area. The text states the rules would commence after final notification by the individual authority. No operative rule profile is enabled; use the currently applicable approved master plan and final amendments only after verification.",
+      "next_action": "Obtain current approved master plan/zoning regulations and all Gazette amendments; verify any final notification/commencement of UDD 559 BMR 2025(E).",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "nelamangala_planning_authority",
+      "name": "Nelamangala Planning Authority",
+      "region": "Nelamangala, Karnataka",
+      "rule_profile": "nelamangala_lpa2031_candidate",
+      "status": "provisional_rules_profile_enabled_secondary_source",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "secondary_copy_pending_official_validation",
+      "scope_note": "Nelamangala LPA 2031 candidate rules are transcribed from secondary copies. FAR is provisional only; verify the precise planning boundary, operative final notification and later amendments before reliance. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile. Official-domain authority-hosted reference located for the Approved Master Plan 2031; not treated as validation of the secondary-transcribed FAR/setback tables.",
+      "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        },
+        {
+          "title": "Nelamangala Planning Authority — authority-hosted document referencing Approved Master Plan 2031",
+          "url": "https://npa.karnataka.gov.in/uploads/media_to_upload1753705289.pdf",
+          "source_type": "official_authority_hosted_source_lead",
+          "status": "Official-domain authority-hosted reference located, but not verified as a complete current zoning/FAR tables document; does not validate secondary-source table transcriptions."
+        }
+      ]
+    },
+    {
+      "key": "strr_planning_authority",
+      "name": "Satellite Town Ring Road Planning Authority (STRRPA)",
+      "region": "Bengaluru Metropolitan Region, Karnataka",
+      "rule_profile": null,
+      "status": "draft_uniform_rules_source_found_final_notification_not_verified",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "draft_only_not_enabled_for_calculations",
+      "scope_note": "A 24 March 2026 draft of Uniform Zonal Regulations lists this authority/local planning area. The text states the rules would commence after final notification by the individual authority. No operative rule profile is enabled; use the currently applicable approved master plan and final amendments only after verification.",
+      "next_action": "Obtain current approved master plan/zoning regulations and all Gazette amendments; verify any final notification/commencement of UDD 559 BMR 2025(E).",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "ramanagara_urban_development_authority",
+      "name": "Ramanagara Urban Development Authority (RUDA)",
+      "region": "Ramanagara, Karnataka",
+      "rule_profile": null,
+      "status": "draft_uniform_rules_source_found_final_notification_not_verified",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "draft_only_not_enabled_for_calculations",
+      "scope_note": "A 24 March 2026 draft of Uniform Zonal Regulations lists this authority/local planning area. The text states the rules would commence after final notification by the individual authority. No operative rule profile is enabled; use the currently applicable approved master plan and final amendments only after verification.",
+      "next_action": "Obtain current approved master plan/zoning regulations and all Gazette amendments; verify any final notification/commencement of UDD 559 BMR 2025(E).",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "gbda_bmr_draft_reference",
+      "name": "Greater Bengaluru Development Authority (designation appearing in UDD 559 BMR 2025(E) draft)",
+      "region": "Greater Bengaluru area, Karnataka",
+      "rule_profile": null,
+      "status": "draft_uniform_rules_source_found_final_notification_not_verified",
+      "coverage_group": "BMRDA local planning areas",
+      "rule_source_status": "draft_only_not_enabled_for_calculations",
+      "scope_note": "A 24 March 2026 draft of Uniform Zonal Regulations lists this authority/local planning area. The text states the rules would commence after final notification by the individual authority. No operative rule profile is enabled; use the currently applicable approved master plan and final amendments only after verification.",
+      "next_action": "Obtain current approved master plan/zoning regulations and all Gazette amendments; verify any final notification/commencement of UDD 559 BMR 2025(E).",
+      "sources": [
+        {
+          "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+          "notification": "UDD 559 BMR 2025(E)",
+          "date": "2026-03-24",
+          "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+          "source_type": "secondary_gazette_mirror",
+          "status": "draft_proposal_only_not_enabled_for_calculations",
+          "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+        },
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; not a substitute for authority-specific zoning rules"
+        }
+      ]
+    },
+    {
+      "key": "mangaluru_uda",
+      "name": "Mangaluru Urban Development Authority",
+      "region": "Mangaluru, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    },
+    {
+      "key": "belagavi_uda",
+      "name": "Belagavi Urban Development Authority",
+      "region": "Belagavi, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    },
+    {
+      "key": "kalaburagi_uda",
+      "name": "Kalaburagi Urban Development Authority",
+      "region": "Kalaburagi, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    },
+    {
+      "key": "davanagere_uda",
+      "name": "Davanagere Urban Development Authority",
+      "region": "Davanagere, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    },
+    {
+      "key": "tumakuru_uda",
+      "name": "Tumakuru Urban Development Authority",
+      "region": "Tumakuru, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    },
+    {
+      "key": "shivamogga_uda",
+      "name": "Shivamogga Urban Development Authority",
+      "region": "Shivamogga, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities. Review applicability of final notification UDD 17 TTP 2025(E), dated 22.05.2026 (excludes BMR and Mangaluru LPA), but do not treat it as a universal residential FAR table.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    },
+    {
+      "key": "ballari_uda",
+      "name": "Ballari Urban Development Authority / planning area — name to verify",
+      "region": "Ballari, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    },
+    {
+      "key": "udupi_planning_area",
+      "name": "Udupi planning authority / local planning area — current legal name to verify",
+      "region": "Udupi, Karnataka",
+      "rule_profile": null,
+      "status": "discovery_queue_not_configured",
+      "coverage_group": "Statewide expansion queue",
+      "rule_source_status": "not_reviewed",
+      "scope_note": "Seed entry only; current legal authority name, jurisdiction boundary, approved master plan, zoning regulations and amendments must be identified before use. This list is not a complete inventory of Karnataka authorities.",
+      "next_action": "Verify current authority structure and collect the operative plan/bylaws/Gazette amendment set.",
+      "sources": [
+        {
+          "title": "Karnataka Town and Country Planning Act, 1961 — India Code",
+          "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963.pdf&type=actfile",
+          "source_type": "official_law_repository",
+          "status": "framework statute; authority-specific documents still required"
+        }
+      ]
+    }
+  ],
+  "coverage_note": "Selected Bengaluru RMP 2015 clauses plus provisional secondary-source profiles for Hoskote, Kanakapura, Nelamangala and Anekal. Administrative sources and draft proposals are not a substitute for verified authority-specific operative regulations."
+}

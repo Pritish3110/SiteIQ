@@ -1,0 +1,688 @@
+{
+  "application": {
+    "name": "SiteIQ",
+    "version": "0.4.7",
+    "assessment_date": "2026-10-16",
+    "profile_status": "partial; selected tables transcribed; not a consolidated code"
+  },
+  "project": "Nandi Housing - preliminary feasibility test",
+  "client": "Not supplied",
+  "site": {
+    "address": "Southern Bengaluru (map pin supplied by user)",
+    "map_url": "https://maps.app.goo.gl/U8yQthUAFPPCcgXV6",
+    "coordinates": "12.871003, 77.569919",
+    "authority": "Bengaluru / Greater Bengaluru - RMP 2015 profile",
+    "authority_status": "partial_rules_configured",
+    "authority_scope_note": "Selected provisions from the user-supplied RMP 2015 and amendments are configured. Greater Bengaluru Authority and BDA planning boundaries have changed; the exact jurisdiction and current land-use map must be verified for each parcel before the configured clauses are applied.",
+    "rule_profile": "Bengaluru / Greater Bengaluru RMP 2015 - selected rules, 2026 update",
+    "site_area_m2": 2200.0,
+    "site_area_source": "user-entered",
+    "road_width_m": 18.5,
+    "frontage_m": 33,
+    "depth_m": 68,
+    "shape_type": "Irregular / non-rectangular",
+    "geometry_mode": "Do not create footprint from bounding dimensions",
+    "proposed_use": "Residential apartments",
+    "zone": "Residential (Main)",
+    "land_use_category": "Residential (Main)",
+    "official_zone": "Residential (Main)",
+    "surrounding_zone": null,
+    "approval_path": "Not sure / needs confirmation",
+    "height_for_setback_m": 12,
+    "stilt": false,
+    "basement": "Undecided",
+    "implied_rectangular_area_m2": 2244.0,
+    "dimension_difference_pct": 2.0
+  },
+  "far": {
+    "category": "Residential (Main)",
+    "category_key": "residential_main",
+    "table": "Table 10",
+    "coverage": {
+      "status": "chapter4_coverage_not_considered_for_area_up_to_4000",
+      "coverage_pct": null,
+      "message": "coverage provisions mentioned in Chapter 4 shall not be considered for plots up to 4,000 m² under the supplied 5 January 2026 amendment; do not present legacy coverage percentages as a hard cap for these plots.",
+      "source": {
+        "id": "udd235_setbacks",
+        "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
+        "notification": "UDD 235 MNJ 2025(E)",
+        "date": "2026-01-05",
+        "document": "Amendment 01.pdf (provided by user)",
+        "document_page": "PDF pages 2-6; printed pages 2-6",
+        "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
+        "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
+        "url": "https://gba.karnataka.gov.in/"
+      }
+    },
+    "conditions": [
+      "Confirm exact Residential (Main) zoning from the notified land-use map.",
+      "For apartment eligibility, check the current ring-specific plot-size/unit-count conditions and minimum access-road requirements."
+    ],
+    "far_interpretation": "Road-width FAR candidate capped by the FAR limit for the plot-area band; if the road is narrower than a FAR band requires, use the FAR corresponding to the actual road width, subject to the plot-area cap. Derived from RMP 2015 Regulation 3.4(iii)-(iv).",
+    "source": {
+      "id": "rmp2015_tables10_19",
+      "title": "Revised Master Plan 2015 - Zoning of Land Use and Regulations, Tables 10-19",
+      "document": "BBMP 2015.pdf (provided by user)",
+      "document_page": "PDF pages 28-37; printed pages 27-36",
+      "clause": "Chapter 4, Regulations 4.1-4.10, Tables 10-19; Chapter 3, Regulation 3.4(iii)-(iv)",
+      "status": "provided base source; apply supplied subsequent amendments and verify current operative text",
+      "url": "https://eng.bdabangalore.org/masterplan.html"
+    },
+    "profile_name": "Bengaluru / Greater Bengaluru RMP 2015 - selected rules, 2026 update",
+    "profile_status": "partial; selected tables transcribed; not a consolidated code",
+    "rule_source_quality": "unspecified",
+    "selected_path": null,
+    "status": "candidate_match_requires_verification",
+    "message": "The table's road-width FAR is 2.50; the plot-area FAR cap is 3.00. SiteIQ uses the lower value, 2.50, following the source's road-width and plot-area limit notes. Confirm the zone and operative table before design freeze.",
+    "matched_rule": {
+      "id": "residential_main",
+      "far": 2.5,
+      "maximum_far": 2.5,
+      "area_capacity_m2": 5500.0,
+      "table": "Table 10",
+      "source_id": "rmp2015_tables10_19",
+      "details": {
+        "plot_area_far_cap": 3.0,
+        "road_width_far": 2.5,
+        "limiting_factor": "road width"
+      },
+      "matched_bands": [
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 2.5
+        }
+      ],
+      "gross_site_area_m2": 2200.0,
+      "far_calculation_area_m2": 2200.0,
+      "far_area_basis": {
+        "type": "gross_site_area"
+      },
+      "conditional_path_id": null
+    },
+    "candidate_rules": [
+      {
+        "min": 2000,
+        "max": 4000,
+        "min_exclusive": true,
+        "far": 3.0
+      },
+      {
+        "min": 18,
+        "max": 24,
+        "min_exclusive": true,
+        "far": 2.5
+      }
+    ],
+    "maximum_far": 2.5,
+    "maximum_far_area_m2": 5500.0,
+    "far_calculation_area_m2": 2200.0
+  },
+  "maximum_far": 2.5,
+  "maximum_far_area_m2": 5500.0,
+  "setbacks": {
+    "status": "nominal_calculation_requires_site_geometry_check",
+    "message": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope.",
+    "front_m": 8.16,
+    "rear_m": 5.44,
+    "left_m": 2.64,
+    "right_m": 2.64,
+    "all_round_m": null,
+    "basis": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope.",
+    "source": {
+      "id": "udd235_setbacks",
+      "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
+      "notification": "UDD 235 MNJ 2025(E)",
+      "date": "2026-01-05",
+      "document": "Amendment 01.pdf (provided by user)",
+      "document_page": "PDF pages 2-6; printed pages 2-6",
+      "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
+      "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
+      "url": "https://gba.karnataka.gov.in/"
+    }
+  },
+  "envelope": {
+    "status": "not_requested",
+    "area_m2": null,
+    "width_m": null,
+    "depth_m": null,
+    "message": "No rectangular proxy requested; SiteIQ does not compute the true buildable polygon in this MVP."
+  },
+  "single_plot": {
+    "status": "applicability_needs_confirmation",
+    "park_option_m2": 220.0,
+    "guidance_value_charge_pct": 10,
+    "message": "Only if this is an eligible single-plot approval under Chapter 6-A and the provision is applicable; check property-record identity, registered deed history and prior approval/grandfather provisions. Approval route is not confirmed as a new Chapter 6-A single-plot approval; this percentage is an indicative check only.",
+    "source": {
+      "id": "udd272_single_plot",
+      "title": "Zonal Regulations of Revised Master Plan 2015 of Bengaluru (Amendment) Regulations 2025 - Single Plot Approval / Chapter 6-A",
+      "notification": "UDD 272 MNJ 2025(E)",
+      "date": "2025-07-16",
+      "document": "Amendment 05.pdf (provided by user)",
+      "document_page": "PDF pages 2-5; printed pages 2-5",
+      "clause": "Definitions, Regulation 3.9 basement setback and Chapter 6-A",
+      "status": "final notification in user-supplied document; applicability and grandfather clause must be checked",
+      "url": "https://eng.bdabangalore.org/acts-rules-amendments.html"
+    }
+  },
+  "fire": {
+    "status": "below_configured_high_rise_threshold",
+    "threshold_m": 21,
+    "maximum_scenario_height_m": 18.0,
+    "message": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed.",
+    "source": {
+      "id": "kff_act_2023",
+      "title": "Karnataka Fire Force (Amendment) Act, 2023",
+      "notification": "Karnataka Act No. 24 of 2023",
+      "date": "2023-07-27",
+      "document": "Amendment 03.pdf (provided by user)",
+      "document_page": "PDF pages 1-3",
+      "clause": "Section 13: high-rise definition / Fire NOC trigger at 21 metres or above",
+      "status": "provided primary legislation; current administrative procedure and other fire provisions need review",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_587_000010_196442_1551090039403&filename=42_of_1964_%28e%29.pdf&type=actfile"
+    }
+  },
+  "scenarios": [
+    {
+      "name": "Option 01",
+      "height_m": 12.0,
+      "floors": 4,
+      "footprint_m2": 1483.0,
+      "benchmark_far": 2.5,
+      "benchmark_source": "configured rule lookup",
+      "assumed_far": null,
+      "stilt": false,
+      "basement_levels": 0,
+      "setback_mode": null,
+      "manual_all_round_setback_m": null,
+      "basement_setback_mode": null,
+      "manual_basement_front_m": null,
+      "manual_basement_nonfront_m": null,
+      "far_capacity_m2": 5500.0,
+      "far_calculation_area_m2": 2200.0,
+      "far_ratio_basis": "gross site area",
+      "gross_concept_area_m2": 5932.0,
+      "achieved_gross_far_ratio": 2.696,
+      "achieved_far_ratio": 2.696,
+      "scenario_headroom_m2": -432.0,
+      "interpretation": "Gross arithmetic proxy for the above-ground concept only. FAR exclusions, basements, floor-by-floor variations and sanction conditions are not modelled.",
+      "setback_result": {
+        "status": "nominal_calculation_requires_site_geometry_check",
+        "message": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope.",
+        "front_m": 8.16,
+        "rear_m": 5.44,
+        "left_m": 2.64,
+        "right_m": 2.64,
+        "all_round_m": null,
+        "basis": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope.",
+        "source": {
+          "id": "udd235_setbacks",
+          "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
+          "notification": "UDD 235 MNJ 2025(E)",
+          "date": "2026-01-05",
+          "document": "Amendment 01.pdf (provided by user)",
+          "document_page": "PDF pages 2-6; printed pages 2-6",
+          "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
+          "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
+          "url": "https://gba.karnataka.gov.in/"
+        }
+      },
+      "setback_status": "nominal_calculation_requires_site_geometry_check",
+      "setback_summary": "Front 8.16 / Rear 5.44 / Sides 2.64, 2.64 m",
+      "basement_setback_result": {
+        "status": "no_basement",
+        "message": "No basement selected for this option.",
+        "front_m": null,
+        "rear_m": null,
+        "left_m": null,
+        "right_m": null,
+        "all_round_m": null,
+        "levels": 0,
+        "source": null
+      },
+      "basement_setback_status": "no_basement",
+      "basement_setback_summary": "No basement",
+      "setback_basis": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope."
+    },
+    {
+      "name": "Option 02",
+      "height_m": 15.0,
+      "floors": 5,
+      "footprint_m2": 1271.0,
+      "benchmark_far": 2.5,
+      "benchmark_source": "configured rule lookup",
+      "assumed_far": null,
+      "stilt": false,
+      "basement_levels": 0,
+      "setback_mode": null,
+      "manual_all_round_setback_m": null,
+      "basement_setback_mode": null,
+      "manual_basement_front_m": null,
+      "manual_basement_nonfront_m": null,
+      "far_capacity_m2": 5500.0,
+      "far_calculation_area_m2": 2200.0,
+      "far_ratio_basis": "gross site area",
+      "gross_concept_area_m2": 6355.0,
+      "achieved_gross_far_ratio": 2.889,
+      "achieved_far_ratio": 2.889,
+      "scenario_headroom_m2": -855.0,
+      "interpretation": "Gross arithmetic proxy for the above-ground concept only. FAR exclusions, basements, floor-by-floor variations and sanction conditions are not modelled.",
+      "setback_result": {
+        "status": "nominal_height_band_requires_authority_check",
+        "message": "Height-band reading from the supplied Table 9; confirm the applicable row and definition with the authority.",
+        "front_m": 5.0,
+        "rear_m": 5.0,
+        "left_m": 5.0,
+        "right_m": 5.0,
+        "all_round_m": 5.0,
+        "basis": "Height-band reading from the supplied Table 9; confirm the applicable row and definition with the authority.",
+        "source": {
+          "id": "udd235_setbacks",
+          "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
+          "notification": "UDD 235 MNJ 2025(E)",
+          "date": "2026-01-05",
+          "document": "Amendment 01.pdf (provided by user)",
+          "document_page": "PDF pages 2-6; printed pages 2-6",
+          "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
+          "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
+          "url": "https://gba.karnataka.gov.in/"
+        }
+      },
+      "setback_status": "nominal_height_band_requires_authority_check",
+      "setback_summary": "5.00 m all sides",
+      "basement_setback_result": {
+        "status": "no_basement",
+        "message": "No basement selected for this option.",
+        "front_m": null,
+        "rear_m": null,
+        "left_m": null,
+        "right_m": null,
+        "all_round_m": null,
+        "levels": 0,
+        "source": null
+      },
+      "basement_setback_status": "no_basement",
+      "basement_setback_summary": "No basement",
+      "setback_basis": "Height-band reading from the supplied Table 9; confirm the applicable row and definition with the authority."
+    },
+    {
+      "name": "Option 03",
+      "height_m": 18.0,
+      "floors": 6,
+      "footprint_m2": 1106.0,
+      "benchmark_far": 2.5,
+      "benchmark_source": "configured rule lookup",
+      "assumed_far": null,
+      "stilt": false,
+      "basement_levels": 0,
+      "setback_mode": null,
+      "manual_all_round_setback_m": null,
+      "basement_setback_mode": null,
+      "manual_basement_front_m": null,
+      "manual_basement_nonfront_m": null,
+      "far_capacity_m2": 5500.0,
+      "far_calculation_area_m2": 2200.0,
+      "far_ratio_basis": "gross site area",
+      "gross_concept_area_m2": 6636.0,
+      "achieved_gross_far_ratio": 3.016,
+      "achieved_far_ratio": 3.016,
+      "scenario_headroom_m2": -1136.0,
+      "interpretation": "Gross arithmetic proxy for the above-ground concept only. FAR exclusions, basements, floor-by-floor variations and sanction conditions are not modelled.",
+      "setback_result": {
+        "status": "nominal_height_band_requires_authority_check",
+        "message": "All-round setback from supplied Table 9; confirm exact height definition and applicable row.",
+        "front_m": 6.0,
+        "rear_m": 6.0,
+        "left_m": 6.0,
+        "right_m": 6.0,
+        "all_round_m": 6.0,
+        "basis": "Table 9 all-round setback",
+        "source": {
+          "id": "udd235_setbacks",
+          "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
+          "notification": "UDD 235 MNJ 2025(E)",
+          "date": "2026-01-05",
+          "document": "Amendment 01.pdf (provided by user)",
+          "document_page": "PDF pages 2-6; printed pages 2-6",
+          "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
+          "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
+          "url": "https://gba.karnataka.gov.in/"
+        }
+      },
+      "setback_status": "nominal_height_band_requires_authority_check",
+      "setback_summary": "6.00 m all sides",
+      "basement_setback_result": {
+        "status": "no_basement",
+        "message": "No basement selected for this option.",
+        "front_m": null,
+        "rear_m": null,
+        "left_m": null,
+        "right_m": null,
+        "all_round_m": null,
+        "levels": 0,
+        "source": null
+      },
+      "basement_setback_status": "no_basement",
+      "basement_setback_summary": "No basement",
+      "setback_basis": "Table 9 all-round setback"
+    }
+  ],
+  "checks": [
+    {
+      "item": "Planning jurisdiction and boundary",
+      "status": "pending_confirmation",
+      "note": "Map pin does not establish the notified planning boundary or sanctioning authority."
+    },
+    {
+      "item": "Official land-use zone / selected rule category",
+      "status": "pending_confirmation",
+      "note": "Confirm the official land-use classification against the relevant notified map. The selected category drives this FAR lookup."
+    },
+    {
+      "item": "Maximum FAR lookup",
+      "status": "candidate_match_requires_verification",
+      "note": "The table's road-width FAR is 2.50; the plot-area FAR cap is 3.00. SiteIQ uses the lower value, 2.50, following the source's road-width and plot-area limit notes. Confirm the zone and operative table before design freeze."
+    },
+    {
+      "item": "Survey geometry / boundary",
+      "status": "pending_confirmation",
+      "note": "Irregular site boundaries need an authenticated survey and CAD-reviewed setback envelope."
+    },
+    {
+      "item": "Building and basement setbacks",
+      "status": "calculated_candidate",
+      "note": "Compare the selected rule and each option's building and basement setbacks; special geometry and frontage remain to be checked."
+    },
+    {
+      "item": "Lake, drain, HT line, road widening and other overlays",
+      "status": "pending_confirmation",
+      "note": "Official overlay checks have not been performed by this offline MVP."
+    },
+    {
+      "item": "Parking, accessibility, structure and services",
+      "status": "pending_design",
+      "note": "Requires unit schedule, design strategy and authority/consultant coordination."
+    },
+    {
+      "item": "Fire NOC trigger",
+      "status": "below_configured_high_rise_threshold",
+      "note": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed."
+    }
+  ],
+  "sources": [
+    {
+      "id": "rmp2015_table10",
+      "title": "Revised Master Plan 2015 - Zoning of Land Use and Regulations, Table 10 (Residential Main)",
+      "document": "BBMP 2015.pdf (provided by user)",
+      "document_page": "PDF page 28; printed page 27",
+      "clause": "Chapter 4, Regulation 4.1.2, Table 10",
+      "status": "provided_source; older base document; applicability must be checked against amendments",
+      "url": "https://eng.bdabangalore.org/masterplan.html"
+    },
+    {
+      "id": "udd235_setbacks",
+      "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
+      "notification": "UDD 235 MNJ 2025(E)",
+      "date": "2026-01-05",
+      "document": "Amendment 01.pdf (provided by user)",
+      "document_page": "PDF pages 2-6; printed pages 2-6",
+      "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
+      "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
+      "url": "https://gba.karnataka.gov.in/"
+    },
+    {
+      "id": "udd272_single_plot",
+      "title": "Zonal Regulations of Revised Master Plan 2015 of Bengaluru (Amendment) Regulations 2025 - Single Plot Approval / Chapter 6-A",
+      "notification": "UDD 272 MNJ 2025(E)",
+      "date": "2025-07-16",
+      "document": "Amendment 05.pdf (provided by user)",
+      "document_page": "PDF pages 2-5; printed pages 2-5",
+      "clause": "Definitions, Regulation 3.9 basement setback and Chapter 6-A",
+      "status": "final notification in user-supplied document; applicability and grandfather clause must be checked",
+      "url": "https://eng.bdabangalore.org/acts-rules-amendments.html"
+    },
+    {
+      "id": "kff_act_2023",
+      "title": "Karnataka Fire Force (Amendment) Act, 2023",
+      "notification": "Karnataka Act No. 24 of 2023",
+      "date": "2023-07-27",
+      "document": "Amendment 03.pdf (provided by user)",
+      "document_page": "PDF pages 1-3",
+      "clause": "Section 13: high-rise definition / Fire NOC trigger at 21 metres or above",
+      "status": "provided primary legislation; current administrative procedure and other fire provisions need review",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_587_000010_196442_1551090039403&filename=42_of_1964_%28e%29.pdf&type=actfile"
+    },
+    {
+      "id": "rmp2015_tables10_19",
+      "title": "Revised Master Plan 2015 - Zoning of Land Use and Regulations, Tables 10-19",
+      "document": "BBMP 2015.pdf (provided by user)",
+      "document_page": "PDF pages 28-37; printed pages 27-36",
+      "clause": "Chapter 4, Regulations 4.1-4.10, Tables 10-19; Chapter 3, Regulation 3.4(iii)-(iv)",
+      "status": "provided base source; apply supplied subsequent amendments and verify current operative text",
+      "url": "https://eng.bdabangalore.org/masterplan.html"
+    }
+  ],
+  "authority_sources": [
+    {
+      "title": "Greater Bengaluru Authority (official portal; land-use maps and corporation tools)",
+      "url": "https://gba.karnataka.gov.in/",
+      "source_type": "official_portal"
+    },
+    {
+      "title": "BDA Master Plan portal (RMP 2015 resources)",
+      "url": "https://eng.bdabangalore.org/masterplan.html",
+      "source_type": "official_authority_page"
+    },
+    {
+      "title": "BDA acts, rules and amendments",
+      "url": "https://eng.bdabangalore.org/acts-rules-amendments.html",
+      "source_type": "official_authority_page"
+    },
+    {
+      "title": "Karnataka Town and Country Planning Act, 1961 (India Code copy)",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_402_00001_11_1552283484255&filename=11_of_1963_%28e%29.pdf&type=actfile",
+      "source_type": "official_law_repository"
+    }
+  ],
+  "land_use_categories": [
+    {
+      "key": "residential_main",
+      "label": "Residential (Main)",
+      "table": "Table 10",
+      "method": "area_cap_and_road_width"
+    },
+    {
+      "key": "residential_mixed",
+      "label": "Residential (Mixed)",
+      "table": "Table 12",
+      "method": "road_width"
+    },
+    {
+      "key": "commercial_central",
+      "label": "Commercial (Central)",
+      "table": "Table 13",
+      "method": "fixed"
+    },
+    {
+      "key": "commercial_business",
+      "label": "Commercial (Business)",
+      "table": "Table 14",
+      "method": "road_width"
+    },
+    {
+      "key": "mutation_corridors_commercial",
+      "label": "Mutation Corridors (Commercial)",
+      "table": "Table 15",
+      "method": "road_width"
+    },
+    {
+      "key": "commercial_axes",
+      "label": "Commercial Axes (inherits surrounding zone)",
+      "table": "Regulation 4.6.2(ii)",
+      "method": "inherit_surrounding_zone"
+    },
+    {
+      "key": "industrial_general",
+      "label": "Industrial (General)",
+      "table": "Table 16 (as amended by UDD 235 MNJ 2025(E))",
+      "method": "plot_area"
+    },
+    {
+      "key": "industrial_hitech",
+      "label": "Industrial (Hi-Tech)",
+      "table": "Table 17",
+      "method": "area_cap_and_road_width"
+    },
+    {
+      "key": "public_semi_public",
+      "label": "Public and Semi-public (P&SP)",
+      "table": "Table 18",
+      "method": "plot_area"
+    },
+    {
+      "key": "traffic_transportation",
+      "label": "Traffic and Transportation (T&T)",
+      "table": "Table 19",
+      "method": "plot_area"
+    },
+    {
+      "key": "public_utilities",
+      "label": "Public Utilities (PU)",
+      "table": "Regulation 4.11.2",
+      "method": "special_no_generic_far"
+    },
+    {
+      "key": "park_open_space",
+      "label": "Park and Open Space (P)",
+      "table": "Regulation 4.12.2",
+      "method": "special_no_generic_far"
+    },
+    {
+      "key": "agricultural_land",
+      "label": "Agricultural Land Zone (AG)",
+      "table": "Regulation 4.13",
+      "method": "special_no_generic_far"
+    },
+    {
+      "key": "unclassified_use",
+      "label": "Unclassified Use (UC)",
+      "table": "Regulation 4.14",
+      "method": "special_no_generic_far"
+    },
+    {
+      "key": "residential_development_plan",
+      "label": "Residential Development Plan (>10,000 m² pathway)",
+      "table": "Chapter 7 (Development Plan)",
+      "method": "special_no_generic_far"
+    },
+    {
+      "key": "nonresidential_development_plan",
+      "label": "Non-residential Development Plan / Flatted Factory (>10,000 m² pathway)",
+      "table": "Chapter 7 (Development Plan)",
+      "method": "special_no_generic_far"
+    }
+  ],
+  "limits": [
+    "This is an early-stage feasibility aid, not sanction advice or a legal opinion.",
+    "Bengaluru RMP 2015 has a partial configured profile. Hoskote, Kanakapura, Nelamangala and Anekal use provisional FAR candidate profiles transcribed from secondary Master Plan 2031 copies; operative notification, amendments, zoning and authority coverage require confirmation. Other authority profiles remain unconfigured.",
+    "A rule-based FAR is a candidate from the configured source, not a sanctioned entitlement. Confirm the exact authority, official land-use classification, notification validity and applicable conditions.",
+    "SiteIQ can use a validated imported boundary area and calculate preliminary envelopes. Complex concave geometry, frontage-specific interpretations and all statutory overlays still need architect/authority review.",
+    "Gross area is footprint times above-ground floor count; FAR exclusions, ancillary areas, floor-by-floor variations, parking, structure and service constraints are not fully modelled."
+  ],
+  "location_identification": {
+    "coordinates": {
+      "latitude": 12.871003,
+      "longitude": 77.569919,
+      "text": "12.8710030, 77.5699190",
+      "method": "illustrative_sample_only"
+    },
+    "geocoded_address": "Southern Bengaluru (illustrative sample location)",
+    "authority": {
+      "key": "bengaluru_rmp2015",
+      "label": "Bengaluru / Greater Bengaluru RMP 2015 profile",
+      "status": "provisional_geocoder_candidate",
+      "confidence": "low",
+      "reason": "Illustrative location candidate only; current planning boundary is not established.",
+      "source_url": "https://www.openstreetmap.org/"
+    },
+    "zone": {
+      "value": "Not verified",
+      "status": "layer_not_installed",
+      "reason": "No official land-use polygon match is claimed in this sample."
+    },
+    "approval_route": {
+      "suggested_value": "Not sure / needs confirmation",
+      "status": "suggestion_only",
+      "reason": "Confirm official jurisdiction, land-use zone and the applicable approval path."
+    },
+    "public_sources": [
+      {
+        "id": "gba_gis_viewer",
+        "title": "Greater Bengaluru Authority GIS Viewer",
+        "url": "https://bbmp.gov.in/gisviewer/",
+        "hosts": [
+          "bbmp.gov.in"
+        ],
+        "areas": [
+          "bengaluru_rmp2015",
+          "bda_lpa",
+          "bmrda"
+        ],
+        "types": [
+          "interactive_gis_viewer",
+          "corporation_ward_context"
+        ],
+        "queryable_geometry": false,
+        "note": "Official interactive viewer for city corporation/ward context. It is not treated by SiteIQ as a verified planning-authority or land-use API.",
+        "status": "official_reference_available_not_a_queryable_zone_layer"
+      },
+      {
+        "id": "gba_portal",
+        "title": "Greater Bengaluru Authority — official portal",
+        "url": "https://gba.karnataka.gov.in/",
+        "hosts": [
+          "gba.karnataka.gov.in"
+        ],
+        "areas": [
+          "bengaluru_rmp2015",
+          "bda_lpa",
+          "bmrda"
+        ],
+        "types": [
+          "official_authority_portal"
+        ],
+        "queryable_geometry": false,
+        "note": "Use for current notifications and corporate/jurisdiction information; verify the parcel against the notified planning boundary.",
+        "status": "official_reference_available_not_a_queryable_zone_layer"
+      },
+      {
+        "id": "bda_rmp2015",
+        "title": "Bangalore Development Authority — RMP 2015 maps and zoning regulations",
+        "url": "https://eng.bdabangalore.org/masterplan.html",
+        "hosts": [
+          "eng.bdabangalore.org"
+        ],
+        "areas": [
+          "bengaluru_rmp2015",
+          "bda_lpa",
+          "bmrda"
+        ],
+        "types": [
+          "official_land_use_map_catalogue",
+          "regulations"
+        ],
+        "queryable_geometry": false,
+        "note": "Contains published RMP map sheets and regulations. A PDF map sheet is a reference, not automatically a georeferenced zoning polygon.",
+        "status": "official_reference_available_not_a_queryable_zone_layer"
+      }
+    ],
+    "sample_note": "Illustrative location metadata, not a live jurisdiction lookup."
+  }
+}

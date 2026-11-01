@@ -1,0 +1,10 @@
+SITEIQ v0.4.7 — Hoskote profile smoke test
+
+This is an internal rule-engine test, not a design feasibility report.
+Configured FAR status: candidate_match_requires_verification
+Provisional FAR candidate: 2.75
+Gross site area in test: 20,684.15 m²
+FAR calculation area after configured 5% deduction: 19,649.94 m²
+Candidate FAR area capacity: 54,037.34 m²
+
+Secondary-source candidate only; official land-use zone, notified jurisdiction, current operative rules and road width must be verified.

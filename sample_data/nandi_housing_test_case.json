@@ -1,0 +1,26 @@
+{
+  "project_name": "Nandi Housing - preliminary feasibility test",
+  "client": "",
+  "address": "Southern Bengaluru (map pin supplied by user)",
+  "map_url": "https://maps.app.goo.gl/U8yQthUAFPPCcgXV6",
+  "coordinates": "12.871003, 77.569919",
+  "authority_key": "bengaluru_rmp2015",
+  "zone": "Residential (Main)",
+  "proposed_use": "Residential apartments",
+  "site_area_m2": 2200,
+  "road_width_m": 18.5,
+  "frontage_m": 33,
+  "depth_m": 68,
+  "shape_type": "Irregular / non-rectangular",
+  "geometry_mode": "Do not create footprint from bounding dimensions",
+  "height_for_setback_m": 12,
+  "stilt": false,
+  "basement": "Undecided",
+  "approval_path": "Not sure / needs confirmation",
+  "scenarios": [
+    {"name":"Option 01", "height_m":12, "floors":4, "footprint_m2":1483, "assumed_far":2.5, "stilt":false},
+    {"name":"Option 02", "height_m":15, "floors":5, "footprint_m2":1271, "assumed_far":2.5, "stilt":false},
+    {"name":"Option 03", "height_m":18, "floors":6, "footprint_m2":1106, "assumed_far":2.5, "stilt":false}
+  ],
+  "sample_notes": "Footprints, floor counts and option heights are carried over from the user-provided manual Nandi Housing feasibility study as design scenarios. Under the configured interpretation of RMP 2015 Regulation 3.4(iii)-(iv), the plot-area FAR cap (3.00 for >2,000 to 4,000 m2) and road-width FAR band (2.50 for >18 to 24 m) yield a candidate maximum FAR of 2.50 (the lower value). This is a configured-rule candidate only; verify current jurisdiction, official zone, road right-of-way and operative provisions before design freeze. Footprints are not statutory buildable areas."
+}

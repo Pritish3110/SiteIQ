@@ -1,0 +1,47 @@
+{
+  "candidate_key": "kanakapura_mp2031_review_candidate",
+  "authority_key": "kanakapura_planning_authority",
+  "title": "Kanakapura LPA Master Plan 2031 Final Report and Zoning Regulations — source review candidate",
+  "status": "NOT_ENABLED_FOR_AUTOMATIC_CALCULATIONS",
+  "reason": "Found in secondary copies, but the official current approved version, exact notification/effective date, amendments, and present applicability have not yet been confirmed with the competent authority.",
+  "sources": [
+    {
+      "title": "Planning Authority Kanakapura — official district administration directory",
+      "url": "https://bengalurusouth.nic.in/en/whoswho/nagaratna/",
+      "source_type": "official_authority_directory",
+      "status": "authority_contact_verified; does not itself establish a parcel boundary or FAR rule"
+    },
+    {
+      "title": "Kanakapura LPA Master Plan 2031 Final Report and Zoning Regulations — secondary copy",
+      "url": "https://www.scribd.com/document/403292547/Kanakapura-LPA-Final-Report-pdf",
+      "source_type": "secondary_document_mirror",
+      "status": "candidate_source_only; official final notification, current amendments and continuing legal applicability need confirmation"
+    },
+    {
+      "title": "Kanakapura LPA Master Plan 2031 Zoning Regulations — copy hosted by National Green Tribunal",
+      "url": "https://www.greentribunal.gov.in/sites/default/files/news_updates/3_15.pdf",
+      "source_type": "court_or_tribunal_hosted_copy",
+      "status": "supporting copy; not treated as current operative consolidated law without official verification"
+    },
+    {
+      "title": "Draft Uniform Zonal Regulations for Master Plans of Local Planning Areas within BMRDA",
+      "notification": "UDD 559 BMR 2025(E)",
+      "date": "2026-03-24",
+      "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g",
+      "source_type": "secondary_gazette_mirror",
+      "status": "draft_proposal_only_not_enabled_for_calculations",
+      "note": "The published text describes draft regulations and says commencement is from final notification by the individual planning/development authority. Final operative notification and authority-specific commencement were not established in the targeted check as of 2026-10-16."
+    }
+  ],
+  "verification_questions": [
+    "Is the Kanakapura LPA Master Plan 2031 the operative approved plan for the relevant parcel today?",
+    "Was UDD 559 BMR 2025(E) Uniform Zonal Regulations proposal finalized and notified for Kanakapura Planning Authority? If yes, what is the final notification and commencement date?",
+    "Which post-plan amendments and Government Orders alter FAR, setbacks, coverage, parking, basement, land-use categories, or approval paths?",
+    "Does the entered coordinate 12.511506, 77.323792 fall inside the currently notified Kanakapura LPA boundary? The secondary plan copy reports a longitude extent of 77°31′E to 77°41′E, which does not appear to include the entered longitude 77.323792; treat this only as a red flag requiring official boundary verification, not as a final jurisdiction determination."
+  ],
+  "active_far_tables": [],
+  "notes": [
+    "No FAR values have been copied into the active rules engine.",
+    "After official source validation, encode categories/tables with exact clause, page, date, exceptions and regression tests."
+  ]
+}

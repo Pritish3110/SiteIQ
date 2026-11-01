@@ -1,0 +1,13 @@
+{
+  "release": "0.4.7",
+  "sample_type": "rule-profile smoke test only — not a client report or design proposal",
+  "authority_profile": "Hoskote LPA Master Plan 2031 — provisional source-based profile",
+  "source_quality": "secondary_copy_pending_official_validation",
+  "selected_path": "group_housing",
+  "far_status": "candidate_match_requires_verification",
+  "candidate_far": 2.75,
+  "gross_site_area_m2": 20684.15,
+  "far_calculation_area_m2": 19649.94,
+  "candidate_far_capacity_m2": 54037.34,
+  "key_warning": "Secondary-source candidate only; official land-use zone, notified jurisdiction, current operative rules and road width must be verified."
+}

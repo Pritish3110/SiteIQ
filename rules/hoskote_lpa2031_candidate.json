@@ -1,0 +1,796 @@
+{
+  "profile_key": "hoskote_lpa2031_candidate",
+  "profile_name": "Hoskote LPA Master Plan 2031 — provisional source-based profile",
+  "authority_key": "hoskote_planning_authority",
+  "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance.",
+  "rule_source_quality": "secondary_copy_pending_official_validation",
+  "last_reviewed": "2026-10-16",
+  "important_note": "Hoskote Master Plan 2031 rules are transcribed from secondary copies for preliminary feasibility candidates. They are not an officially verified consolidated current code. Current operative zoning regulations, all subsequent amendments, exact planning jurisdiction and official land-use category must be verified before using results for design freeze or sanction.",
+  "setback_table8_max_height_m": 10.0,
+  "setback_height_source_id": "base_zr_table3",
+  "setback_table9_height_bands": [
+    {
+      "height_min_exclusive": 10,
+      "height_max": 12,
+      "all_round_m": 4.5,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 10 m up to 12 m."
+    },
+    {
+      "height_min_exclusive": 12,
+      "height_max": 15,
+      "all_round_m": 5.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 12 m up to 15 m."
+    },
+    {
+      "height_min_exclusive": 15,
+      "height_max": 18,
+      "all_round_m": 6.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 15 m up to 18 m."
+    },
+    {
+      "height_min_exclusive": 18,
+      "height_max": 21,
+      "all_round_m": 7.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 18 m up to 21 m."
+    },
+    {
+      "height_min_exclusive": 21,
+      "height_max": 24,
+      "all_round_m": 8.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 21 m up to 24 m."
+    },
+    {
+      "height_min_exclusive": 24,
+      "height_max": 27,
+      "all_round_m": 9.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 24 m up to 27 m."
+    },
+    {
+      "height_min_exclusive": 27,
+      "height_max": 30,
+      "all_round_m": 10.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 27 m up to 30 m."
+    },
+    {
+      "height_min_exclusive": 30,
+      "height_max": 35,
+      "all_round_m": 11.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 30 m up to 35 m."
+    },
+    {
+      "height_min_exclusive": 35,
+      "height_max": 40,
+      "all_round_m": 12.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 35 m up to 40 m."
+    },
+    {
+      "height_min_exclusive": 40,
+      "height_max": 45,
+      "all_round_m": 13.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 40 m up to 45 m."
+    },
+    {
+      "height_min_exclusive": 45,
+      "height_max": 50,
+      "all_round_m": 14.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 45 m up to 50 m."
+    },
+    {
+      "height_min_exclusive": 50,
+      "height_max": null,
+      "all_round_m": 16.0,
+      "source_id": "base_zr_table3",
+      "note": "Table 3 all-round setback for height above 50 m."
+    }
+  ],
+  "sources": [
+    {
+      "id": "base_zr_table4",
+      "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Zonal Regulations, Table 4",
+      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document_page": "Zonal Regulations page 35",
+      "clause": "Chapter 1.5, Table 4 — Maximum FAR and road widths for different uses",
+      "status": "Secondary mirror transcription. Base document is labelled final, but current operative version and later amendments have not been independently verified with the authority.",
+      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+    },
+    {
+      "id": "hoskote_table5",
+      "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Group Housing, Table 5",
+      "document": "Secondary copies of Hoskote LPA 2031 zoning regulations",
+      "document_page": "Zonal Regulations page 36",
+      "clause": "Chapter 1.6, Table 5 — Group housing FAR/coverage and minimum road width",
+      "status": "Secondary copies disagree on whether the minimum group-housing road threshold is 9 m or 12 m. SiteIQ conservatively uses 12 m until the authority confirms. The rows above 18 m agree between copies.",
+      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+    },
+    {
+      "id": "base_zr_table3",
+      "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Table 3",
+      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document_page": "Zonal Regulations page 34",
+      "clause": "Chapter 1.5, Table 3 — all-round setbacks for buildings above 10 m",
+      "status": "Secondary transcription; verify against current official regulation and height definition.",
+      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+    },
+    {
+      "id": "hoskote_group_reservation",
+      "title": "Hoskote LPA 2031 — group housing civic amenity and park reservation",
+      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document_page": "Zonal Regulations pages 36-37",
+      "clause": "Chapter 1.6, group housing conditions",
+      "status": "Secondary transcription; minimum 15% combined for parks/open space and civic amenity, with at least 10% park/open space and 5% civic amenity; FAR calculated on net area after civic amenity deduction.",
+      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+    },
+    {
+      "id": "premium_far_bmr_lpa_2025_2026",
+      "title": "Premium FAR amendments for BMRDA-area local planning areas; discussed in Karnataka High Court judgment dated 15 June 2026",
+      "notification": "UDD 78 MNJ 2024(E), notifications dated 02.04.2025 and 05.02.2026",
+      "document": "Karnataka High Court judgment, WA 1983/2025 with connected writ petitions",
+      "clause": "Paras 38-42, 86, 130; notification scope includes Anekal, Kanakapura, Ramanagara, Channapatna, Magadi, Nelamangala, BIAAPA and Hoskote",
+      "document_page": "Judgment pages 44-50 and 107-108 (online transcript pagination)",
+      "status": "Judgment confirms amendments were issued for named LPAs; exact applicable Gazette/Table and premium charge calculation must be checked for the individual site. This is an optional scenario only, not part of base FAR.",
+      "url": "https://indiankanoon.org/doc/91467302/"
+    },
+    {
+      "id": "udd559_draft_only",
+      "title": "Draft Uniform Zonal Regulations for LPAs within BMRDA",
+      "notification": "UDD 559 BMR 2025(E)",
+      "date": "2026-03-24",
+      "clause": "Draft commencement clause",
+      "status": "DRAFT ONLY — not used for FAR calculations. The draft states commencement is from final notification by the individual planning authority.",
+      "url": "https://policyindex.ai/in/gazette/zonal-regulations-for-master-plans-of-different-lpas-within-bmrda-and-it-is-required-to-regulate-the-lpas-within-bmrda-with-uniform-zonal-regulations-to-avoid-confusions-while-hr5z5g"
+    },
+    {
+      "id": "hoskote_nonres_dev_table",
+      "title": "Hoskote LPA 2031 — Non-Residential Development Plan over 1 hectare",
+      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document_page": "Chapter 1.7 / Table 6A (copy pagination)",
+      "clause": "Non-residential development plan on site area above 1 hectare, excluding industrial",
+      "status": "Secondary transcription; exact operative copy and current amendments require confirmation.",
+      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+    }
+  ],
+  "land_use_categories": [
+    {
+      "key": "residential",
+      "label": "Residential",
+      "table": "Table 4 — Maximum FAR by road width",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "min_exclusive": false,
+          "max_exclusive": false,
+          "far": 1.5
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.0
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.25
+        },
+        {
+          "min": 24,
+          "max": null,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.5
+        }
+      ],
+      "coverage_method": "none",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Source is a secondary copy of the LPA Master Plan 2031 zoning regulations; confirm the official current text and amendments.",
+        "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
+        "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
+        "For apartment/group housing sites of 1 hectare or more, the group-housing pathway may apply; SiteIQ switches to the configured group-housing table for a residential-apartment use."
+      ],
+      "far_interpretation": "Ordinary residential FAR by public road width, unless a special development typology/pathway applies.",
+      "conditional_paths": [
+        {
+          "id": "group_housing",
+          "when": {
+            "site_area_min_m2": 10000,
+            "proposed_use_contains_any": [
+              "residential apartment",
+              "apartments",
+              "group housing",
+              "multi-dwelling",
+              "multi dwelling"
+            ]
+          },
+          "method": "road_width",
+          "table": "hoskote_table5",
+          "source_id": "hoskote_table5",
+          "road_far_bands": [
+            {
+              "min": 12,
+              "max": 12,
+              "min_exclusive": false,
+              "max_exclusive": false,
+              "far": 2.0
+            },
+            {
+              "min": 12,
+              "max": 18,
+              "min_exclusive": true,
+              "max_exclusive": false,
+              "far": 2.25
+            },
+            {
+              "min": 18,
+              "max": 24,
+              "min_exclusive": true,
+              "max_exclusive": false,
+              "far": 2.5
+            },
+            {
+              "min": 24,
+              "max": null,
+              "min_exclusive": true,
+              "max_exclusive": false,
+              "far": 2.75
+            }
+          ],
+          "coverage_method": "road_width",
+          "coverage_bands": [
+            {
+              "min": 12,
+              "max": 12,
+              "min_exclusive": false,
+              "coverage_pct": 60
+            },
+            {
+              "min": 12,
+              "max": 18,
+              "min_exclusive": true,
+              "coverage_pct": 55
+            },
+            {
+              "min": 18,
+              "max": 24,
+              "min_exclusive": true,
+              "coverage_pct": 55
+            },
+            {
+              "min": 24,
+              "max": null,
+              "min_exclusive": true,
+              "coverage_pct": 50
+            }
+          ],
+          "eligibility": {
+            "road_width_min_m": 12
+          },
+          "far_area_basis": {
+            "type": "net_after_deduction_pct",
+            "deduct_pct": 5.0,
+            "reason": "Source says FAR is calculated on net plot area after deducting the 5% civic-amenity reservation."
+          },
+          "source_ids_for_reservation": [
+            "hoskote_lpa2031_candidate_group_reservation"
+          ],
+          "conditions": [
+            "Site area is 1 hectare or more, so the Master Plan copy treats an apartment building of this size as group housing.",
+            "Group-housing approach road minimum configured conservatively as 12 m. Hoskote copies disagree between 9 m and 12 m; the stricter 12 m is used until authority confirmation.",
+            "Source requires 15% combined reservation for park/open space and civic amenity, with at least 10% for parks/open space and 5% for civic amenity. FAR basis is net of the 5% civic-amenity reservation; the park area is not additionally deducted in this calculation based on the transcribed wording.",
+            "A development plan for building blocks, access roads, parks/open spaces and civic amenity areas is required before building-plan approval under the source text."
+          ],
+          "far_interpretation": "Group-housing FAR table selected for apartment/group-housing use on sites of at least 1 hectare; floor-area capacity is calculated on net site area after the civic-amenity deduction."
+        }
+      ]
+    },
+    {
+      "key": "commercial",
+      "label": "Commercial",
+      "table": "Table 4 — Maximum FAR by road width",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "min_exclusive": false,
+          "max_exclusive": false,
+          "far": 1.5
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.0
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.25
+        },
+        {
+          "min": 24,
+          "max": null,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.5
+        }
+      ],
+      "coverage_method": "none",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Source is a secondary copy of the LPA Master Plan 2031 zoning regulations; confirm the official current text and amendments.",
+        "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
+        "Road width must be the legally recognised width of the abutting public road, not a map estimate."
+      ],
+      "far_interpretation": "Commercial FAR by public road width; special non-residential development-plan provisions may apply to sites over 1 hectare and must be selected/verified separately."
+    },
+    {
+      "key": "public_semi_public",
+      "label": "Public and Semi-public",
+      "table": "Table 4 — combined Public/Semi-public, Transportation and Public Utility column",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "min_exclusive": false,
+          "max_exclusive": false,
+          "far": 1.25
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.5
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 24,
+          "max": null,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.0
+        }
+      ],
+      "coverage_method": "none",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Source is a secondary copy of the LPA Master Plan 2031 zoning regulations; confirm the official current text and amendments.",
+        "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
+        "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
+        "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
+      ],
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+    },
+    {
+      "key": "transportation_communication",
+      "label": "Transportation and Communication",
+      "table": "Table 4 — combined Public/Semi-public, Transportation and Public Utility column",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "min_exclusive": false,
+          "max_exclusive": false,
+          "far": 1.25
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.5
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 24,
+          "max": null,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.0
+        }
+      ],
+      "coverage_method": "none",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Source is a secondary copy of the LPA Master Plan 2031 zoning regulations; confirm the official current text and amendments.",
+        "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
+        "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
+        "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
+      ],
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+    },
+    {
+      "key": "public_utilities",
+      "label": "Public Utilities",
+      "table": "Table 4 — combined Public/Semi-public, Transportation and Public Utility column",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "min_exclusive": false,
+          "max_exclusive": false,
+          "far": 1.25
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.5
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 1.75
+        },
+        {
+          "min": 24,
+          "max": null,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.0
+        }
+      ],
+      "coverage_method": "none",
+      "setback_method": "table8_9",
+      "conditions": [
+        "Source is a secondary copy of the LPA Master Plan 2031 zoning regulations; confirm the official current text and amendments.",
+        "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
+        "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
+        "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
+      ],
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+    },
+    {
+      "key": "agricultural",
+      "label": "Agricultural Use",
+      "table": "Special / agricultural provisions",
+      "source_id": "base_zr_table4",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "No generic FAR has been transcribed for agricultural use. Check exact permitted use, land-conversion status and any special-control rules."
+      ],
+      "far_interpretation": "No generic FAR candidate; authority/use-specific review required."
+    },
+    {
+      "key": "parks_open_space",
+      "label": "Parks and Open Spaces",
+      "table": "Special use / restrictions",
+      "source_id": "base_zr_table4",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "No general building FAR is configured for park/open-space land. Check the notified land-use map and special restrictions."
+      ],
+      "far_interpretation": "No generic FAR candidate."
+    },
+    {
+      "key": "areas_special_control",
+      "label": "Areas of Special Control",
+      "table": "Special-control provisions",
+      "source_id": "base_zr_table4",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "Site-specific restrictions or authority decisions may apply. No generic FAR table is configured."
+      ],
+      "far_interpretation": "No generic FAR candidate."
+    },
+    {
+      "key": "industrial_buildings",
+      "label": "Industrial Buildings (plot-area table)",
+      "table": "Industrial Buildings Table 9/11 (source copy)",
+      "source_id": "base_zr_table4",
+      "method": "plot_area",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 230,
+          "min_exclusive": false,
+          "far": 1.0,
+          "min_road_width_m": 9.0
+        },
+        {
+          "min": 230,
+          "max": 1000,
+          "min_exclusive": true,
+          "far": 1.25,
+          "min_road_width_m": 9.0
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "far": 1.25,
+          "min_road_width_m": 12.0
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "far": 1.25,
+          "min_road_width_m": 12.0
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "min_exclusive": true,
+          "far": 1.0,
+          "min_road_width_m": 15.0
+        },
+        {
+          "min": 8000,
+          "max": null,
+          "min_exclusive": true,
+          "far": 1.0,
+          "min_road_width_m": 15.0
+        }
+      ],
+      "coverage_method": "plot_area",
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 230,
+          "coverage_pct": 80
+        },
+        {
+          "min": 230,
+          "max": 1000,
+          "min_exclusive": true,
+          "coverage_pct": 60
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "coverage_pct": 55
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "min_exclusive": true,
+          "coverage_pct": 45
+        },
+        {
+          "min": 8000,
+          "max": null,
+          "min_exclusive": true,
+          "coverage_pct": 45
+        }
+      ],
+      "coverage_source_id": "base_zr_table4",
+      "setback_method": "industrial_table16",
+      "industrial_setbacks": [
+        {
+          "min": 0,
+          "max": 230,
+          "min_exclusive": false,
+          "front": "1.00 m",
+          "rear_side": "1.00 m"
+        },
+        {
+          "min": 230,
+          "max": 1000,
+          "min_exclusive": true,
+          "front": "4.50 m",
+          "rear_side": "3.00 m"
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "min_exclusive": true,
+          "front": "6.00 m",
+          "rear_side": "5.00 m"
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "min_exclusive": true,
+          "front": "8.00 m",
+          "rear_side": "5.00 m"
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "min_exclusive": true,
+          "front": "8.00 m",
+          "rear_side": "6.00 m"
+        },
+        {
+          "min": 8000,
+          "max": null,
+          "min_exclusive": true,
+          "front": "15.00 m",
+          "rear_side": "12.00 m"
+        }
+      ],
+      "conditions": [
+        "Source is a secondary copy of the LPA Master Plan 2031 zoning regulations; confirm the official current text and amendments.",
+        "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
+        "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
+        "The source table lists minimum road widths by plot-area band. SiteIQ checks the transcribed row minimum; confirm frontage and all special industrial conditions.",
+        "Rows around exactly 1,000 m² are transcribed using exclusive upper-to-next lower boundaries to avoid overlapping bands; verify precise treatment in the official table."
+      ],
+      "far_interpretation": "Industrial building FAR by plot-area band with a minimum road-width condition. Do not use this for IT/BT-related activities without selecting the applicable use-specific provision."
+    },
+    {
+      "key": "industrial_it_bt",
+      "label": "Industrial Zone — IT/BT Related Activities",
+      "table": "IT/BT Table 10 / Table 10A (source copy)",
+      "source_id": "base_zr_table4",
+      "method": "special_no_generic_far",
+      "setback_method": "authority_decided",
+      "conditions": [
+        "The source provides a paired plot-area/road-width table for IT/BT activities. This MVP does not yet implement the strict paired-band method for this table, so it will not produce an automatic FAR."
+      ],
+      "far_interpretation": "Use-specific paired area/road table not yet enabled; no generic industrial FAR substituted."
+    },
+    {
+      "key": "nonres_development_plan",
+      "label": "Non-residential Development Plan (>1 ha, except industrial)",
+      "table": "Table 6A / Non-Residential Development Plan >1 hectare",
+      "source_id": "hoskote_nonres_dev_table",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 12,
+          "max": 15,
+          "min_exclusive": false,
+          "max_exclusive": false,
+          "far": 2.0
+        },
+        {
+          "min": 15,
+          "max": 18,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.25
+        },
+        {
+          "min": 18,
+          "max": null,
+          "min_exclusive": true,
+          "max_exclusive": false,
+          "far": 2.5
+        }
+      ],
+      "coverage_method": "road_width",
+      "coverage_bands": [
+        {
+          "min": 12,
+          "max": 15,
+          "coverage_pct": 55
+        },
+        {
+          "min": 15,
+          "max": 18,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        },
+        {
+          "min": 18,
+          "max": null,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        }
+      ],
+      "eligibility": {
+        "plot_area_min_m2": 10000,
+        "road_width_min_m": 12
+      },
+      "far_area_basis": {
+        "type": "net_after_deduction_pct",
+        "deduct_pct": 5.0,
+        "reason": "Source states FAR is calculated after deduction of the civic-amenity area."
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Source is a secondary copy of the LPA Master Plan 2031 zoning regulations; confirm the official current text and amendments.",
+        "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
+        "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
+        "Use this category only when the project is being processed under the non-residential development-plan pathway over 1 hectare. The source table excludes industrial projects.",
+        "The source copy indicates a 5% civic-amenity reservation deducted for FAR; verify all required reservations and approval conditions."
+      ],
+      "far_interpretation": "Non-residential development-plan FAR by road width; calculated on area net of civic amenity, subject to confirmation."
+    }
+  ],
+  "premium_far_rule": {
+    "enabled_for_scenario_only": true,
+    "max_additional_far_factor": 0.6,
+    "minimum_road_width_m": 9.0,
+    "mixed_premium_tdr_min_road_width_m": 12.0,
+    "source_id": "premium_far_bmr_lpa_2025_2026",
+    "status": "candidate_opportunity_only_fees_and_site_eligibility_not_configured",
+    "conditions": [
+      "The 2026 Premium FAR amendment discussed in the Karnataka High Court judgment permits additional FAR up to 0.6 times ordinary FAR under conditions; this is not automatic and requires premium charge/TDR compliance.",
+      "For roads >=9 m but <12 m, the judgment says additional FAR is available only through TDR, not Premium FAR charges. For roads >=12 m, the 0.6× additional FAR ceiling requires a combination of Premium FAR and TDR; exact Table 27 charge/premium mix is not configured.",
+      "The judgment identifies amendments for Hoskote, Kanakapura, Anekal, Channapatna, Magadi, Nelamangala, BIAAPA and Ramanagara LPAs. Verify the relevant notification and site eligibility for this exact authority."
+    ]
+  },
+  "force_minimum_all_round_for_area_above_4000": false,
+  "profile_version": "0.1-candidate"
+}
