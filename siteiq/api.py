@@ -83,6 +83,12 @@ class PreviewRequest(Strict):
     statutory_deduction_pct: Optional[float] = Field(None, ge=0, le=50)
 
 
+class FloorRow(Strict):
+    name: str = Field("", max_length=60)
+    floors: int = Field(gt=0, le=200)
+    area_m2: float = Field(gt=0)
+
+
 class Scenario(Strict):
     name: str = Field(max_length=80)
     height_m: Optional[float] = Field(None, gt=0, le=500)
@@ -96,6 +102,9 @@ class Scenario(Strict):
     basement_setback_mode: Literal["automatic", "manual"] = "automatic"
     manual_basement_front_m: Optional[float] = Field(None, gt=0, le=100)
     manual_basement_nonfront_m: Optional[float] = Field(None, gt=0, le=100)
+    floor_schedule: list[FloorRow] = Field(default_factory=list, max_length=30)
+    core_excluded_per_floor_m2: Optional[float] = Field(None, gt=0)
+    parking_excluded_m2: Optional[float] = Field(None, gt=0)
 
 
 class Overlay(Strict):
@@ -129,6 +138,8 @@ class Boundary(Strict):
     use_computed_area: bool = True
     front_edges: list[int] = Field(default_factory=list)
     rear_edges: list[int] = Field(default_factory=list)
+    left_edges: list[int] = Field(default_factory=list)
+    right_edges: list[int] = Field(default_factory=list)
     source_points_wgs84: Optional[list[list[float]]] = None
     source_holes_wgs84: Optional[list[list[list[float]]]] = None
 
@@ -158,6 +169,7 @@ class AssessRequest(Strict):
     rmp_ring: Optional[Literal["I", "II", "III", "unknown"]] = None
     dwelling_units: Optional[int] = Field(None, gt=0, le=100000)
     average_unit_area_m2: Optional[float] = Field(None, gt=0)
+    guidance_value_per_m2: Optional[float] = Field(None, gt=0)
     land_status: Literal["unknown", "converted", "not_converted"] = "unknown"
     prior_sanction: Literal["unknown", "none", "exists"] = "unknown"
     overlays: dict[str, Overlay] = Field(default_factory=dict)
@@ -267,6 +279,7 @@ def run_assess(body: AssessRequest) -> dict:
 
 EXPORTS = {
     "report-pdf": ("application/pdf", "Feasibility_Report.pdf"),
+    "technical-pdf": ("application/pdf", "Technical_Report.pdf"),
     "report-pptx": ("application/vnd.openxmlformats-officedocument.presentationml.presentation", "Feasibility_Report.pptx"),
     "board-pdf": ("application/pdf", "Comparison_Board_A3.pdf"),
     "board-pptx": ("application/vnd.openxmlformats-officedocument.presentationml.presentation", "Comparison_Board_A3.pptx"),
@@ -282,7 +295,9 @@ def export(kind: str, body: AssessRequest) -> Response:
         raise HTTPException(status_code=404, detail="Unknown export type.")
     report = _run_assessment(body)
     if kind == "report-pdf":
-        data = build_pdf_report(report)
+        data = build_pdf_report(report, audience="client")
+    elif kind == "technical-pdf":
+        data = build_pdf_report(report, audience="technical")
     elif kind == "report-pptx":
         data = build_pptx_report(report)
     elif kind == "board-pdf":

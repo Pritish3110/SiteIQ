@@ -1,4 +1,4 @@
-SITEIQ v0.6.0 — Hoskote profile smoke test
+SITEIQ v0.7.0 — Hoskote profile smoke test
 
 This is an internal rule-engine test, not a design feasibility report.
 Configured FAR status: candidate_match_requires_verification

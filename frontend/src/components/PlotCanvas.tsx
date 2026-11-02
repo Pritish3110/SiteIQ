@@ -55,7 +55,7 @@ export function PlotCanvas({ points, holes = [], roles = {}, onEdgeClick, envelo
         let angle = (Math.atan2(dy, dx) * 180) / Math.PI;
         if (angle > 90 || angle < -90) angle += 180;
         const offset = 19;
-        const text = `${role === "road" ? "ROAD · " : role === "rear" ? "REAR · " : ""}E${i + 1} · ${lengths[i].toFixed(2)} m`;
+        const text = `${role === "side" ? "" : `${role.toUpperCase()} · `}E${i + 1} · ${lengths[i].toFixed(2)} m`;
         const interactive = !!onEdgeClick;
         return (
           <g key={i} data-testid={`edge-${i}`} data-role={role} onClick={interactive ? () => onEdgeClick!(i) : undefined} onKeyDown={interactive ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEdgeClick!(i); } } : undefined}

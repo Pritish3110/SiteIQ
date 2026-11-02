@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { RevisionPanel } from "./components/RevisionPanel";
 import { Hero } from "./components/Hero";
 import { StatusMark } from "./components/StatusMark";
 import { Button, CountUp } from "./components/ui";
 import { api } from "./lib/api";
 import { area, SOURCE_STATUS_LABEL, VERDICT_LABEL } from "./lib/format";
+import { deleteProject, downloadProject, listProjects, loadProject, newProjectId, parseProjectFile, saveProject, type ProjectSummary, type Revision } from "./lib/projects";
 import { effectiveArea, emptyStudy, missing as missingInputs, nandiSample, toPayload, type Study } from "./lib/study";
 import type { AuthorityDetail, CheckStatus, Meta, Report } from "./lib/types";
 import { BoundaryStep } from "./steps/Boundary";
@@ -24,8 +26,6 @@ const SHEETS = [
   { code: "A-06", title: "Dossier", heading: "Feasibility dossier", lead: "The result, everything still open, and the documents to issue." },
   { code: "L-01", title: "Rule library", heading: "Rule library", lead: "What SiteIQ can and cannot calculate, authority by authority." },
 ] as const;
-const DRAFT_KEY = "siteiq.draft.v1";
-
 const readStorage = (key: string) => { try { return localStorage.getItem(key); } catch { return null; } };
 const writeStorage = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch { /* A private window can block storage; the study still works. */ } };
 
@@ -40,12 +40,15 @@ export default function App() {
   const [assessedFor, setAssessedFor] = useState("");
   const [assessError, setAssessError] = useState<string | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() => (readStorage("siteiq.theme") === "dark" ? "dark" : "light"));
-  const [hasDraft] = useState(() => !!readStorage(DRAFT_KEY));
+  const [projectId, setProjectId] = useState(newProjectId);
+  const [revisions, setRevisions] = useState<Revision[]>([]);
+  const [recent, setRecent] = useState<ProjectSummary[]>(listProjects);
+  const [openError, setOpenError] = useState<string | null>(null);
   const main = useRef<HTMLElement>(null);
 
   useEffect(() => { document.documentElement.dataset.theme = theme; writeStorage("siteiq.theme", theme); }, [theme]);
   useEffect(() => { api.meta().then(setMeta).catch((e) => setBootError(e.message)); }, []);
-  useEffect(() => { if (entered) writeStorage(DRAFT_KEY, JSON.stringify(study)); }, [study, entered]);
+  useEffect(() => { if (entered) saveProject(projectId, study, revisions); }, [study, revisions, entered, projectId]);
   useEffect(() => { main.current?.scrollTo({ top: 0 }); }, [sheet]);
   useEffect(() => {
     if (!study.authorityKey) { setDetail(null); return; }
@@ -90,10 +93,13 @@ export default function App() {
   if (bootError) return <div className="flex min-h-full items-center justify-center p-10"><div className="max-w-md"><p className="display text-4xl">SiteIQ could not start.</p><p className="mt-4 text-soft">{bootError}</p></div></div>;
   if (!meta) return <div className="flex min-h-full items-center justify-center"><span className="mono-label">Loading rules…</span></div>;
   if (!entered) {
-    return <Hero version={meta.version} hasDraft={hasDraft}
-      onStart={() => { setStudy(emptyStudy()); setSheet(0); setEntered(true); }}
-      onSample={() => { setStudy(nandiSample()); setSheet(5); setEntered(true); }}
-      onResume={() => { try { setStudy({ ...emptyStudy(), ...JSON.parse(readStorage(DRAFT_KEY) ?? "{}") }); } catch { setStudy(emptyStudy()); } setSheet(0); setEntered(true); }} />;
+    const begin = (next: Study, nextRevisions: Revision[], id: string, startSheet: number) => { setStudy(next); setRevisions(nextRevisions); setProjectId(id); setSheet(startSheet); setOpenError(null); setEntered(true); };
+    return <Hero version={meta.version} recent={recent} openError={openError}
+      onStart={() => begin(emptyStudy(), [], newProjectId(), 0)}
+      onSample={() => begin(nandiSample(), [], newProjectId(), 5)}
+      onOpenRecent={(id) => { const project = loadProject(id); if (project) begin(project.study, project.revisions, id, 0); else { setOpenError("That project could not be read on this computer."); setRecent(listProjects()); } }}
+      onDeleteRecent={(id) => { deleteProject(id); setRecent(listProjects()); }}
+      onOpenFile={async (file) => { try { const project = parseProjectFile(await file.text()); begin(project.study, project.revisions, newProjectId(), 0); } catch (e) { setOpenError((e as Error).message); } }} />;
   }
 
   const current = SHEETS[sheet];
@@ -102,7 +108,7 @@ export default function App() {
   return (
     <div className="grid h-full grid-rows-[auto_minmax(0,1fr)] lg:grid-cols-[13.5rem_minmax(0,1fr)_17.5rem] lg:grid-rows-1">
       <nav aria-label="Sheets" className="no-print flex items-center gap-4 overflow-x-auto border-b border-rule bg-sheet px-4 lg:flex-col lg:items-stretch lg:gap-0 lg:overflow-visible lg:border-b-0 lg:border-r lg:p-0">
-        <button type="button" onClick={() => setEntered(false)} className="display shrink-0 py-3 text-left text-[26px] leading-none lg:px-6 lg:pb-7 lg:pt-6">SiteIQ</button>
+        <button type="button" onClick={() => { setRecent(listProjects()); setEntered(false); }} className="display shrink-0 py-3 text-left text-[26px] leading-none lg:px-6 lg:pb-7 lg:pt-6">SiteIQ</button>
         <ol className="flex lg:flex-1 lg:flex-col">
           {SHEETS.map((s, i) => (
             <li key={s.code}>
@@ -121,6 +127,14 @@ export default function App() {
       </nav>
 
       <main ref={main} className="scroll-quiet relative min-w-0 overflow-y-auto">
+        <div data-testid="compact-status" className="no-print sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-rule bg-sheet px-6 py-2 lg:hidden">
+          <span className="min-w-0 truncate text-[13px]">{study.projectName || "Untitled site"}</span>
+          <span className="flex shrink-0 items-baseline gap-4 font-mono text-[11px]">
+            <span>FAR {report?.maximum_far != null ? report.maximum_far.toFixed(2) : "—"}</span>
+            <span>{report ? VERDICT_LABEL[report.verdict.code] : gaps.length ? `Needs ${gaps[0]}` : "Calculating"}</span>
+            <button type="button" data-testid="theme-toggle-compact" onClick={() => setTheme(theme === "light" ? "dark" : "light")} className="underline underline-offset-2">{theme === "light" ? "Dark" : "Light"}</button>
+          </span>
+        </div>
         <div className="mx-auto max-w-[1280px] px-6 pb-20 pt-9 lg:px-12">
           <AnimatePresence mode="wait">
             <motion.div key={sheet} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.32 }}>
@@ -130,6 +144,7 @@ export default function App() {
                   <h1 className="display text-[clamp(2.6rem,4.6vw,4.25rem)] leading-none" data-testid="sheet-heading">{current.heading}</h1>
                   <p className="mt-3 text-[15px] text-soft">{current.lead}</p>
                 </div>
+                <div className="no-print shrink-0"><Button variant="line" data-testid="save-project" onClick={() => downloadProject(study, revisions)}>Save project file</Button></div>
               </header>
               {assessError && <div className="mb-8 border border-ink p-4 text-[13px] font-medium" role="alert" data-testid="assess-error">The assessment could not run: {assessError}</div>}
               {sheet === 0 && <SiteStep study={study} set={set} meta={meta} />}
@@ -137,7 +152,7 @@ export default function App() {
               {sheet === 2 && <ControlsStep study={study} set={set} meta={meta} detail={detail} />}
               {sheet === 3 && <FarStep report={report} missing={gaps} />}
               {sheet === 4 && <OptionsStep study={study} set={set} report={report} />}
-              {sheet === 5 && <DossierStep study={study} report={report} payload={payload} stale={stale} missing={gaps} />}
+              {sheet === 5 && <DossierStep study={study} report={report} payload={payload} stale={stale} missing={gaps} revisionPanel={report && <RevisionPanel study={study} report={report} payload={payload} revisions={revisions} onChange={setRevisions} onRestore={setStudy} stale={stale} />} />}
               {sheet === 6 && <LibraryStep meta={meta} />}
               <footer className="no-print mt-16 flex items-center justify-between border-t border-rule pt-5">
                 <Button variant="quiet" className="!px-0" disabled={sheet === 0} onClick={() => setSheet(sheet - 1)}>← {sheet > 0 ? SHEETS[sheet - 1].title : ""}</Button>

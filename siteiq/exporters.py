@@ -1,6 +1,7 @@
 """Client-friendly PDF and editable PowerPoint report exporters for SiteIQ."""
 from __future__ import annotations
 from io import BytesIO
+import math
 from xml.sax.saxutils import escape
 
 from reportlab.lib import colors
@@ -183,8 +184,36 @@ def _make_styles():
     return s
 
 
-def build_pdf_report(report: dict) -> bytes:
-    """Generate a plain-English client report, followed by a technical source appendix."""
+def _calculation_story(report: dict, styles) -> list:
+    """Figures an architect needs to retrace each option: floor areas, exclusions and envelopes."""
+    rows = [[_p(h, styles["ClientTableHead"]) for h in ("Option", "Floors", "Gross floor area", "Excluded", "Counted for FAR", "FAR", "Remaining", "Envelope", "Footprint from")]]
+    area = lambda v: f"{float(v):,.0f} m²" if v is not None else "—"
+    for s in report.get("scenarios", []):
+        rows.append([_p(_html(v), styles["ClientTableSmall"]) for v in (
+            s.get("name", ""), s.get("floors") or "—", area(s.get("gross_concept_area_m2")), area(s.get("far_excluded_m2")), area(s.get("far_counted_area_m2")),
+            f"{s['achieved_far_ratio']:.2f}" if s.get("achieved_far_ratio") is not None else "—", area(s.get("scenario_headroom_m2")), area((s.get("boundary_envelope") or {}).get("area_m2")), s.get("footprint_source") or "As entered")])
+    table = Table(rows, colWidths=[42*mm, 14*mm, 30*mm, 24*mm, 30*mm, 14*mm, 28*mm, 28*mm, 63*mm], repeatRows=1)
+    table.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('LINEBELOW',(0,0),(-1,-1),0.3,colors.HexColor('#CCCCCC')),('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),4),('TOPPADDING',(0,0),(-1,-1),3),('BOTTOMPADDING',(0,0),(-1,-1),3)]))
+    out = [PageBreak(), _p("CALCULATION TRACE", styles["ClientTitle"]), table, Spacer(1, 3*mm)]
+    far = report.get("far") or {}
+    notes = []
+    boundary = report.get("boundary_analysis") or {}
+    span = boundary.get("dimension_range")
+    if span:
+        notes.append(f"Plot depth {span['depth_min_m']:g} to {span['depth_max_m']:g} m, width {span['width_min_m']:g} to {span['width_max_m']:g} m, measured from the first road edge.")
+    widening = report.get("road_widening")
+    if widening:
+        notes.append(f"Road widening takes about {widening['area_taken_m2']:,.0f} m² along edge {widening['edge'] + 1}.")
+    charge = (far.get("premium_far") or {}).get("charge_estimate")
+    if charge:
+        notes.append(f"Premium FAR charge estimate: ₹{charge['estimated_charge_inr']:,} for {charge['additional_area_m2']:,.0f} m². {charge['note']}".replace("₹", "Rs "))
+    for note in notes:
+        out.append(_p(_html(note), styles["ClientBody"]))
+    return out
+
+
+def build_pdf_report(report: dict, audience: str = "technical") -> bytes:
+    """Generate the PDF report. ``client`` stops after the plain-English pages; ``technical`` adds the trace, sources and register."""
     buf = BytesIO()
     doc = SimpleDocTemplate(
         buf, pagesize=landscape(A4), rightMargin=12*mm, leftMargin=12*mm,
@@ -482,6 +511,7 @@ def build_pdf_report(report: dict) -> bytes:
         story.append(_p(
             f"<b>Survey note:</b> the entered frontage × depth equals {_fmt(site.get('implied_rectangular_area_m2'),' m²')}, compared with the stated plot area of {_fmt(site.get('site_area_m2'),' m²')}. "
             f"The difference is {_fmt(site.get('dimension_difference_pct'),'%')}. Because the site is irregular, this is only a consistency check; the authenticated survey area and boundary should be used for design.", styles["ClientBody"]))
+    client_story_end = len(story)
     story.append(PageBreak())
 
     # PAGE 4: Traceability appendix for architects and reviewers.
@@ -592,7 +622,13 @@ def build_pdf_report(report: dict) -> bytes:
     ]))
     story.append(final_box)
 
+    story += _calculation_story(report, styles)
     story += _compliance_story(report, styles)
+    if audience == "client":
+        story = story[:client_story_end]
+        counts = (report.get("verdict") or {}).get("counts") or {}
+        if counts:
+            story += [Spacer(1, 3*mm), _p(f"<b>Still open:</b> {counts.get('FAIL', 0)} failed, {counts.get('NEEDS_INPUT', 0)} need information and {counts.get('REFER', 0) + counts.get('NOT_CONFIGURED', 0)} need confirming. Your architect holds the full register.", styles["ClientBody"])]
 
     def footer(canvas, doc_):
         canvas.saveState()
@@ -960,7 +996,13 @@ def _geojson_polygon_lists(geom: dict | None) -> list[list[tuple[float, float]]]
     return out
 
 
-def _draw_geo_preview_pdf(c, x, y, w, h, boundary_geom: dict | None, envelope_geom: dict | None = None):
+def _scale_length(target: float) -> float:
+    power = 10 ** math.floor(math.log10(max(target, 1e-6)))
+    unit = target / power
+    return (5 if unit >= 5 else 2 if unit >= 2 else 1) * power
+
+
+def _draw_geo_preview_pdf(c, x, y, w, h, boundary_geom: dict | None, envelope_geom: dict | None = None, road_edges: list | None = None):
     """Small-to-medium vector preview in PDF coordinates; y is the lower edge."""
     parcel = _geojson_polygon_lists(boundary_geom)
     envs = _geojson_polygon_lists(envelope_geom)
@@ -998,6 +1040,18 @@ def _draw_geo_preview_pdf(c, x, y, w, h, boundary_geom: dict | None, envelope_ge
         c.setStrokeColor(TEAL)
         c.setLineWidth(1.5)
         c.drawPath(path, stroke=1, fill=1)
+    ring = parcel[0][:-1] if parcel[0][0] == parcel[0][-1] else parcel[0]
+    for index, (a, b) in enumerate(zip(ring, ring[1:] + ring[:1])):
+        ax, ay, bx, by = ox + a[0] * scale, oy + a[1] * scale, ox + b[0] * scale, oy + b[1] * scale
+        road = index in (road_edges or [])
+        if road:
+            c.setStrokeColor(NAVY); c.setLineWidth(3); c.line(ax, ay, bx, by)
+        if len(ring) <= 16:
+            c.setFillColor(NAVY); c.setFont("Helvetica-Bold" if road else "Helvetica", 6)
+            c.drawCentredString((ax + bx) / 2, (ay + by) / 2 + 2.5, f"{'ROAD ' if road else ''}E{index + 1}")
+    bar = _scale_length(w * 0.25 / scale)
+    c.setStrokeColor(NAVY); c.setLineWidth(0.8); c.line(x + 4, y + 4, x + 4 + bar * scale, y + 4)
+    c.setFillColor(NAVY); c.setFont("Helvetica", 5.8); c.drawString(x + 7 + bar * scale, y + 2.5, f"{bar:g} m")
 
 
 def build_a3_comparison_board_pdf(report: dict) -> bytes:
@@ -1061,7 +1115,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
     card_y = card_top - card_h
     n = max(1, len(options))
     card_w = (strip_w - gap * (n - 1)) / n
-    color_cycle = [teal, colors.HexColor('#737373'), orange, colors.HexColor('#7B7B7B')]
+    color_cycle = [dark]
     for i, opt in enumerate(options):
         x = margin + i * (card_w + gap)
         accent = color_cycle[i % len(color_cycle)]
@@ -1080,7 +1134,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
         preview_h = 66*mm
         preview_y = card_y + card_h - 85*mm
         env_geom = (opt.get("boundary_envelope") or {}).get("geometry")
-        _draw_geo_preview_pdf(c, x + 3*mm, preview_y, card_w - 6*mm, preview_h, boundary_geom, env_geom)
+        _draw_geo_preview_pdf(c, x + 3*mm, preview_y, card_w - 6*mm, preview_h, boundary_geom, env_geom, boundary.get("front_edges"))
         # Divider then clear, client-readable metrics.
         y = preview_y - 4*mm
         c.setStrokeColor(line); c.line(x + 3*mm, y + 1.2*mm, x + card_w - 3*mm, y + 1.2*mm)
@@ -1257,7 +1311,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
 
     card_x0=0.4; card_y=2.16; card_h=6.53; gap=0.14
     n=max(1,len(options)); card_w=(15.74-gap*(n-1))/n
-    accents=[teal,(115,115,115),(142,142,142),(123,123,123)]
+    accents=[dark]
     for i,opt in enumerate(options):
         x=card_x0+i*(card_w+gap); accent=accents[i%len(accents)]
         _add_rect(slide,x,card_y,card_w,card_h,white,line=line,radius=True)
@@ -1275,6 +1329,13 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
             _pptx_polyline(slide,boundary_geom,diagram_x,diagram_y,diagram_w,diagram_h,dark,1.2,reference_bounds=ref_bounds)
             env=(opt.get("boundary_envelope") or {}).get("geometry")
             if env: _pptx_polyline(slide,env,diagram_x,diagram_y,diagram_w,diagram_h,accent,1.7,reference_bounds=ref_bounds)
+            ring = boundary_polys[0][:-1] if boundary_polys[0][0] == boundary_polys[0][-1] else boundary_polys[0]
+            for edge in boundary.get("front_edges") or []:
+                if 0 <= edge < len(ring):
+                    road_line = {"type": "Polygon", "coordinates": [[ring[edge], ring[(edge + 1) % len(ring)]]]}
+                    _pptx_polyline(slide,road_line,diagram_x,diagram_y,diagram_w,diagram_h,dark,3.5,reference_bounds=ref_bounds)
+            if boundary.get("front_edges"):
+                _add_text(slide,diagram_x,diagram_y+diagram_h-0.2,diagram_w,0.18,"Heavy line: road edge",7,grey,False,align=PP_ALIGN.CENTER)
         else:
             _add_rect(slide,diagram_x+0.20,diagram_y+0.18,diagram_w-0.40,diagram_h-0.36,pale,line=line,radius=True)
             _add_text(slide,diagram_x+0.28,diagram_y+0.58,diagram_w-0.56,0.36,"Boundary drawing not imported",8,grey,False,align=PP_ALIGN.CENTER)

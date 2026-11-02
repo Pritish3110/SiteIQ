@@ -44,6 +44,9 @@ export function FarStep({ report, missing }: { report: Report | null; missing: s
                 <Row k="Possible additional FAR" v={`+${ratio(far.premium_far.additional_far_candidate)}`} />
                 <Row k="Possible additional area" v={`+${area(far.premium_far.additional_floor_area_candidate_m2)}`} />
                 <Row k="Possible total FAR" v={ratio(far.premium_far.potential_total_far_candidate)} />
+                {far.premium_far.premium_only_additional_far != null && <Row k="With Premium FAR alone, no TDR" v={`+${ratio(far.premium_far.premium_only_additional_far)} · ${area(far.premium_far.premium_only_additional_area_m2)}`} />}
+                {far.premium_far.charge_estimate && <Row k="Estimated Premium FAR charge" v={<span data-testid="premium-charge">₹{far.premium_far.charge_estimate.estimated_charge_inr.toLocaleString("en-IN")}</span>} />}
+                {far.premium_far.charge_estimate && <p className="mt-3 text-xs leading-relaxed text-soft">{far.premium_far.charge_estimate.note}</p>}
               </>
             )}
           </Panel>
@@ -64,6 +67,13 @@ export function FarStep({ report, missing }: { report: Report | null; missing: s
           {details.deduction_pct != null && <Row k="Deducted" v={`${details.deduction_pct as number}% (${details.deduction_source === "configured_rule" ? "rule" : "your assumption"})`} />}
           {far.coverage?.coverage_pct != null && <Row k="Ground coverage limit" v={`${far.coverage.coverage_pct}%`} />}
         </Panel>
+        {report.road_widening && (
+          <Panel title="Road widening">
+            <Row k="Land taken" v={area(report.road_widening.area_taken_m2)} />
+            {report.road_widening.capacity_if_land_excluded_m2 != null && <Row k="Capacity if that land is not counted" v={<span data-testid="widening-capacity">{area(report.road_widening.capacity_if_land_excluded_m2)}</span>} />}
+            <p className="mt-3 text-xs leading-relaxed text-soft">Confirm with the authority whether surrendered land still counts towards FAR. Any TDR is not calculated.</p>
+          </Panel>
+        )}
         {far.source && (
           <Panel title="Source">
             <p className="display text-xl leading-snug">{far.source.title}</p>

@@ -357,6 +357,12 @@ def calculate_premium_far_opportunity(profile: dict, far_result: dict, site_area
     if road_width_m < min_road:
         return {"status":"road_width_below_configured_threshold", "message":f"The configured optional Premium FAR/TDR opportunity starts at {min_road:g} m road width. This site is below that threshold.", "base_far":base_far, "additional_far_factor":factor, "source":source_by_id(profile, rule.get("source_id"))}
     additional_far = base_far * factor
+    premium_only_factor = rule.get("premium_only_factor")
+    premium_only = {
+        "premium_only_factor": premium_only_factor,
+        "premium_only_additional_far": round(base_far * float(premium_only_factor), 3),
+        "premium_only_additional_area_m2": round(calc_area * base_far * float(premium_only_factor), 2),
+    } if premium_only_factor and road_width_m >= mix_min_road else {}
     if road_width_m < mix_min_road:
         return {
             "status":"tdr_only_candidate", "base_far":base_far,
@@ -368,7 +374,7 @@ def calculate_premium_far_opportunity(profile: dict, far_result: dict, site_area
             "conditions":rule.get("conditions",[]), "source":source_by_id(profile, rule.get("source_id"))
         }
     return {
-        "status":"premium_far_plus_tdr_candidate", "base_far":base_far,
+        "status":"premium_far_plus_tdr_candidate", "base_far":base_far, **premium_only,
         "maximum_additional_far_factor":factor, "additional_far_candidate":round(additional_far,3),
         "additional_floor_area_candidate_m2":round(calc_area * additional_far,2),
         "potential_total_far_candidate":round(base_far + additional_far,3),
@@ -566,7 +572,23 @@ def calculate_rectangular_proxy(site: dict, setbacks: dict) -> dict:
         "message":message,
     }
 
-def build_scenarios(site_area_m2: float, scenarios: List[dict], max_far_benchmark: float | None = None, max_far_capacity_m2: float | None = None, far_calculation_area_m2: float | None = None) -> List[dict]:
+def far_counted_area(gross_m2: float, floors: int | None, core_per_floor_m2: float | None, parking_m2: float | None, exclusions: dict | None) -> dict:
+    """Split gross floor area into what counts towards FAR, applying only exclusions the rule allows."""
+    rule = exclusions or {}
+    core_total = float(core_per_floor_m2 or 0) * int(floors or 0)
+    parking = float(parking_m2 or 0)
+    applied_core = core_total if rule.get("core") else 0.0
+    applied_parking = parking if rule.get("parking") else 0.0
+    applied = min(applied_core + applied_parking, gross_m2)
+    return {
+        "far_excluded_m2": round(applied, 2),
+        "far_counted_area_m2": round(gross_m2 - applied, 2),
+        "far_exclusion_refused_m2": round(core_total - applied_core + parking - applied_parking, 2),
+        "far_exclusions_entered": bool(core_total or parking),
+    }
+
+
+def build_scenarios(site_area_m2: float, scenarios: List[dict], max_far_benchmark: float | None = None, max_far_capacity_m2: float | None = None, far_calculation_area_m2: float | None = None, far_exclusions: dict | None = None) -> List[dict]:
     """Calculate gross scenario yields against a rule-derived FAR benchmark only.
 
     A user-entered legacy assumed_far value is ignored unless the site explicitly sets
@@ -590,13 +612,20 @@ def build_scenarios(site_area_m2: float, scenarios: List[dict], max_far_benchmar
         if benchmark is None and s.get("manual_benchmark_far") is not None and float(s.get("manual_benchmark_far") or 0) > 0:
             benchmark = float(s["manual_benchmark_far"])
             benchmark_source = "user-entered what-if only; not statutory"
-        if footprint is not None and floors is not None and float(footprint) > 0 and int(floors) > 0:
+        schedule = [row for row in (s.get("floor_schedule") or []) if row.get("area_m2") and row.get("floors")]
+        if schedule:
+            floors = sum(int(row["floors"]) for row in schedule)
+            footprint = max(float(row["area_m2"]) for row in schedule)
+            gross_concept_area = round(sum(float(row["area_m2"]) * int(row["floors"]) for row in schedule), 2)
+        elif footprint is not None and floors is not None and float(footprint) > 0 and int(floors) > 0:
             gross_concept_area = round(float(footprint) * int(floors), 2)
-            achieved_far = round(gross_concept_area / scenario_far_area, 3) if scenario_far_area > 0 else None
+        counted = far_counted_area(gross_concept_area, floors, s.get("core_excluded_per_floor_m2"), s.get("parking_excluded_m2"), far_exclusions) if gross_concept_area is not None else {}
+        if gross_concept_area is not None:
+            achieved_far = round(counted["far_counted_area_m2"] / scenario_far_area, 3) if scenario_far_area > 0 else None
         if benchmark is not None:
             far_capacity = round(float(max_far_capacity_m2), 2) if max_far_capacity_m2 is not None else round(site_area_m2 * benchmark, 2)
             if gross_concept_area is not None:
-                headroom = round(far_capacity - gross_concept_area, 2)
+                headroom = round(far_capacity - counted["far_counted_area_m2"], 2)
         output.append({
             "name": name,
             "height_m": float(height) if height not in (None, "") else None,
@@ -617,11 +646,15 @@ def build_scenarios(site_area_m2: float, scenarios: List[dict], max_far_benchmar
             "far_calculation_area_m2": round(scenario_far_area, 2),
             "far_ratio_basis": far_ratio_basis,
             "gross_concept_area_m2": gross_concept_area,
+            **counted,
+            "floor_schedule": schedule,
+            "core_excluded_per_floor_m2": s.get("core_excluded_per_floor_m2"),
+            "parking_excluded_m2": s.get("parking_excluded_m2"),
             # Keep legacy key for older templates; reports label the denominator correctly.
             "achieved_gross_far_ratio": achieved_far,
             "achieved_far_ratio": achieved_far,
             "scenario_headroom_m2": headroom,
-            "interpretation": "Gross arithmetic proxy for the above-ground concept only. FAR exclusions, basements, floor-by-floor variations and sanction conditions are not modelled.",
+            "interpretation": "Floor area from the footprint or floor schedule, less only the FAR exclusions the configured rule allows. Basements and sanction conditions are not modelled.",
         })
     return output
 
@@ -695,7 +728,7 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
             normalized["basement_setback_summary"] = "Not determined"
         scenario_inputs.append(normalized)
 
-    scenarios = build_scenarios(site_area, scenario_inputs, max_far_benchmark=max_far_benchmark, max_far_capacity_m2=max_far_capacity, far_calculation_area_m2=far_calculation_area)
+    scenarios = build_scenarios(site_area, scenario_inputs, max_far_benchmark=max_far_benchmark, max_far_capacity_m2=max_far_capacity, far_calculation_area_m2=far_calculation_area, far_exclusions=(profile or {}).get("far_exclusions"))
     if max_far_benchmark is not None and far_result.get("rule_source_quality") in {"secondary_copy_pending_official_validation", "official_authority_copy_pending_review"}:
         for item in scenarios:
             item["benchmark_source"] = "provisional rule candidate; official applicability pending"

@@ -9,7 +9,7 @@ import type { AppliedBoundary, Study } from "../lib/study";
 import type { Candidate, EdgeRole, ParsedFile, ValidatedBoundary } from "../lib/types";
 
 const UNITS: Record<string, number> = { Metres: 1, Millimetres: 0.001, Centimetres: 0.01, Feet: 0.3048, Inches: 0.0254 };
-const NEXT_ROLE: Record<EdgeRole, EdgeRole> = { side: "road", road: "rear", rear: "side" };
+const NEXT_ROLE: Record<EdgeRole, EdgeRole> = { side: "road", road: "rear", rear: "left", left: "right", right: "side" };
 
 export function BoundaryStep({ study, set, onIdentify }: { study: Study; set: (p: Partial<Study>) => void; onIdentify: (lonLat: [number, number]) => void }) {
   const [parsed, setParsed] = useState<ParsedFile | null>(null);
@@ -154,7 +154,7 @@ export function BoundaryStep({ study, set, onIdentify }: { study: Study; set: (p
         </div>
         {(previewPoints || applied) && (
           <div className="mt-4 flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
-            <p className="max-w-md text-[13px] leading-relaxed text-soft"><strong className="font-medium text-ink">Click each edge</strong> to mark it as road, then rear, then side. SiteIQ never guesses the frontage from the shape.</p>
+            <p className="max-w-md text-[13px] leading-relaxed text-soft"><strong className="font-medium text-ink">Click each edge</strong> to cycle through road, rear, left, right and side. An edge left as side takes the larger side setback. SiteIQ never guesses the frontage from the shape.</p>
             <div className="flex gap-5 font-mono text-[10.5px] text-soft">
               <span className="flex items-center gap-2"><svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="currentColor" strokeWidth="3" /></svg>Road</span>
               <span className="flex items-center gap-2"><svg width="26" height="6"><line x1="0" y1="3" x2="26" y2="3" stroke="currentColor" strokeWidth="1.5" strokeDasharray="6 3" /></svg>Rear</span>

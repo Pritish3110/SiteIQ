@@ -1,4 +1,4 @@
-# SiteIQ v0.6.0: early-stage site feasibility for Karnataka
+# SiteIQ v0.7.0: early-stage site feasibility for Karnataka
 
 SiteIQ takes a site location and survey boundary, finds the planning rule, draws the buildable envelope for each design option, and reports what it could not confirm. It is a preliminary aid, not sanction advice. To run it, see `START_HERE.md`.
 
@@ -35,6 +35,7 @@ A FAR returned from a provisional profile is a **candidate**, not a statutory en
 - Authority boundary, ward/corporation boundaries and planning-area boundaries are distinct. Administrative KMLs from OpenCity are useful clues but do not establish legal planning jurisdiction or FAR zoning on their own.
 
 ## Version notes
+- **v0.7.0:** calculation gaps, saved projects and revisions, see `CHANGELOG.md`.
 - **v0.6.0:** new interface, compliance register and reliability fixes; see `CHANGELOG.md`.
 - **v0.4.7:** provisional FAR profiles for four BMRDA-area LPAs; conditional group-housing logic, net FAR calculation basis, source-quality warnings and optional Premium FAR/TDR scenario; per-option set-back and basement logic retained.
 - v0.4.4: KML boundary location precedence and public-source lookup.

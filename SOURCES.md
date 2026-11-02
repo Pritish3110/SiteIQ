@@ -123,3 +123,5 @@ Only the items below were read from the document itself for this release. Everyt
 **Not encoded:** solar and rainwater sizing, attached-housing layout checks, township eligibility, and detailed accessibility design. No official planning-boundary or land-use GIS layer was found. The BDA site refused connections.
 
 **Taken from secondary sources only:** the EIA 20,000 m² trigger and the RERA 500 m² and 8-unit limits. Both checks say so and ask you to confirm.
+
+**Added in v0.7.0, from secondary sources only:** the Premium FAR bands effective 5 February 2026 come from [commentary on the High Court judgment](https://corporate.cyrilamarchandblogs.com/2026/07/bengaluru-goes-vertical-green-light-to-premium-far/), which describes Bengaluru. The charge formula comes from a quoted gazette excerpt whose link has since gone dead. Read the notifications before relying on either. Applying the 0.4 × Premium-only figure to the four planning authorities is unconfirmed, and the profiles say so.

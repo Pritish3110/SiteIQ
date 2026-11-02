@@ -2,7 +2,9 @@ import { positive } from "./format";
 import { perimeter, shoelace } from "./geometry";
 import type { EdgeRole, LocationResult, Point } from "./types";
 
+export interface FloorRow { name: string; floors: string; area: string }
 export interface OptionDraft {
+  schedule: FloorRow[]; corePerFloor: string; parking: string;
   id: string; name: string; height: string; floors: string; footprint: string; stilt: boolean; stiltHeight: string; manualSetback: string; basements: string; manualBasementFront: string; manualBasementSide: string;
 }
 export interface OverlayDraft { status: "unknown" | "absent" | "present"; edge: string; depth: string; drainClass: "" | "primary" | "secondary" | "tertiary"; lineKv?: string }
@@ -15,7 +17,7 @@ export interface Study {
   projectName: string; client: string; address: string; mapUrl: string; coordinates: string; location: LocationResult | null; authorityKey: string; authorityConfirmed: boolean;
   category: string; zoneConfirmed: boolean; surroundingZone: string; proposedUse: string; siteArea: string; stated: string; roadWidth: string; roadSource: "unknown" | "notified" | "survey" | "measured";
   deduction: string; ring: "" | "I" | "II" | "III"; units: string; unitArea: string; landStatus: "unknown" | "converted" | "not_converted"; priorSanction: "unknown" | "none" | "exists"; approvalPath: string;
-  frontage: string; depth: string; boundary: AppliedBoundary | null; overlays: Record<string, OverlayDraft>; options: OptionDraft[];
+  guidanceValue: string; frontage: string; depth: string; boundary: AppliedBoundary | null; overlays: Record<string, OverlayDraft>; options: OptionDraft[];
 }
 export const OVERLAYS: [string, string][] = [
   ["lake", "Lake or tank"], ["drain", "Drain or rajakaluve"], ["ht_line", "High-tension power line"], ["airport", "Airport height zone"], ["heritage", "Protected monument"],
@@ -25,11 +27,11 @@ export const USES = ["Residential apartments", "Individual house / villa", "Comm
 
 let counter = 0;
 export const newOption = (index: number, seed: Partial<OptionDraft> = {}): OptionDraft => ({
-  id: `opt-${Date.now()}-${counter++}`, name: `Option ${String(index + 1).padStart(2, "0")}`, height: "", floors: "", footprint: "", stilt: false, stiltHeight: "", manualSetback: "", basements: "0", manualBasementFront: "", manualBasementSide: "", ...seed,
+  schedule: [], corePerFloor: "", parking: "", id: `opt-${Date.now()}-${counter++}`, name: `Option ${String(index + 1).padStart(2, "0")}`, height: "", floors: "", footprint: "", stilt: false, stiltHeight: "", manualSetback: "", basements: "0", manualBasementFront: "", manualBasementSide: "", ...seed,
 });
 export const emptyStudy = (): Study => ({
   projectName: "", client: "", address: "", mapUrl: "", coordinates: "", location: null, authorityKey: "", authorityConfirmed: false, category: "", zoneConfirmed: false, surroundingZone: "", proposedUse: USES[0],
-  siteArea: "", stated: "", roadWidth: "", roadSource: "unknown", deduction: "", ring: "", units: "", unitArea: "", landStatus: "unknown", priorSanction: "unknown", approvalPath: "Not sure / needs confirmation", frontage: "", depth: "", boundary: null,
+  siteArea: "", stated: "", roadWidth: "", roadSource: "unknown", deduction: "", ring: "", units: "", unitArea: "", landStatus: "unknown", priorSanction: "unknown", approvalPath: "Not sure / needs confirmation", guidanceValue: "", frontage: "", depth: "", boundary: null,
   overlays: {}, options: [newOption(0), newOption(1)],
 });
 
@@ -62,17 +64,19 @@ export const toPayload = (s: Study) => {
     authority_key: s.authorityKey, authority_confirmed: s.authorityConfirmed, land_use_category: s.category || "Not configured", zone_confirmed: s.zoneConfirmed, surrounding_zone: s.surroundingZone || null,
     proposed_use: s.proposedUse, site_area_m2: effectiveArea(s) ?? 0, site_area_source: b?.useComputedArea ? "imported polyline area" : "user-entered survey/title area", area_stated_m2: positive(s.stated),
     road_width_m: positive(s.roadWidth) ?? 0, road_width_source: s.roadSource, road_edges: b ? Object.entries(b.roadWidths).filter(([i, w]) => positive(w) != null && b.roles[Number(i)] === "road").map(([i, w]) => ({ edge: Number(i), width_m: positive(w)! })) : [],
-    statutory_deduction_pct: positive(s.deduction), frontage_m: positive(s.frontage), depth_m: positive(s.depth), approval_path: s.approvalPath, rmp_ring: s.ring || null, dwelling_units: positive(s.units) ? Math.round(positive(s.units)!) : null, average_unit_area_m2: positive(s.unitArea),
+    statutory_deduction_pct: positive(s.deduction), guidance_value_per_m2: positive(s.guidanceValue), frontage_m: positive(s.frontage), depth_m: positive(s.depth), approval_path: s.approvalPath, rmp_ring: s.ring || null, dwelling_units: positive(s.units) ? Math.round(positive(s.units)!) : null, average_unit_area_m2: positive(s.unitArea),
     land_status: s.landStatus, prior_sanction: s.priorSanction, overlays,
     scenarios: s.options.map((o, i) => ({
       name: o.name.trim() || `Option ${i + 1}`, height_m: positive(o.height), floors: positive(o.floors) ? Math.round(positive(o.floors)!) : null, footprint_m2: positive(o.footprint), stilt: o.stilt, stilt_height_m: o.stilt ? positive(o.stiltHeight) : null,
       setback_mode: positive(o.manualSetback) ? "manual" : "automatic", manual_all_round_setback_m: positive(o.manualSetback), basement_levels: Math.max(0, Math.round(Number(o.basements) || 0)),
       basement_setback_mode: positive(o.manualBasementFront) && positive(o.manualBasementSide) ? "manual" : "automatic", manual_basement_front_m: positive(o.manualBasementFront), manual_basement_nonfront_m: positive(o.manualBasementSide),
+      floor_schedule: (o.schedule ?? []).filter((r) => positive(r.floors) && positive(r.area)).map((r) => ({ name: r.name.trim(), floors: Math.round(positive(r.floors)!), area_m2: positive(r.area)! })),
+      core_excluded_per_floor_m2: positive(o.corePerFloor ?? ""), parking_excluded_m2: positive(o.parking ?? ""),
     })),
     boundary: b ? {
       source_file: b.sourceFile, source_type: b.sourceType, source_units: b.sourceUnits ?? null, scale_to_m: b.scale ?? null, source_fingerprint: b.fingerprint ?? null, candidate_id: b.candidateId ?? null,
       points_m: b.points, holes_m: b.holes, area_m2: b.area, perimeter_m: b.perimeter, vertex_count: b.points.length, is_convex: b.convex, validation_notes: b.notes, use_computed_area: b.useComputedArea,
-      front_edges: edgesWithRole(b, "road"), rear_edges: edgesWithRole(b, "rear"), source_points_wgs84: b.wgs84 ?? null, source_holes_wgs84: b.holesWgs84 ?? null,
+      front_edges: edgesWithRole(b, "road"), rear_edges: edgesWithRole(b, "rear"), left_edges: edgesWithRole(b, "left"), right_edges: edgesWithRole(b, "right"), source_points_wgs84: b.wgs84 ?? null, source_holes_wgs84: b.holesWgs84 ?? null,
     } : null,
     location,
   };

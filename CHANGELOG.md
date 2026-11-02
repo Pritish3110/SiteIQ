@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.7.0 — 2026-11-03
+**Changed results.** Bengaluru now shows Premium FAR scenarios, and side edges tagged left or right use their own setback.
+
+**Calculations.** FAR exclusions apply only where the plan lists them. Floor schedules replace footprint × floors. Depth and width variation on irregular plots is reported. Road widening reports the land taken and the capacity if it isn't counted. Premium FAR shows the Premium-only allowance and an estimated charge.
+
+**Daily use.** Projects save to `.siteiq` files and appear in a recent list. Revisions record inputs and results, and compare against the current study. DXF import opens blocks and joins loose lines and arcs; PDF import joins loose lines. Client and architect reports are separate. A3 boards label road edges and show a scale. Narrow screens keep a status bar. Map layer installation moved under administrator tools.
+
+**Tidying.** `python -m siteiq.rule_admin` validates profiles and records sign-off. Runtime and development dependencies are split, with a tested lockfile. Removed `create_location_demo.py`, whose input file no longer exists.
+
 ## v0.6.0 — 2026-11-02
 **New interface.** React and FastAPI replace Streamlit as the main interface. Results update live, and exports recalculate from the current inputs. The Streamlit app remains as `app.py` and shares the same service.
 

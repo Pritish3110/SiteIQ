@@ -55,7 +55,7 @@ test("exports download with the live figures and are held while recalculating", 
   await page.goto("/");
   await page.getByTestId("load-sample").click();
   await expect(page.getByTestId("verdict")).toBeVisible();
-  for (const [kind, ext] of [["report-pdf", "pdf"], ["board-pdf", "pdf"], ["report-pptx", "pptx"], ["board-pptx", "pptx"], ["envelopes-dxf", "dxf"], ["assessment-json", "json"]]) {
+  for (const [kind, ext] of [["report-pdf", "pdf"], ["technical-pdf", "pdf"], ["board-pdf", "pdf"], ["report-pptx", "pptx"], ["board-pptx", "pptx"], ["envelopes-dxf", "dxf"], ["assessment-json", "json"]]) {
     const [download] = await Promise.all([page.waitForEvent("download"), page.getByTestId(`export-${kind}`).click()]);
     expect(download.suggestedFilename()).toMatch(new RegExp(`SiteIQ_.*\\.${ext}$`));
     if (SHOTS) await download.saveAs(path.join(SHOTS, download.suggestedFilename()));
@@ -74,6 +74,10 @@ test("full manual flow: KML upload, edge tagging, rules, options, live results",
   await page.getByTestId("edge-2").click();
   await page.getByTestId("edge-2").click();
   await expect(page.getByTestId("edge-2")).toHaveAttribute("data-role", "rear");
+  await page.getByTestId("edge-1").click();
+  await page.getByTestId("edge-1").click();
+  await page.getByTestId("edge-1").click();
+  await expect(page.getByTestId("edge-1")).toHaveAttribute("data-role", "left");
   await shot(page, "07-boundary-preview");
   await page.getByTestId("apply-boundary").click();
   await expect(page.getByTestId("applied-area")).toContainText("m²");
@@ -148,6 +152,49 @@ test("a real DXF with several features needs an explicit choice", async ({ page 
   await expect(page.getByTestId("preview-area")).toContainText("m²");
 });
 
+test("a project can be saved to a file, reopened and compared with a revision", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("load-sample").click();
+  await expect(page.getByTestId("verdict")).toBeVisible();
+  await page.getByTestId("revision-name").fill("Before road change");
+  await page.getByTestId("save-revision").click();
+  await page.getByTestId("sheet-2").click();
+  await page.getByTestId("road-width").fill("9");
+  await page.getByTestId("sheet-5").click();
+  await expect(page.getByTestId("revision-diff")).toContainText("road width m");
+  await expect(page.getByTestId("revision-diff")).toContainText("Base FAR");
+  await shot(page, "14-revisions");
+  const [download] = await Promise.all([page.waitForEvent("download"), page.getByTestId("save-project").click()]);
+  expect(download.suggestedFilename()).toBe("Nandi_Housing.siteiq");
+  const file = await download.path();
+  await page.getByTestId("restore-revision").click();
+  await page.getByTestId("sheet-2").click();
+  await expect(page.getByTestId("road-width")).toHaveValue("18.5");
+  await page.goto("/");
+  await expect(page.getByTestId("recent-projects")).toContainText("Nandi Housing");
+  await shot(page, "15-recent");
+  await page.getByTestId("project-file").setInputFiles(file);
+  await expect(page.getByTestId("tb-project")).toHaveText("Nandi Housing");
+  await page.goto("/");
+  await page.getByTestId("project-file").setInputFiles({ name: "x.siteiq", mimeType: "application/json", buffer: Buffer.from("{}") });
+  await expect(page.getByTestId("open-error")).toContainText("not a SiteIQ project");
+});
+
+test("exclusions and a floor schedule change the counted area", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("load-sample").click();
+  await page.getByTestId("sheet-4").click();
+  await expect(page.getByTestId("headroom-0")).toContainText("-562");
+  await page.getByTestId("far-details-0").locator("summary").click();
+  await page.getByTestId("parking-0").fill("600");
+  await expect(page.getByTestId("headroom-0")).toContainText("+38");
+  await page.getByTestId("add-level-0").click();
+  await page.getByTestId("schedule-floors-0-0").fill("2");
+  await page.getByTestId("schedule-area-0-0").fill("800");
+  await expect(page.getByTestId("gross-0")).toContainText("1,600");
+  await shot(page, "16-schedule");
+});
+
 test("the rule library shows coverage honestly", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("start-study").click();
@@ -167,6 +214,7 @@ test("the sheet is usable and readable in the dark theme and on a narrow screen"
   await shot(page, "11-dark-boundary");
   await page.getByTestId("theme-toggle").click();
   await page.setViewportSize({ width: 820, height: 1100 });
+  await expect(page.getByTestId("compact-status")).toContainText("FAR 2.50");
   await shot(page, "12-tablet");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);

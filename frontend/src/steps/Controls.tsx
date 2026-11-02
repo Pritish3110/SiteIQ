@@ -61,6 +61,7 @@ export function ControlsStep({ study, set, meta, detail }: { study: Study; set: 
               <Field label="Dwelling units" type="number" value={study.units} onChange={(v) => set({ units: v })} testId="units" hint="For parking, apartment and RERA checks." />
               <Field label="Average unit area" type="number" unit="m²" value={study.unitArea} onChange={(v) => set({ unitArea: v })} testId="unit-area" />
             </div>
+            <Field label="Guidance value" type="number" unit="₹/m²" value={study.guidanceValue} onChange={(v) => set({ guidanceValue: v })} testId="guidance-value" hint="Optional. Used only to estimate a Premium FAR charge." />
             <Field label="Reservation to test" type="number" unit="%" value={study.deduction} onChange={(v) => set({ deduction: v })} testId="deduction" hint="Optional what-if, shown as your assumption. Rules with their own deduction apply it automatically." />
             <div className="flex flex-wrap gap-x-8 gap-y-5">
               <Segmented label="Land conversion" compact value={study.landStatus} onChange={(v) => set({ landStatus: v })} testId="land-status" options={[{ value: "unknown", label: "Unknown" }, { value: "converted", label: "Converted" }, { value: "not_converted", label: "Not converted" }]} />

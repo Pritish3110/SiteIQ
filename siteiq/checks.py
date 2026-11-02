@@ -461,6 +461,33 @@ def option_checks(site: dict, profile: Optional[dict], far: dict, scenario: dict
     return out
 
 
+def calculation_checks(report: dict) -> list[dict]:
+    """Checks on what the geometry and floor areas reveal about the calculation itself."""
+    out = []
+    boundary = report.get("boundary_analysis") or {}
+    span = boundary.get("dimension_range")
+    percentage = any((s.get("setback_result") or {}).get("status") == "nominal_calculation_requires_site_geometry_check" and (s.get("setback_result") or {}).get("all_round_m") is None for s in report.get("scenarios", []))
+    if span and percentage and (span["depth_max_m"] > span["depth_min_m"] * 1.05 or span["width_max_m"] > span["width_min_m"] * 1.05):
+        out.append(_check("site.dimensions", "Site", "Depth and width vary", REFER, f"Depth runs from {span['depth_min_m']:g} to {span['depth_max_m']:g} m and width from {span['width_min_m']:g} to {span['width_max_m']:g} m. Percentage setbacks here use the overall dimensions, which is the cautious reading. Confirm how the authority measures an irregular plot.", value=span))
+    widening = report.get("road_widening")
+    if widening:
+        capacity = widening.get("capacity_if_land_excluded_m2")
+        extra = f" If the authority does not count that land, capacity falls from {float(report.get('maximum_far_area_m2') or 0):,.0f} to {capacity:,.0f} m²." if capacity is not None else ""
+        out.append(_check("far.road_widening", "FAR", "Road widening", REFER, f"Widening takes about {widening['area_taken_m2']:,.0f} m² along edge {widening['edge'] + 1}.{extra} Any TDR for the surrendered land is not calculated.", value=widening))
+    for s in report.get("scenarios", []):
+        if s.get("gross_concept_area_m2") is None:
+            continue
+        name = s.get("name")
+        refused = float(s.get("far_exclusion_refused_m2") or 0)
+        if refused > 0:
+            out.append(_check("option.far_exclusions", "Options", "FAR exclusions", REFER, f"{refused:,.0f} m² you entered was not deducted, because this authority's plan does not list it as excluded from FAR.", option=name, value=refused))
+        elif s.get("far_exclusions_entered"):
+            out.append(_check("option.far_exclusions", "Options", "FAR exclusions", REFER, f"{float(s.get('far_excluded_m2') or 0):,.0f} m² is excluded from FAR, as you entered it. Confirm it against the design.", option=name, value=s.get("far_excluded_m2")))
+        else:
+            out.append(_check("option.far_exclusions", "Options", "FAR exclusions", REFER, "No exclusions were entered, so all floor area counts towards FAR. Enter parking and core areas where the rule allows them.", option=name))
+    return out
+
+
 def project_checks(site: dict, profile: Optional[dict] = None, scenarios: Optional[list[dict]] = None) -> list[dict]:
     rule = load_statewide_rules()["rera"]
     area = float(site.get("site_area_m2") or 0)

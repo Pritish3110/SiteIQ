@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { PlotCanvas } from "../components/PlotCanvas";
 import { StatusMark, StatusTag } from "../components/StatusMark";
 import { Note, Panel, Segmented } from "../components/ui";
@@ -10,7 +10,7 @@ import type { Check, CheckStatus, Report } from "../lib/types";
 
 const ORDER: CheckStatus[] = ["FAIL", "NEEDS_INPUT", "REFER", "NOT_CONFIGURED", "PASS"];
 const EXPORTS = [
-  ["report-pdf", "Client report", "PDF, A4 landscape"], ["board-pdf", "Comparison board", "PDF, A3 landscape"], ["report-pptx", "Editable report", "PowerPoint"],
+  ["report-pdf", "Client report", "PDF, plain English"], ["technical-pdf", "Architect's report", "PDF, trace and register"], ["board-pdf", "Comparison board", "PDF, A3 landscape"], ["report-pptx", "Editable report", "PowerPoint"],
   ["board-pptx", "Editable board", "PowerPoint, A3"], ["envelopes-dxf", "Boundary and envelopes", "DXF, layered"], ["assessment-json", "Full assessment", "JSON"],
 ] as const;
 
@@ -30,7 +30,7 @@ export function Verdict({ report }: { report: Report }) {
   );
 }
 
-export function DossierStep({ study, report, payload, stale, missing }: { study: Study; report: Report | null; payload: unknown; stale: boolean; missing: string[] }) {
+export function DossierStep({ study, report, payload, stale, missing, revisionPanel }: { study: Study; report: Report | null; payload: unknown; stale: boolean; missing: string[]; revisionPanel?: ReactNode }) {
   const [filter, setFilter] = useState<"open" | "all" | "fail">("open");
   const [downloading, setDownloading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,18 +46,18 @@ export function DossierStep({ study, report, payload, stale, missing }: { study:
     try { await api.download(kind, payload); } catch (e) { setError((e as Error).message); } finally { setDownloading(null); }
   }
   const capacity = report.maximum_far_area_m2;
-  const widest = Math.max(capacity ?? 0, ...report.scenarios.map((s) => s.gross_concept_area_m2 ?? 0), 1);
+  const widest = Math.max(capacity ?? 0, ...report.scenarios.map((s) => s.far_counted_area_m2 ?? s.gross_concept_area_m2 ?? 0), 1);
 
   return (
     <div className="space-y-14">
       <Verdict report={report} />
       <Panel title="Options compared" aside={capacity != null ? <span className="font-mono text-xs">Base capacity {area(capacity)}</span> : <span className="text-xs text-soft">No FAR benchmark</span>}>
         <div className="overflow-x-auto scroll-quiet">
-          <table className="w-full min-w-[860px] text-left text-[13px]" data-testid="comparison">
-            <thead><tr className="border-b border-rule">{["Option", "Height", "Floors", "Setbacks", "Footprint", "Floor area", "FAR used", "Against capacity", "Remaining"].map((h, i) => <th key={h} scope="col" className={`mono-label pb-2 pl-3 font-normal first:pl-0 ${i === 3 || i === 0 || i === 7 ? "" : "text-right"}`}>{h}</th>)}</tr></thead>
+          <table className="w-full min-w-[1000px] text-left text-[13px]" data-testid="comparison">
+            <thead><tr className="border-b border-rule">{["Option", "Height", "Floors", "Setbacks", "Footprint", "Floor area", "Counted", "FAR used", "Against capacity", "Remaining"].map((h, i) => <th key={h} scope="col" className={`mono-label pb-2 pl-3 font-normal first:pl-0 ${i === 3 || i === 0 || i === 8 ? "" : "text-right"}`}>{h}</th>)}</tr></thead>
             <tbody>
               {report.scenarios.map((s, i) => {
-                const gross = s.gross_concept_area_m2 ?? 0;
+                const gross = s.far_counted_area_m2 ?? s.gross_concept_area_m2 ?? 0;
                 const over = (s.scenario_headroom_m2 ?? 0) < -0.5;
                 return (
                   <tr key={i} className="border-b border-rule align-middle">
@@ -65,8 +65,9 @@ export function DossierStep({ study, report, payload, stale, missing }: { study:
                     <td className="text-right font-mono tnum">{s.height_m ?? "—"}</td>
                     <td className="text-right font-mono tnum">{s.floors ?? "—"}</td>
                     <td className="max-w-52 pl-4 pr-2 text-xs text-soft">{s.setback_summary}</td>
-                    <td className="text-right font-mono tnum">{area(s.footprint_m2)}</td>
-                    <td className="text-right font-mono tnum">{area(s.gross_concept_area_m2)}</td>
+                    <td className="whitespace-nowrap pl-3 text-right font-mono tnum">{area(s.footprint_m2)}</td>
+                    <td className="whitespace-nowrap pl-3 text-right font-mono tnum">{area(s.gross_concept_area_m2)}</td>
+                    <td className="whitespace-nowrap pl-3 text-right font-mono tnum">{area(s.far_counted_area_m2)}</td>
                     <td className="text-right font-mono tnum">{ratio(s.achieved_far_ratio)}</td>
                     <td className="w-52 pl-5 pr-3">
                       <div className="relative h-3 border-b border-rule" aria-hidden>
@@ -81,7 +82,7 @@ export function DossierStep({ study, report, payload, stale, missing }: { study:
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-soft">Floor area is footprint × floors. FAR exclusions such as parking, stairs and lift shafts are not modelled, so real FAR will be lower.</p>
+        <p className="mt-3 text-xs text-soft">Counted is floor area less the FAR exclusions you entered and the rule allows. Enter them under each option's FAR details.</p>
       </Panel>
 
       {study.boundary && (
@@ -118,6 +119,7 @@ export function DossierStep({ study, report, payload, stale, missing }: { study:
         </ul>
       </Panel>
 
+      {revisionPanel}
       <Panel title="Issue" aside={stale ? <span className="text-xs">Recalculating. Exports wait for the latest figures.</span> : <span className="font-mono text-[10.5px] text-soft">Set {report.input_fingerprint}</span>}>
         {report.verdict.code !== "READY_FOR_REVIEW" && <div className="mb-5"><Note>Every export carries the status above, so nobody reads it as a sanction-ready study.</Note></div>}
         {error && <div className="mb-5"><Note tone="strong">{error}</Note></div>}

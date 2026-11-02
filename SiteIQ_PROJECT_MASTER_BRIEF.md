@@ -1,3 +1,5 @@
+> **Historical document.** This is the original handover brief for v0.4.7. The file layout, stack and defect list below are out of date. For the current state see `README.md`, `CHANGELOG.md` and `SOURCES.md`.
+
 # SiteIQ — Project Master Brief for Engineering Agent
 
 **Document purpose:** This is the handover brief for an engineering agent taking the existing SiteIQ prototype and turning it into a maintainable, complete application. Read this document together with the existing SiteIQ ZIP/source code before making changes.

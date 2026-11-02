@@ -1,7 +1,7 @@
 {
   "application": {
     "name": "SiteIQ",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "assessment_date": "2026-11-02",
     "profile_status": "PROVISIONAL FAR CANDIDATE. Tables compared on 2026-11-02 with the plan published on the authority's website, but not independently reviewed. Later amendments, jurisdiction, zoning and notified road width still need confirmation.",
     "source_status": "official_source_found_pending_review",
@@ -34,7 +34,19 @@
     "stilt": false,
     "basement": "Not decided",
     "implied_rectangular_area_m2": null,
-    "dimension_difference_pct": null
+    "dimension_difference_pct": null,
+    "road_width_source": null,
+    "authority_confirmed": null,
+    "zone_confirmed": null,
+    "rmp_ring": null,
+    "dwelling_units": null,
+    "average_unit_area_m2": null,
+    "land_status": null,
+    "prior_sanction": null,
+    "area_stated_m2": null,
+    "dimensions_source": null,
+    "statutory_deduction_pct": null,
+    "guidance_value_per_m2": null
   },
   "far": {
     "category": "Residential",
@@ -136,6 +148,9 @@
     "premium_far": {
       "status": "premium_far_plus_tdr_candidate",
       "base_far": 2.75,
+      "premium_only_factor": 0.4,
+      "premium_only_additional_far": 1.1,
+      "premium_only_additional_area_m2": 21614.93,
       "maximum_additional_far_factor": 0.6,
       "additional_far_candidate": 1.65,
       "additional_floor_area_candidate_m2": 32422.4,
@@ -145,7 +160,8 @@
       "conditions": [
         "The 2026 Premium FAR amendment discussed in the Karnataka High Court judgment permits additional FAR up to 0.6 times ordinary FAR under conditions; this is not automatic and requires premium charge/TDR compliance.",
         "For roads >=9 m but <12 m, the judgment says additional FAR is available only through TDR, not Premium FAR charges. For roads >=12 m, the 0.6× additional FAR ceiling requires a combination of Premium FAR and TDR; exact Table 27 charge/premium mix is not configured.",
-        "The judgment identifies amendments for Hoskote, Kanakapura, Anekal, Channapatna, Magadi, Nelamangala, BIAAPA and Ramanagara LPAs. Verify the relevant notification and site eligibility for this exact authority."
+        "The judgment identifies amendments for Hoskote, Kanakapura, Anekal, Channapatna, Magadi, Nelamangala, BIAAPA and Ramanagara LPAs. Verify the relevant notification and site eligibility for this exact authority.",
+        "The 0.4 × Premium-only figure is from commentary on Bengaluru. Confirm that it applies in this planning area."
       ],
       "source": {
         "id": "premium_far_bmr_lpa_2025_2026",
@@ -451,5 +467,291 @@
     },
     "public_sources": [],
     "sample_note": "Rule-profile smoke test only. Road width of 36 m is an explicit illustrative input, not verified for the user's actual Hoskote parcel."
-  }
+  },
+  "parcel_jurisdiction": null,
+  "compliance_checks": [
+    {
+      "id": "jurisdiction.confirmed",
+      "group": "Jurisdiction",
+      "title": "Planning authority",
+      "status": "NEEDS_INPUT",
+      "message": "No official boundary evidence supports this authority. Check the notified planning area, then mark it as confirmed.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "location.resolved",
+      "group": "Jurisdiction",
+      "title": "Site location",
+      "status": "NEEDS_INPUT",
+      "message": "The location was not identified. Run the location lookup or import a georeferenced boundary.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "rule.profile",
+      "group": "Rules",
+      "title": "Rule profile",
+      "status": "REFER",
+      "message": "This profile is compared with the published source documents, but not independently reviewed. Do not freeze a design on it. Hoskote LPA Master Plan 2031 — published plan, review pending",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "rule.zone",
+      "group": "Rules",
+      "title": "Land-use zone",
+      "status": "NEEDS_INPUT",
+      "message": "Check the category against the official land-use map, then mark it as confirmed.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "rule.far",
+      "group": "Rules",
+      "title": "FAR table match",
+      "status": "REFER",
+      "message": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after a 5% deduction (from the configured rule); verify it against the operative plan.",
+      "source": {
+        "id": "hoskote_table5",
+        "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Group Housing, Table 5",
+        "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
+        "document_page": "Zonal Regulations page 36",
+        "clause": "Chapter 1.6, Table 5 — Group housing FAR/coverage and minimum road width",
+        "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+        "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
+      },
+      "option": null,
+      "value": 2.75
+    },
+    {
+      "id": "site.boundary",
+      "group": "Site",
+      "title": "Surveyed boundary",
+      "status": "NEEDS_INPUT",
+      "message": "No boundary is applied, so the area is as typed and no envelope can be drawn.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "site.road",
+      "group": "Site",
+      "title": "Road width source",
+      "status": "NEEDS_INPUT",
+      "message": "Record where the road width came from: notified, surveyed or measured.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "site.conversion",
+      "group": "Site",
+      "title": "Land conversion",
+      "status": "NEEDS_INPUT",
+      "message": "Record whether the land has been converted for non-agricultural use.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "site.prior_sanction",
+      "group": "Site",
+      "title": "Earlier sanctions",
+      "status": "NEEDS_INPUT",
+      "message": "Record whether an earlier sanction or layout exists on this land.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "far.deduction",
+      "group": "FAR",
+      "title": "Net FAR area",
+      "status": "REFER",
+      "message": "Source says FAR is calculated on net plot area after deducting the 5% civic-amenity reservation.",
+      "source": {
+        "id": "hoskote_table5",
+        "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Group Housing, Table 5",
+        "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
+        "document_page": "Zonal Regulations page 36",
+        "clause": "Chapter 1.6, Table 5 — Group housing FAR/coverage and minimum road width",
+        "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+        "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
+      },
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.lake",
+      "group": "Overlays",
+      "title": "Lake or tank",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.drain",
+      "group": "Overlays",
+      "title": "Drain or rajakaluve",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.ht_line",
+      "group": "Overlays",
+      "title": "High-tension power line",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.airport",
+      "group": "Overlays",
+      "title": "Airport height zone",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.heritage",
+      "group": "Overlays",
+      "title": "Protected monument",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.railway",
+      "group": "Overlays",
+      "title": "Railway land",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.defence",
+      "group": "Overlays",
+      "title": "Defence establishment",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.highway",
+      "group": "Overlays",
+      "title": "National or state highway",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.flood_prone",
+      "group": "Overlays",
+      "title": "Flood-prone or low-lying land",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "overlay.road_widening",
+      "group": "Overlays",
+      "title": "Road widening or master-plan road",
+      "status": "NEEDS_INPUT",
+      "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "project.rera",
+      "group": "Approvals",
+      "title": "RERA registration",
+      "status": "REFER",
+      "message": "RERA section 3(2)(a) exempts small projects, but regulators read the 500 m² and 8-apartment limits differently. Confirm registration with Karnataka RERA.",
+      "source": {
+        "id": "rera_2016",
+        "title": "Real Estate (Regulation and Development) Act 2016, section 3(2)(a)",
+        "clause": "Section 3(2)(a)",
+        "status": "Limits taken from secondary commentary, which records conflicting regulator readings.",
+        "url": "https://argus-p.com/papers-publications/thought-paper/rera-regime-the-exemption-conundrum/"
+      },
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "project.accessibility",
+      "group": "Approvals",
+      "title": "Accessibility",
+      "status": "NOT_CONFIGURED",
+      "message": "Detailed accessibility standards are not configured. Check the applicable building bye-laws and NBC 2016.",
+      "source": null,
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "project.services",
+      "group": "Approvals",
+      "title": "Rainwater and solar",
+      "status": "REFER",
+      "message": "Rainwater harvesting is compulsory on plots of 200 m² and above. The plan also sets solar water heater quantities by use; SiteIQ does not size either. Water, sewerage, STP and transformer rules are not configured.",
+      "source": {
+        "id": "base_zr_table4",
+        "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Zonal Regulations, Table 4",
+        "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
+        "document_page": "Zonal Regulations page 35",
+        "clause": "Chapter 1.5, Table 4 — Maximum FAR and road widths for different uses",
+        "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+        "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
+      },
+      "option": null,
+      "value": null
+    },
+    {
+      "id": "project.separation",
+      "group": "Approvals",
+      "title": "Multiple blocks",
+      "status": "NOT_CONFIGURED",
+      "message": "Building separation is not configured for this authority. Each option is assessed as a single block.",
+      "source": null,
+      "option": null,
+      "value": null
+    }
+  ],
+  "verdict": {
+    "code": "INCOMPLETE",
+    "message": "Information is missing, so these figures may change. Complete the open items.",
+    "counts": {
+      "PASS": 0,
+      "FAIL": 0,
+      "NEEDS_INPUT": 17,
+      "NOT_CONFIGURED": 2,
+      "REFER": 5
+    },
+    "total": 24
+  },
+  "input_fingerprint": "4688d28863497d0c"
 }

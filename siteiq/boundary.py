@@ -14,16 +14,19 @@ from dataclasses import dataclass, asdict
 from io import BytesIO, StringIO
 from pathlib import Path
 from typing import Any
+import logging
 import math
 import re
 import zipfile
 import xml.etree.ElementTree as ET
 
 from shapely.geometry import Polygon, LineString, MultiPolygon, GeometryCollection, mapping
-from shapely.ops import unary_union
+from shapely.ops import polygonize, unary_union
 from shapely.validation import explain_validity
 from shapely.ops import transform as shapely_transform
 
+logger = logging.getLogger("siteiq.boundary")
+MAX_JOINED_CANDIDATES = 12
 MAX_XML_BYTES = 50 * 1024 * 1024
 MAX_KMZ_UNCOMPRESSED_BYTES = 100 * 1024 * 1024
 DEFAULT_MIN_CLEAR_WIDTH_M = 6.0  # Screening aid only; not a statutory value.
@@ -122,14 +125,24 @@ def parse_dxf(data: bytes) -> tuple[list[dict], dict]:
     candidates: list[BoundaryCandidate] = []
     ignored_open = 0
     curve_notes = 0
-    for entity in modelspace:
+    loose: dict[str, list[list[tuple[float, float]]]] = {}
+    flat_step = max((0.02 / scale) if scale else 0.01, 1e-6)
+    for entity in _dxf_entities(modelspace):
         kind = entity.dxftype()
+        if kind in {"LINE", "ARC"}:
+            try:
+                points = [(v.x, v.y) for v in make_path(entity).flattening(distance=flat_step, segments=8)]
+                loose.setdefault(entity.dxf.layer, []).append(points)
+            except Exception:
+                logger.warning("Could not read a DXF %s.", kind, exc_info=True)
+            continue
         if kind not in {"LWPOLYLINE", "POLYLINE"}:
             continue
         try:
             is_closed = bool(entity.closed if kind == "LWPOLYLINE" else entity.is_closed)
             if not is_closed:
                 ignored_open += 1
+                loose.setdefault(entity.dxf.layer, []).append([(v.x, v.y) for v in make_path(entity).flattening(distance=flat_step, segments=8)])
                 continue
             path = make_path(entity)
             # Flatten arcs in a polyline so the boundary remains polygonal for calculation.
@@ -152,23 +165,61 @@ def parse_dxf(data: bytes) -> tuple[list[dict], dict]:
                 candidates.append(cand)
         except Exception:
             continue
+    joined = 0
+    join_tolerance = (0.01 / scale) if scale else 0.01  # 10 mm where the drawing states its units.
+    for layer, segments in loose.items():
+        for ring, count in _rings_from_linework(segments, join_tolerance):
+            cand = _candidate(ring, f"j{joined}", f"Joined linework · layer {layer}", "dxf", unit_name, scale, True, layer, None, f"Joined from {count} separate lines on this layer. Check that the outline follows the legal boundary.")
+            if cand:
+                candidates.append(cand)
+                joined += 1
     candidates.sort(key=lambda c: _candidate_raw_area(c), reverse=True)
     for i, cand in enumerate(candidates, 1):
         cand.candidate_id = str(i)
     block_refs = sum(1 for e in modelspace if e.dxftype() == "INSERT")
     meta = {
-        "format": "DXF", "block_references_not_read": block_refs, "insunits_code": insunits, "units": unit_name,
+        "format": "DXF", "block_references_read": block_refs, "joined_outlines": joined, "insunits_code": insunits, "units": unit_name,
         "scale_to_m": scale, "open_polylines_ignored": ignored_open,
         "curved_polylines_tessellated": curve_notes,
-        "warnings": ["Only closed LWPOLYLINE/POLYLINE entities are extracted. Put the site boundary on a clear layer and make it a closed polyline."]
+        "warnings": ["Closed polylines are read directly, and loose lines and arcs are joined into outlines layer by layer. A clear layer with a closed polyline gives the most reliable result."]
     }
-    if ignored_open:
-        meta["warnings"].append(f"{ignored_open} open polyline(s) were ignored.")
+    if joined:
+        meta["warnings"].append(f"{joined} outline(s) were joined from separate lines. Check each one before using it.")
     if block_refs:
-        meta["warnings"].append(f"{block_refs} block reference(s) were not read. Explode the site boundary if it sits inside a block.")
+        meta["warnings"].append(f"{block_refs} block reference(s) were opened and read.")
     if scale is None:
         meta["warnings"].append("DXF has unitless/unknown units. Calibrate from a known boundary edge or select the drawing units before calculating area.")
     return [c.to_dict() if hasattr(c, "to_dict") else c for c in candidates], meta
+
+
+def _rings_from_linework(segments: list[list[tuple[float, float]]], tolerance: float) -> list[tuple[list[tuple[float, float]], int]]:
+    """Join separate lines into closed rings. Ends within the tolerance are treated as meeting."""
+    if len(segments) < 3 or tolerance <= 0:
+        return []
+    snap = lambda p: (round(p[0] / tolerance) * tolerance, round(p[1] / tolerance) * tolerance)
+    lines = []
+    for segment in segments:
+        points = _dedupe_consecutive([snap(p) for p in segment])
+        if len(points) >= 2:
+            lines.append(LineString(points))
+    rings = []
+    for polygon in polygonize(unary_union(lines)):
+        if polygon.area > tolerance * tolerance * 100:
+            rings.append((list(polygon.exterior.coords)[:-1], len(lines)))
+    rings.sort(key=lambda r: Polygon(r[0]).area, reverse=True)
+    return rings[:MAX_JOINED_CANDIDATES]
+
+
+def _dxf_entities(modelspace, depth: int = 0):
+    """Yield drawing entities, opening block references so a boundary inside a block can be found."""
+    for entity in modelspace:
+        if entity.dxftype() == "INSERT" and depth < 4:
+            try:
+                yield from _dxf_entities(entity.virtual_entities(), depth + 1)
+            except Exception:
+                logger.warning("Could not open a DXF block reference.", exc_info=True)
+        else:
+            yield entity
 
 
 def _candidate_raw_area(candidate: BoundaryCandidate) -> float:
@@ -415,9 +466,24 @@ def parse_pdf(data: bytes, max_pages: int = 6) -> tuple[list[dict], dict]:
     candidates: list[BoundaryCandidate] = []
     candidate_index = 0
     pages_checked = min(len(doc), max_pages)
+    joined = 0
     for page_i in range(pages_checked):
         page = doc[page_i]
-        for drawing_i, drawing in enumerate(page.get_drawings(), 1):
+        loose: list[list[tuple[float, float]]] = []
+        drawings = page.get_drawings()
+        for drawing in drawings:
+            for item in drawing.get("items", []):
+                if item and item[0] == "l":
+                    loose.append([(float(item[1].x), -float(item[1].y)), (float(item[2].x), -float(item[2].y))])
+        for ring, count in _rings_from_linework(loose, 0.75):
+            if len(ring) < 3:
+                continue
+            candidate_index += 1
+            cand = _candidate(ring, candidate_index, f"PDF page {page_i+1} · joined linework", "pdf", "PDF points (72 points = 1 inch on source page)", None, True, "", page_i+1, f"Joined from {count} separate lines. Check that the outline follows the legal boundary.")
+            if cand:
+                candidates.append(cand)
+                joined += 1
+        for drawing_i, drawing in enumerate(drawings, 1):
             parsed = _pdf_drawing_points(drawing)
             if parsed is None:
                 continue
@@ -438,7 +504,7 @@ def parse_pdf(data: bytes, max_pages: int = 6) -> tuple[list[dict], dict]:
     meta = {
         "format": "PDF vector geometry", "units": "PDF points (needs scale calibration)", "scale_to_m": None,
         "pages_checked": pages_checked, "warnings": [
-            "Only simple vector line paths, rectangles and quadrilaterals are extracted in this version.",
+            "Vector lines, rectangles and quadrilaterals are read, and separate lines on a page are joined into outlines. Curves are not read.",
             "Raster/scanned PDFs do not expose parcel lines as vector geometry and need DXF/KML input or a manual tracing workflow.",
             "A scale calibration is mandatory: PDF page units do not establish real-world dimensions by themselves."
         ]
@@ -570,6 +636,7 @@ def _setback_zone(ring: list[tuple[float, float]], distances: list[float]):
 def calculate_setback_envelope(
     poly: Polygon, setback_result: dict, front_edges: list[int] | None = None, rear_edges: list[int] | None = None,
     edge_extra_m: dict[int, float] | None = None, min_clear_width_m: float = DEFAULT_MIN_CLEAR_WIDTH_M,
+    left_edges: list[int] | None = None, right_edges: list[int] | None = None,
 ) -> dict:
     """Calculate a preliminary inner polygon for an option.
 
@@ -609,9 +676,24 @@ def calculate_setback_envelope(
             return {"status": "edge_role_conflict", "message": "An edge cannot be both front and rear."}
         if any(i < 0 or i >= n for i in front_set | rear_set):
             return {"status": "edge_index_invalid", "message": "A selected frontage/rear edge number does not match the imported boundary."}
-        # Left and right are not tagged per edge, so the greater side distance applies to every side edge.
+        left_set, right_set = set(left_edges or []), set(right_edges or [])
+        if (left_set | right_set) & (front_set | rear_set) or left_set & right_set:
+            return {"status": "edge_role_conflict", "message": "An edge can only have one role."}
+        if any(i < 0 or i >= n for i in left_set | right_set):
+            return {"status": "edge_index_invalid", "message": "A selected left or right edge number does not match the imported boundary."}
+        # A side edge not tagged left or right takes the greater side distance, which is the cautious reading.
         side = max(float(setback_result["left_m"]), float(setback_result["right_m"]))
-        base = [float(setback_result["front_m"]) if i in front_set else float(setback_result["rear_m"]) if i in rear_set else side for i in range(n)]
+        def edge_distance(i: int) -> float:
+            if i in front_set:
+                return float(setback_result["front_m"])
+            if i in rear_set:
+                return float(setback_result["rear_m"])
+            if i in left_set:
+                return float(setback_result["left_m"])
+            if i in right_set:
+                return float(setback_result["right_m"])
+            return side
+        base = [edge_distance(i) for i in range(n)]
     distances = [base[i] + extras.get(i, 0.0) for i in range(n)]
     ccw = poly.exterior.is_ccw
     ring = pts if ccw else pts[::-1]

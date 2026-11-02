@@ -31,6 +31,25 @@ export function OptionsStep({ study, set, report }: { study: Study; set: (p: Par
                     <Check label="Stilt floor" checked={option.stilt} onChange={(v) => update(option.id, { stilt: v })} testId={`stilt-${index}`} />
                     <Field label="Stilt height" type="number" unit="m" value={option.stiltHeight} onChange={(v) => update(option.id, { stiltHeight: v })} disabled={!option.stilt} testId={`stilt-height-${index}`} />
                   </div>
+                  <details className="col-span-2 group/a" data-testid={`far-details-${index}`}>
+                    <summary className="mono-label cursor-pointer list-none hover:text-ink"><span className="inline-block transition-transform group-open/a:rotate-90">›</span> FAR exclusions and floor schedule</summary>
+                    <div className="mt-4 grid grid-cols-2 gap-4">
+                      <Field label="Core, per floor" type="number" unit="m²" value={option.corePerFloor ?? ""} onChange={(v) => update(option.id, { corePerFloor: v })} testId={`core-${index}`} hint="Stairs, lifts and ducts, where the rule allows." />
+                      <Field label="Parking, in total" type="number" unit="m²" value={option.parking ?? ""} onChange={(v) => update(option.id, { parking: v })} testId={`parking-${index}`} hint="Parking inside the floor area." />
+                    </div>
+                    <div className="mt-5 space-y-3">
+                      {(option.schedule ?? []).map((row, r) => (
+                        <div key={r} className="grid grid-cols-[1.3fr_0.7fr_1fr_auto] items-end gap-3" data-testid={`schedule-row-${index}-${r}`}>
+                          <Field label="Level" value={row.name} placeholder="Typical" onChange={(v) => update(option.id, { schedule: option.schedule.map((x, i) => (i === r ? { ...x, name: v } : x)) })} />
+                          <Field label="Floors" type="number" value={row.floors} onChange={(v) => update(option.id, { schedule: option.schedule.map((x, i) => (i === r ? { ...x, floors: v } : x)) })} testId={`schedule-floors-${index}-${r}`} />
+                          <Field label="Area each" type="number" unit="m²" value={row.area} onChange={(v) => update(option.id, { schedule: option.schedule.map((x, i) => (i === r ? { ...x, area: v } : x)) })} testId={`schedule-area-${index}-${r}`} />
+                          <button type="button" aria-label={`Remove level ${r + 1}`} className="pb-2 font-mono text-xs text-soft hover:text-ink" onClick={() => update(option.id, { schedule: option.schedule.filter((_, i) => i !== r) })}>×</button>
+                        </div>
+                      ))}
+                      <button type="button" data-testid={`add-level-${index}`} className="text-[13px] underline underline-offset-4" onClick={() => update(option.id, { schedule: [...(option.schedule ?? []), { name: "", floors: "", area: "" }] })}>Add a level</button>
+                      {(option.schedule ?? []).length > 0 && <p className="text-xs text-soft">The schedule replaces footprint × floors for this option.</p>}
+                    </div>
+                  </details>
                   <details className="col-span-2 group">
                     <summary className="mono-label cursor-pointer list-none hover:text-ink"><span className="inline-block transition-transform group-open:rotate-90">›</span> What-if setbacks</summary>
                     <div className="mt-4 grid grid-cols-3 gap-4">

@@ -1,3 +1,7 @@
+"""Older Streamlit interface. The React app in frontend/ is the main one, and both share siteiq/service.py.
+
+Remove this file, requirements-dev.txt's Streamlit and pandas entries, and its tests once architect testing of the React app is complete.
+"""
 from __future__ import annotations
 import hashlib
 import json

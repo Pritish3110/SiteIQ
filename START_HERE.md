@@ -31,8 +31,23 @@ Work through the sheets on the left. Figures update as you type.
 ## Without Node.js or for the older interface
 `python -m streamlit run app.py` starts the Streamlit interface. It uses the same calculations.
 
+## Saving your work
+Studies save automatically in your browser and appear under Recent. **Save project file** writes a `.siteiq` file you can back up or send to a colleague. Under **Revisions** on the dossier sheet, save a revision before changing anything to see exactly what moved.
+
+## Sign off a rule profile
+After a registered architect has reviewed a profile:
+```bash
+python -m siteiq.rule_admin validate
+python -m siteiq.rule_admin sign-off hoskote_lpa2031_candidate --reviewer "Name, CoA no." --note "What was checked"
+```
+Update `tests/test_reliability.py` (`test_no_shipped_profile_claims_verified_status`) in the same commit. It is there to stop a profile being marked verified by accident.
+
+## Add an authority
+Copy a file such as `rules/hoskote_lpa2031_candidate.json`, enter that plan's tables with their sources, link it in `rules/authority_registry.json` and `rules/authority_coverage_matrix.csv`, then run the validate command.
+
 ## Run the tests
 ```bash
+pip install -r requirements-dev.txt
 python -m pytest -q
 cd frontend && npm test && npx playwright test
 ```

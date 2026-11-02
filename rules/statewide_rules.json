@@ -69,5 +69,17 @@
       "status": "Limits taken from secondary commentary, which records conflicting regulator readings.",
       "url": "https://argus-p.com/papers-publications/thought-paper/rera-regime-the-exemption-conundrum/"
     }
+  },
+  "premium_far_charge": {
+    "pct_of_guidance_on_notional_site": 50,
+    "minimum_pct_of_guidance_per_m2_built": 28,
+    "note": "Estimate only: 50% of guidance value on the notional additional site area, and at least 28% of guidance value per m² of extra built area. TDR cost and other fees are not included.",
+    "source": {
+      "id": "premium_far_gazette",
+      "title": "Karnataka Premium FAR rules, gazette text as quoted in published search results",
+      "clause": "Premium FAR charges",
+      "status": "Read from a quoted excerpt. The gazette link has since gone dead, so confirm the current rate.",
+      "url": "https://data.opencity.in/dataset/bengaluru-floor-area-ratio-far-rules-notification-2025/resource/ee9259b2-3bbf-407f-8868-7ef6daa7318f"
+    }
   }
 }

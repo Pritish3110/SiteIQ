@@ -27,7 +27,7 @@ def test_client_pdf_is_generated():
 def test_client_pptx_has_five_client_facing_slides():
     pptx = build_pptx_report(sample_report())
     prs = Presentation(BytesIO(pptx))
-    assert len(prs.slides) == 5
+    assert len(prs.slides) == 6  # Five client slides, plus the separate Premium FAR slide.
     texts = []
     for shape in prs.slides[2].shapes:
         if getattr(shape, "has_text_frame", False):
@@ -94,8 +94,8 @@ def test_exporters_include_auto_identification_provenance():
     all_text = "\n".join(page.get_text() for page in doc)
     assert "Location auto-identification record" in all_text
     assert "Official land-use polygon layer not installed" in all_text
-    assert len(doc) == 4, "Auto-ID appendix should not orphan the closing note onto a mostly blank page."
-    assert "not a sanction report" in doc[-1].get_text().lower()
+    assert len(doc) == 6, "Auto-ID appendix should not orphan the closing note onto a mostly blank page."
+    assert "not a sanction report" in all_text.lower()
     doc.close()
     prs = Presentation(BytesIO(build_pptx_report(report)))
     ppt_text = "\n".join(shape.text for slide in prs.slides for shape in slide.shapes if getattr(shape, "has_text_frame", False))

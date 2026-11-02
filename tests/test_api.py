@@ -74,7 +74,7 @@ def test_full_flow_with_boundary_and_every_export():
     report = client.post("/api/assess", json=payload).json()
     assert report["boundary_analysis"]["options"][0]["envelope"]["status"] == "calculated_preliminary"
     assert report["verdict"]["total"] > 20
-    for kind, magic in {"report-pdf": b"%PDF", "board-pdf": b"%PDF", "report-pptx": b"PK", "board-pptx": b"PK"}.items():
+    for kind, magic in {"report-pdf": b"%PDF", "technical-pdf": b"%PDF", "board-pdf": b"%PDF", "report-pptx": b"PK", "board-pptx": b"PK"}.items():
         response = client.post(f"/api/export/{kind}", json=payload)
         assert response.status_code == 200 and response.content.startswith(magic)
         assert response.headers["x-siteiq-fingerprint"] == report["input_fingerprint"]
@@ -91,7 +91,8 @@ def test_export_values_match_the_assessment():
     import fitz
     payload = body()
     report = client.post("/api/assess", json=payload).json()
-    pdf = fitz.open(stream=client.post("/api/export/report-pdf", json=payload).content, filetype="pdf")
-    text = " ".join(page.get_text() for page in pdf)
-    assert f"{report['maximum_far_area_m2']:,.0f}" in text
-    assert "COMPLIANCE REGISTER" in text
+    read = lambda kind: " ".join(page.get_text() for page in fitz.open(stream=client.post(f"/api/export/{kind}", json=payload).content, filetype="pdf"))
+    technical, client_report = read("technical-pdf"), read("report-pdf")
+    assert f"{report['maximum_far_area_m2']:,.0f}" in technical and f"{report['maximum_far_area_m2']:,.0f}" in client_report
+    assert "COMPLIANCE REGISTER" in technical and "CALCULATION TRACE" in technical
+    assert "COMPLIANCE REGISTER" not in client_report and "Still open" in client_report

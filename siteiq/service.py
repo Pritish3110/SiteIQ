@@ -10,11 +10,11 @@ import math
 from typing import Any, Optional
 
 from shapely.affinity import rotate
-from shapely.geometry import Polygon
+from shapely.geometry import LineString, Polygon
 
 from .boundary import DEFAULT_MIN_CLEAR_WIDTH_M, calculate_setback_envelope
-from .checks import jurisdiction_checks, option_checks, overlay_checks, project_checks, rule_checks, site_checks, summarise
-from .engine import build_report, find_authority, load_authority_registry, load_rule_profile
+from .checks import calculation_checks, jurisdiction_checks, option_checks, overlay_checks, project_checks, rule_checks, site_checks, summarise
+from .engine import build_report, far_counted_area, find_authority, load_authority_registry, load_rule_profile, load_statewide_rules
 from .location import parcel_jurisdiction_diagnostics
 
 
@@ -41,6 +41,64 @@ def nominal_dimensions(poly: Polygon, front_edges: list[int]) -> tuple[Optional[
     return round(maxx - minx, 3), round(maxy - miny, 3)
 
 
+def dimension_range(poly: Polygon, front_edges: list[int], stations: int = 41) -> Optional[dict]:
+    """Measure plot depth and width at stations across the plot, relative to the first road edge."""
+    if not front_edges:
+        return None
+    coords = list(poly.exterior.coords)[:-1]
+    index = int(front_edges[0])
+    if not 0 <= index < len(coords):
+        return None
+    a, b = coords[index], coords[(index + 1) % len(coords)]
+    turned = rotate(poly, -math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])), origin=a)
+    minx, miny, maxx, maxy = turned.bounds
+    def spans(make_line, low, high):
+        values = []
+        for i in range(1, stations):
+            at = low + (high - low) * i / stations
+            hit = turned.intersection(make_line(at))
+            if not hit.is_empty and hit.length > 0:
+                values.append(hit.length)
+        return values
+    depths = spans(lambda x: LineString([(x, miny - 1), (x, maxy + 1)]), minx, maxx)
+    widths = spans(lambda y: LineString([(minx - 1, y), (maxx + 1, y)]), miny, maxy)
+    if not depths or not widths:
+        return None
+    return {"depth_min_m": round(min(depths), 2), "depth_max_m": round(max(depths), 2), "width_min_m": round(min(widths), 2), "width_max_m": round(max(widths), 2)}
+
+
+def road_widening_effect(boundary: dict, site: dict, far: dict) -> Optional[dict]:
+    """Land a declared widening takes, and the FAR capacity if the authority does not count that land."""
+    item = (site.get("overlays") or {}).get("road_widening") or {}
+    if item.get("status") != "present" or item.get("edge") is None or not item.get("extra_setback_m"):
+        return None
+    parcel = parcel_from_boundary(boundary)
+    coords = list(parcel.exterior.coords)[:-1]
+    edge, depth = int(item["edge"]), float(item["extra_setback_m"])
+    if not 0 <= edge < len(coords):
+        return None
+    remaining = calculate_setback_envelope(parcel, {"all_round_m": 0.0}, edge_extra_m={edge: depth})
+    taken = round(parcel.area - float(remaining.get("area_m2") or 0), 2)
+    result = {"edge": edge, "depth_m": depth, "area_taken_m2": taken}
+    if far.get("maximum_far") is not None:
+        far_area = float(far.get("far_calculation_area_m2") or 0)
+        result["capacity_if_land_excluded_m2"] = round(max(far_area - taken, 0) * float(far["maximum_far"]), 2)
+    return result
+
+
+def premium_charge_estimate(far: dict, guidance_value: Optional[float]) -> Optional[dict]:
+    """Rough Premium FAR charge from the gazetted formula, for the Premium-only allowance."""
+    premium = far.get("premium_far") or {}
+    additional = premium.get("premium_only_additional_area_m2")
+    if not additional or not guidance_value or not far.get("maximum_far"):
+        return None
+    rule = load_statewide_rules()["premium_far_charge"]
+    notional_site = float(additional) / float(far["maximum_far"])
+    by_site = notional_site * float(guidance_value) * rule["pct_of_guidance_on_notional_site"] / 100
+    floor = float(additional) * float(guidance_value) * rule["minimum_pct_of_guidance_per_m2_built"] / 100
+    return {"guidance_value_per_m2": float(guidance_value), "additional_area_m2": float(additional), "notional_site_area_m2": round(notional_site, 2), "estimated_charge_inr": round(max(by_site, floor)), "note": rule["note"], "source": rule["source"]}
+
+
 def _overlay_edge_extras(site: dict) -> dict[int, float]:
     """Combine declared no-build depths per edge; the deepest constraint on an edge governs."""
     extras: dict[int, float] = {}
@@ -51,19 +109,21 @@ def _overlay_edge_extras(site: dict) -> dict[int, float]:
     return extras
 
 
-def attach_boundary_analysis(report: dict, boundary: dict, site: dict, far_area: float, coverage_pct: Optional[float]) -> None:
+def attach_boundary_analysis(report: dict, boundary: dict, site: dict, far_area: float, coverage_pct: Optional[float], far_exclusions: Optional[dict] = None) -> None:
     """Add envelopes, then derive any missing footprint without exceeding envelope or coverage."""
     parcel = parcel_from_boundary(boundary)
     front_edges = boundary.get("front_edges", [])
     rear_edges = boundary.get("rear_edges", [])
+    left_edges = boundary.get("left_edges", [])
+    right_edges = boundary.get("right_edges", [])
     extras = _overlay_edge_extras(site)
     area = float(site["site_area_m2"])
     options = []
     for opt in report.get("scenarios", []):
-        env = calculate_setback_envelope(parcel, opt.get("setback_result", {}), front_edges, rear_edges, extras)
+        env = calculate_setback_envelope(parcel, opt.get("setback_result", {}), front_edges, rear_edges, extras, left_edges=left_edges, right_edges=right_edges)
         opt["boundary_envelope"] = env
         if int(opt.get("basement_levels", 0) or 0) > 0:
-            basement = calculate_setback_envelope(parcel, opt.get("basement_setback_result", {}), front_edges, rear_edges, extras)
+            basement = calculate_setback_envelope(parcel, opt.get("basement_setback_result", {}), front_edges, rear_edges, extras, left_edges=left_edges, right_edges=right_edges)
         else:
             basement = {"status": "no_basement", "message": "No basement selected for this option.", "area_m2": None, "geometry": None}
         opt["basement_boundary_envelope"] = basement
@@ -76,13 +136,15 @@ def attach_boundary_analysis(report: dict, boundary: dict, site: dict, far_area:
             floors = opt.get("floors")
             if floors:
                 opt["gross_concept_area_m2"] = round(opt["footprint_m2"] * int(floors), 2)
-                ratio = round(opt["gross_concept_area_m2"] / far_area, 3) if far_area > 0 else None
+                counted = far_counted_area(opt["gross_concept_area_m2"], floors, opt.get("core_excluded_per_floor_m2"), opt.get("parking_excluded_m2"), far_exclusions)
+                opt.update(counted)
+                ratio = round(counted["far_counted_area_m2"] / far_area, 3) if far_area > 0 else None
                 opt["achieved_gross_far_ratio"] = ratio
                 opt["achieved_far_ratio"] = ratio
                 cap = opt.get("far_capacity_m2")
-                opt["scenario_headroom_m2"] = round(cap - opt["gross_concept_area_m2"], 2) if cap is not None else None
+                opt["scenario_headroom_m2"] = round(cap - counted["far_counted_area_m2"], 2) if cap is not None else None
         elif opt.get("footprint_m2") is not None and env_area is not None:
-            opt["footprint_source"] = "user-entered design footprint"
+            opt["footprint_source"] = "floor schedule" if opt.get("floor_schedule") else "user-entered design footprint"
             opt["footprint_exceeds_envelope"] = float(opt["footprint_m2"]) > float(env_area) + 0.5
             if opt["footprint_exceeds_envelope"]:
                 opt["envelope_warning"] = "Entered footprint is larger than the calculated preliminary setback envelope. Reduce footprint or inspect geometry."
@@ -95,7 +157,7 @@ def attach_boundary_analysis(report: dict, boundary: dict, site: dict, far_area:
         "vertex_count": boundary.get("vertex_count"), "is_convex": boundary.get("is_convex"), "hole_count": len(boundary.get("holes_m") or []),
         "validation_status": boundary.get("validation_status"), "validation_notes": boundary.get("validation_notes", []),
         "use_computed_area": boundary.get("use_computed_area", True),
-        "front_edges": front_edges, "rear_edges": rear_edges, "edge_no_build_m": {str(k): v for k, v in extras.items()},
+        "front_edges": front_edges, "rear_edges": rear_edges, "left_edges": left_edges, "right_edges": right_edges, "dimension_range": dimension_range(parcel, front_edges), "edge_no_build_m": {str(k): v for k, v in extras.items()},
         "min_clear_width_m": DEFAULT_MIN_CLEAR_WIDTH_M,
         "geometry": {"type": "Polygon", "coordinates": [[list(p) for p in parcel.exterior.coords]] + [[list(p) for p in r.coords] for r in parcel.interiors]},
         "options": options,
@@ -133,9 +195,13 @@ def assess(payload: dict, registry: Optional[dict] = None) -> dict:
     coverage_pct = (far.get("coverage") or {}).get("coverage_pct")
     report["location_identification"] = location
     report["parcel_jurisdiction"] = parcel_diagnostics
-    report["site"].update({k: site.get(k) for k in ("road_width_source", "authority_confirmed", "zone_confirmed", "rmp_ring", "dwelling_units", "average_unit_area_m2", "land_status", "prior_sanction", "area_stated_m2", "dimensions_source", "statutory_deduction_pct")})
+    report["site"].update({k: site.get(k) for k in ("road_width_source", "authority_confirmed", "zone_confirmed", "rmp_ring", "dwelling_units", "average_unit_area_m2", "land_status", "prior_sanction", "area_stated_m2", "dimensions_source", "statutory_deduction_pct", "guidance_value_per_m2")})
     if boundary:
-        attach_boundary_analysis(report, boundary, site, far_area, coverage_pct)
+        attach_boundary_analysis(report, boundary, site, far_area, coverage_pct, (profile or {}).get("far_exclusions"))
+        report["road_widening"] = road_widening_effect(boundary, site, far)
+    charge = premium_charge_estimate(far, site.get("guidance_value_per_m2"))
+    if charge:
+        far["premium_far"]["charge_estimate"] = charge
 
     checks = jurisdiction_checks(site, authority, location, parcel_diagnostics)
     checks += rule_checks(site, profile, far, float(site["site_area_m2"]), float(site["road_width_m"]))
@@ -143,6 +209,7 @@ def assess(payload: dict, registry: Optional[dict] = None) -> dict:
     checks += overlay_checks(site, authority, profile)
     for scenario in report.get("scenarios", []):
         checks += option_checks(site, profile, far, scenario, report.get("boundary_analysis"))
+    checks += calculation_checks(report)
     checks += project_checks(site, profile, report.get("scenarios", []))
     report["compliance_checks"] = checks
     report["verdict"] = summarise(checks)

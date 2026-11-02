@@ -598,3 +598,142 @@ def test_lpa_rainwater_threshold(authority, area, expected):
 def test_attached_house_rule_is_shown_for_villas():
     report = assess(payload(authority_key="kanakapura_planning_authority", land_use_category="Residential", proposed_use="Individual house / villa"))
     assert "210 m²" in check(report, "project.typology")["message"]
+
+
+# Calculation gaps closed in v0.7
+ROOM = [[0, 0], [100, 0], [100, 80], [0, 80]]
+
+
+def room_boundary(**extra):
+    return {"points_m": ROOM, "holes_m": [], "area_m2": 8000.0, "perimeter_m": 360.0, "vertex_count": 4, "is_convex": True, "use_computed_area": True, "front_edges": [0], "rear_edges": [2], **extra}
+
+
+def test_exclusions_reduce_counted_area_and_keep_gross_for_parking_and_eia():
+    report = assess(payload(scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 1000, "core_excluded_per_floor_m2": 50, "parking_excluded_m2": 300}]))
+    option = report["scenarios"][0]
+    assert option["gross_concept_area_m2"] == 4000 and option["far_excluded_m2"] == 500 and option["far_counted_area_m2"] == 3500
+    assert option["achieved_far_ratio"] == pytest.approx(3500 / 2200, abs=0.001)
+    assert option["scenario_headroom_m2"] == pytest.approx(report["maximum_far_area_m2"] - 3500)
+    assert check(report, "option.parking", "A")["status"] in {"NEEDS_INPUT", "REFER"}
+
+
+def test_core_exclusion_is_refused_where_the_plan_does_not_list_it():
+    report = assess(payload(authority_key="kanakapura_planning_authority", land_use_category="Residential", scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 400, "core_excluded_per_floor_m2": 50, "parking_excluded_m2": 100}]))
+    option = report["scenarios"][0]
+    assert option["far_excluded_m2"] == 100 and option["far_exclusion_refused_m2"] == 200
+    assert "not deducted" in check(report, "option.far_exclusions", "A")["message"]
+
+
+def test_exclusions_never_exceed_floor_area():
+    report = assess(payload(scenarios=[{"name": "A", "height_m": 3, "floors": 1, "footprint_m2": 100, "parking_excluded_m2": 500}]))
+    assert report["scenarios"][0]["far_counted_area_m2"] == 0
+
+
+def test_floor_schedule_replaces_footprint_times_floors():
+    report = assess(payload(scenarios=[{"name": "A", "height_m": 15, "floor_schedule": [{"name": "Podium", "floors": 1, "area_m2": 1000}, {"name": "Typical", "floors": 4, "area_m2": 600}]}]))
+    option = report["scenarios"][0]
+    assert option["gross_concept_area_m2"] == 3400 and option["floors"] == 5 and option["footprint_m2"] == 1000
+
+
+def test_exclusions_also_apply_to_a_footprint_derived_from_the_envelope():
+    report = assess(payload(site_area_m2=8000.0, road_width_m=27.0, boundary=room_boundary(), scenarios=[{"name": "A", "height_m": 15, "floors": 2, "parking_excluded_m2": 100}]))
+    option = report["scenarios"][0]
+    assert option["far_counted_area_m2"] == pytest.approx(option["gross_concept_area_m2"] - 100)
+
+
+def test_left_and_right_edges_take_their_own_distance():
+    square = Polygon(ROOM)
+    bounds = shape(calculate_setback_envelope(square, {"front_m": 8.0, "rear_m": 4.0, "left_m": 2.0, "right_m": 5.0}, [0], [2], left_edges=[3], right_edges=[1])["geometry"]).bounds
+    assert bounds == pytest.approx((2, 8, 95, 76))
+
+
+def test_untagged_side_edge_stays_cautious_and_conflicts_are_refused():
+    square = Polygon(ROOM)
+    sb = {"front_m": 8.0, "rear_m": 4.0, "left_m": 2.0, "right_m": 5.0}
+    assert shape(calculate_setback_envelope(square, sb, [0], [2], left_edges=[3])["geometry"]).bounds == pytest.approx((2, 8, 95, 76))
+    assert calculate_setback_envelope(square, sb, [0], [2], left_edges=[0])["status"] == "edge_role_conflict"
+
+
+def test_varying_depth_is_reported_for_percentage_setbacks():
+    wedge = [[0, 0], [40, 0], [40, 80], [0, 40]]
+    poly = Polygon(wedge)
+    boundary = {"points_m": wedge, "holes_m": [], "area_m2": poly.area, "perimeter_m": poly.length, "vertex_count": 4, "is_convex": True, "use_computed_area": True, "front_edges": [0], "rear_edges": [2]}
+    report = assess(payload(boundary=boundary, scenarios=[{"name": "A", "height_m": 9, "floors": 3, "footprint_m2": 300}]))
+    assert report["boundary_analysis"]["dimension_range"]["depth_max_m"] > report["boundary_analysis"]["dimension_range"]["depth_min_m"]
+    assert check(report, "site.dimensions")["status"] == "REFER"
+
+
+def test_road_widening_reports_area_and_lower_capacity():
+    overlays = {"road_widening": {"status": "present", "edge": 0, "extra_setback_m": 5.0}}
+    report = assess(payload(site_area_m2=8000.0, road_width_m=27.0, boundary=room_boundary(), overlays=overlays))
+    widening = report["road_widening"]
+    assert widening["area_taken_m2"] == pytest.approx(500)
+    assert widening["capacity_if_land_excluded_m2"] == pytest.approx(7500 * report["maximum_far"])
+    assert check(report, "far.road_widening")["status"] == "REFER"
+
+
+@pytest.mark.parametrize("road,status", [(8.0, "road_width_below_configured_threshold"), (10.0, "tdr_only_candidate"), (12.0, "premium_far_plus_tdr_candidate")])
+def test_premium_far_bands(road, status):
+    assert match_far_rule(load_rule_profile(RMP), "Residential (Main)", 2000, road)["premium_far"]["status"] == status
+
+
+def test_premium_only_figure_and_charge_estimate():
+    report = assess(payload(site_area_m2=2000.0, road_width_m=18.0, guidance_value_per_m2=50000.0))
+    premium = report["far"]["premium_far"]
+    assert premium["premium_only_additional_far"] == pytest.approx(0.9)
+    charge = premium["charge_estimate"]
+    assert charge["notional_site_area_m2"] == pytest.approx(800)
+    # 50% of value on 800 m² is 20,000,000; 28% per built m² on 1,800 m² is 25,200,000, so the minimum governs.
+    assert charge["estimated_charge_inr"] == 25200000
+
+
+def test_no_charge_without_a_guidance_value():
+    assert "charge_estimate" not in assess(payload(site_area_m2=2000.0, road_width_m=18.0))["far"]["premium_far"]
+
+
+def _dxf_bytes(build):
+    import ezdxf
+    from io import StringIO
+    doc = ezdxf.new("R2010")
+    doc.header["$INSUNITS"] = 6
+    build(doc)
+    out = StringIO()
+    doc.write(out)
+    return out.getvalue().encode()
+
+
+def test_dxf_loose_lines_on_a_layer_are_joined():
+    from siteiq.boundary import parse_dxf
+    corners = [(0, 0), (30, 0), (30, 20), (0, 20)]
+    def build(doc):
+        for a, b in zip(corners, corners[1:] + corners[:1]):
+            doc.modelspace().add_line(a, b, dxfattribs={"layer": "SITE"})
+        doc.modelspace().add_line((500, 500), (510, 500), dxfattribs={"layer": "NOTES"})
+    candidates, meta = parse_dxf(_dxf_bytes(build))
+    assert len(candidates) == 1 and meta["joined_outlines"] == 1 and "SITE" in candidates[0]["label"]
+    assert polygon_from_candidate(candidates[0])[1]["area_m2"] == pytest.approx(600)
+
+
+def test_dxf_boundary_inside_a_block_is_found_in_place():
+    from siteiq.boundary import parse_dxf
+    def build(doc):
+        block = doc.blocks.new("PLOT")
+        block.add_lwpolyline([(0, 0), (10, 0), (10, 10), (0, 10)], close=True)
+        doc.modelspace().add_blockref("PLOT", (100, 100), dxfattribs={"xscale": 2, "yscale": 2})
+    candidates, meta = parse_dxf(_dxf_bytes(build))
+    assert len(candidates) == 1 and meta["block_references_read"] == 1
+    poly = polygon_from_candidate(candidates[0])[0]
+    assert poly.area == pytest.approx(400) and poly.bounds[0] == pytest.approx(100)
+
+
+def test_pdf_loose_lines_are_joined():
+    import fitz
+    from siteiq.boundary import parse_pdf
+    doc = fitz.open()
+    page = doc.new_page()
+    corners = [(50, 50), (250, 50), (250, 150), (50, 150)]
+    for a, b in zip(corners, corners[1:] + corners[:1]):
+        page.draw_line(a, b)
+    candidates, _ = parse_pdf(doc.tobytes())
+    joined = [c for c in candidates if "joined" in c["label"]]
+    assert joined and polygon_from_candidate(joined[0], scale_to_m=1.0)[1]["area_m2"] == pytest.approx(20000, rel=0.01)

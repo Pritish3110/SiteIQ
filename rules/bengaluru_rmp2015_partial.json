@@ -74,6 +74,14 @@
       "clause": "Tables 8 and 16; Table 9 notes; Regulations 3.9 and 3.10; Table 10 notes (b) and (c)",
       "status": "Pages 2-6 compared with the configured rules on 2026-11-02.",
       "url": "https://data.opencity.in/dataset/greater-bengaluru-amendment-regulations-2025"
+    },
+    {
+      "id": "premium_far_2026",
+      "title": "Premium FAR amendment effective 5 February 2026, as described in commentary on the June 2026 High Court judgment",
+      "document": "Cyril Amarchand Mangaldas blog, July 2026",
+      "clause": "Additional FAR by road width",
+      "status": "Secondary source. The notification itself has not been read.",
+      "url": "https://corporate.cyrilamarchandblogs.com/2026/07/bengaluru-goes-vertical-green-light-to-premium-far/"
     }
   ],
   "far_table_residential_main": [
@@ -1450,5 +1458,24 @@
       }
     ]
   },
-  "development_plan_note": "RMP 2015 Chapter 7 (Table 20): residential development plan reserves 10% park and at least 5% civic amenity, with FAR calculated after deducting the civic-amenity site only. It does not support a blanket 20% FAR deduction."
+  "development_plan_note": "RMP 2015 Chapter 7 (Table 20): residential development plan reserves 10% park and at least 5% civic amenity, with FAR calculated after deducting the civic-amenity site only. It does not support a blanket 20% FAR deduction.",
+  "far_exclusions": {
+    "core": true,
+    "parking": true,
+    "note": "Regulation 3.4(ii): parking, main stair room, lift shafts and wells, machine rooms, ramps, ducts and overhead tanks.",
+    "source_id": "rmp2015_online_copy"
+  },
+  "premium_far_rule": {
+    "enabled_for_scenario_only": true,
+    "max_additional_far_factor": 0.6,
+    "premium_only_factor": 0.4,
+    "minimum_road_width_m": 9.0,
+    "mixed_premium_tdr_min_road_width_m": 12.0,
+    "source_id": "premium_far_2026",
+    "status": "candidate_opportunity_only",
+    "conditions": [
+      "9 m to under 12 m: up to 0.6 × base FAR through TDR only. 12 m and above: 0.4 × base FAR through Premium FAR alone, or 0.6 × with TDR.",
+      "Areas must be identified in the Zonal Regulations. Confirm that this site qualifies."
+    ]
+  }
 }

@@ -1,11 +1,14 @@
 import { motion } from "motion/react";
-import { Button } from "./ui";
+import { useRef } from "react";
+import type { ProjectSummary } from "../lib/projects";
+import { Button, Note } from "./ui";
 
 const PLOT = "M150 370 L520 410 L600 150 L330 70 L120 130 Z";
 const ENVELOPE = "M185 335 L490 368 L550 178 L335 110 L164 158 Z";
 const draw = (delay: number, duration = 1.6) => ({ initial: { pathLength: 0 }, animate: { pathLength: 1 }, transition: { duration, delay, ease: [0.65, 0, 0.35, 1] as const } });
 
-export function Hero({ version, onStart, onSample, hasDraft, onResume }: { version: string; onStart: () => void; onSample: () => void; hasDraft: boolean; onResume: () => void }) {
+export function Hero({ version, onStart, onSample, onOpenFile, recent, onOpenRecent, onDeleteRecent, openError }: { version: string; onStart: () => void; onSample: () => void; onOpenFile: (file: File) => void; recent: ProjectSummary[]; onOpenRecent: (id: string) => void; onDeleteRecent: (id: string) => void; openError: string | null }) {
+  const fileInput = useRef<HTMLInputElement>(null);
   return (
     <div className="relative flex min-h-full flex-col overflow-hidden bg-sheet">
       <div className="drafting-grid absolute inset-0" aria-hidden />
@@ -24,9 +27,25 @@ export function Hero({ version, onStart, onSample, hasDraft, onResume }: { versi
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-10 flex flex-wrap items-center gap-3">
             <Button onClick={onStart} data-testid="start-study" className="!px-6 !py-3.5 !text-sm">Start a new study</Button>
-            {hasDraft && <Button variant="line" onClick={onResume} data-testid="resume-study" className="!px-6 !py-3.5 !text-sm">Resume your draft</Button>}
+            <Button variant="line" onClick={() => fileInput.current?.click()} data-testid="open-project" className="!px-6 !py-3.5 !text-sm">Open a project file</Button>
+            <input ref={fileInput} data-testid="project-file" type="file" accept=".siteiq,.json" aria-label="Project file" className="sr-only" onChange={(e) => { const f = e.target.files?.[0]; if (f) onOpenFile(f); e.target.value = ""; }} />
             <Button variant="quiet" onClick={onSample} data-testid="load-sample">Open the sample study →</Button>
           </motion.div>
+          {openError && <div className="mt-5 max-w-lg"><Note tone="strong" testId="open-error">{openError}</Note></div>}
+          {recent.length > 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-10 max-w-lg" data-testid="recent-projects">
+              <p className="mono-label mb-2">Recent on this computer</p>
+              <ul className="divide-y divide-rule border-y border-rule">
+                {recent.slice(0, 5).map((p) => (
+                  <li key={p.id} className="flex items-center justify-between gap-4">
+                    <button type="button" className="min-w-0 flex-1 truncate py-2.5 text-left text-[14px] hover:underline" onClick={() => onOpenRecent(p.id)}>{p.name}</button>
+                    <span className="shrink-0 font-mono text-[10.5px] text-soft">{new Date(p.updatedAt).toLocaleDateString("en-IN")}</span>
+                    <button type="button" aria-label={`Remove ${p.name} from this computer`} className="px-1 font-mono text-xs text-soft hover:text-ink" onClick={() => onDeleteRecent(p.id)}>×</button>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
         </div>
         <div className="relative" aria-hidden>
           <svg viewBox="0 0 720 500" className="w-full">

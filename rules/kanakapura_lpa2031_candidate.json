@@ -881,8 +881,10 @@
     "conditions": [
       "The 2026 Premium FAR amendment discussed in the Karnataka High Court judgment permits additional FAR up to 0.6 times ordinary FAR under conditions; this is not automatic and requires premium charge/TDR compliance.",
       "For roads >=9 m but <12 m, the judgment says additional FAR is available only through TDR, not Premium FAR charges. For roads >=12 m, the 0.6× additional FAR ceiling requires a combination of Premium FAR and TDR; exact Table 27 charge/premium mix is not configured.",
-      "The judgment identifies amendments for Hoskote, Kanakapura, Anekal, Channapatna, Magadi, Nelamangala, BIAAPA and Ramanagara LPAs. Verify the relevant notification and site eligibility for this exact authority."
-    ]
+      "The judgment identifies amendments for Hoskote, Kanakapura, Anekal, Channapatna, Magadi, Nelamangala, BIAAPA and Ramanagara LPAs. Verify the relevant notification and site eligibility for this exact authority.",
+      "The 0.4 × Premium-only figure is from commentary on Bengaluru. Confirm that it applies in this planning area."
+    ],
+    "premium_only_factor": 0.4
   },
   "force_minimum_all_round_for_area_above_4000": false,
   "profile_version": "2026-11-02",
@@ -1198,5 +1200,11 @@
   "housing_typology_rule": {
     "source_id": "base_zr_table4",
     "note": "Semi-detached houses need 140 m² of combined plots. Row housing has 3 to 12 units, at least 210 m² combined and at most 108 m² per unit, with setbacks of 2.0 m front, 1.5 m rear and 2.0 m at end units. Coverage and FAR follow the individual plots."
+  },
+  "far_exclusions": {
+    "core": false,
+    "parking": true,
+    "note": "Table 4 note: only effluent treatment plant, open swimming pool and car parking.",
+    "source_id": "base_zr_table4"
   }
 }
