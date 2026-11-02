@@ -403,6 +403,18 @@
       "label": "Industrial Development Plan (>1 ha)",
       "table": "Table 6B of the signed final plan",
       "method": "road_width"
+    },
+    {
+      "key": "flatted_factory",
+      "label": "Flatted Factories",
+      "table": "Flatted factories table of the published plan",
+      "method": "road_width"
+    },
+    {
+      "key": "integrated_township",
+      "label": "Integrated Township",
+      "table": "Table 7 of the signed final plan",
+      "method": "road_width"
     }
   ],
   "limits": [

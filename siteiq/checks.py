@@ -478,7 +478,14 @@ def project_checks(site: dict, profile: Optional[dict] = None, scenarios: Option
         out.append(_check("project.accessibility", "Approvals", "Accessibility", REFER, f"{access['note']} SiteIQ does not check the design details.", source_by_id(profile, access.get("source_id"))))
     else:
         out.append(_check("project.accessibility", "Approvals", "Accessibility", NOT_CONFIGURED, "Detailed accessibility standards are not configured. Check the applicable building bye-laws and NBC 2016."))
-    out.append(_check("project.services", "Approvals", "Services and utilities", NOT_CONFIGURED, "Water, sewerage, STP, rainwater harvesting and transformer rules are not configured. Confirm them with the local agencies."))
+    services = (profile or {}).get("services_rule")
+    if services and area >= float(services["rainwater_min_plot_m2"]):
+        out.append(_check("project.services", "Approvals", "Rainwater and solar", REFER, f"{services['note']} Water, sewerage, STP and transformer rules are not configured.", source_by_id(profile, services.get("source_id"))))
+    else:
+        out.append(_check("project.services", "Approvals", "Services and utilities", NOT_CONFIGURED, "Water, sewerage, STP, rainwater harvesting and transformer rules are not configured for this case. Confirm them with the local agencies."))
+    typology = (profile or {}).get("housing_typology_rule")
+    if typology and site.get("proposed_use") == "Individual house / villa":
+        out.append(_check("project.typology", "Approvals", "Semi-detached or row housing", REFER, f"If these are attached houses: {typology['note']}", source_by_id(profile, typology.get("source_id"))))
     separation = (profile or {}).get("building_separation")
     tallest = max([float(s.get("height_m") or 0) for s in (scenarios or [])], default=0)
     if separation and tallest:

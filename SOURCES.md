@@ -118,6 +118,8 @@ Only the items below were read from the document itself for this release. Everyt
 
 **Lake and drain distances:** these plans print 30 m or 10 m from lakes and 9 m or 3 m from drains. UDD 468 applies "irrespective of anything contained in the zonal regulations" in BMR planning areas, so SiteIQ follows UDD 468.
 
-**Not encoded:** integrated township, row and semi-detached housing, flatted factories, solar and rainwater sizing, and detailed accessibility design. No official planning-boundary or land-use GIS layer was found. The BDA site refused connections.
+**Added as a FAR or a check:** flatted factories, Hoskote integrated township (Table 7), the rainwater trigger and the attached-housing limits.
+
+**Not encoded:** solar and rainwater sizing, attached-housing layout checks, township eligibility, and detailed accessibility design. No official planning-boundary or land-use GIS layer was found. The BDA site refused connections.
 
 **Taken from secondary sources only:** the EIA 20,000 m² trigger and the RERA 500 m² and 8-unit limits. Both checks say so and ask you to confirm.

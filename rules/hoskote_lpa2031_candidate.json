@@ -983,6 +983,98 @@
         "Table 6B applies to sites over 1 hectare. Confirm any reservation that reduces the FAR area."
       ],
       "far_interpretation": "FAR for an industrial development plan from Table 6B."
+    },
+    {
+      "key": "flatted_factory",
+      "label": "Flatted Factories",
+      "table": "Flatted factories table of the published plan",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "far": 1.5
+        },
+        {
+          "min": 12,
+          "max": null,
+          "min_exclusive": true,
+          "far": 1.75
+        }
+      ],
+      "coverage_method": "fixed",
+      "coverage_fixed_pct": 40,
+      "eligibility": {
+        "plot_area_min_m2": 1000
+      },
+      "setback_method": "industrial_table16",
+      "industrial_setbacks": [
+        {
+          "min": 1000,
+          "max": null,
+          "front": "8 m",
+          "rear_side": "4.5 m"
+        }
+      ],
+      "conditions": [
+        "Minimum plot 1,000 m². Front setback 8.0 m, rear and sides 4.5 m."
+      ],
+      "far_interpretation": "FAR for flatted factories from the published plan."
+    },
+    {
+      "key": "integrated_township",
+      "label": "Integrated Township",
+      "table": "Table 7 of the signed final plan",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 18,
+          "max": 24,
+          "far": 2.5
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_method": "road_width",
+      "coverage_bands": [
+        {
+          "min": 18,
+          "max": 24,
+          "coverage_pct": 55
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "coverage_pct": 45
+        }
+      ],
+      "eligibility": {
+        "road_width_min_m": 18
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Check the township eligibility and reservation conditions in the plan; SiteIQ tests only the road width."
+      ],
+      "far_interpretation": "FAR for an integrated township from Table 7."
     }
   ],
   "premium_far_rule": {
@@ -1304,5 +1396,14 @@
     ],
     "source_id": "base_zr_table4",
     "note": "Public and semi-public buildings of 300 m² covered area and above must provide facilities for persons with disabilities."
+  },
+  "services_rule": {
+    "rainwater_min_plot_m2": 200,
+    "source_id": "base_zr_table4",
+    "note": "Rainwater harvesting is compulsory on plots of 200 m² and above. The plan also sets solar water heater quantities by use; SiteIQ does not size either."
+  },
+  "housing_typology_rule": {
+    "source_id": "base_zr_table4",
+    "note": "Semi-detached houses need 140 m² of combined plots. Row housing has 3 to 12 units, at least 210 m² combined and at most 108 m² per unit, with setbacks of 2.0 m front, 1.5 m rear and 2.0 m at end units. Coverage and FAR follow the individual plots."
   }
 }

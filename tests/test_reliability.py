@@ -571,3 +571,30 @@ def test_hoskote_table_6b():
     profile = load_rule_profile("hoskote_lpa2031_candidate")
     assert match_far_rule(profile, "Industrial Development Plan (>1 ha)", 20000, 31)["maximum_far"] == 1.5
     assert match_far_rule(profile, "Industrial Development Plan (>1 ha)", 10000, 31)["status"] == "outside_configured_table_scope"
+
+
+@pytest.mark.parametrize("name", LPAS)
+def test_lpa_flatted_factories(name):
+    profile = load_rule_profile(f"{name}_lpa2031_candidate")
+    assert match_far_rule(profile, "Flatted Factories", 1500, 12)["maximum_far"] == 1.5
+    result = match_far_rule(profile, "Flatted Factories", 1500, 12.5)
+    assert result["maximum_far"] == 1.75 and result["coverage"]["coverage_pct"] == 40
+    assert match_far_rule(profile, "Flatted Factories", 999, 15)["status"] == "outside_configured_table_scope"
+    assert calculate_setbacks(profile, 1500, 40, 40, 12, False, zone="Flatted Factories")["front_m"] == 8.0
+
+
+def test_hoskote_integrated_township():
+    profile = load_rule_profile("hoskote_lpa2031_candidate")
+    assert match_far_rule(profile, "Integrated Township", 50000, 24)["maximum_far"] == 2.5
+    assert match_far_rule(profile, "Integrated Township", 50000, 31)["maximum_far"] == 3.25
+    assert match_far_rule(profile, "Integrated Township", 50000, 17)["status"] == "minimum_road_width_not_met"
+
+
+@pytest.mark.parametrize("authority,area,expected", [("hoskote_planning_authority", 199.0, "NOT_CONFIGURED"), ("hoskote_planning_authority", 200.0, "REFER"), ("anekal_planning_authority", 108.0, "REFER")])
+def test_lpa_rainwater_threshold(authority, area, expected):
+    assert check(assess(payload(authority_key=authority, land_use_category="Residential", site_area_m2=area, road_width_m=12.0)), "project.services")["status"] == expected
+
+
+def test_attached_house_rule_is_shown_for_villas():
+    report = assess(payload(authority_key="kanakapura_planning_authority", land_use_category="Residential", proposed_use="Individual house / villa"))
+    assert "210 m²" in check(report, "project.typology")["message"]

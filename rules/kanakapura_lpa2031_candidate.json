@@ -831,6 +831,44 @@
         "The plan allows the built-up area for the actual road width when a plot does not face the required road, so SiteIQ uses the lower of the plot and road values."
       ],
       "far_interpretation": "FAR for IT and BT related activities from the published plan."
+    },
+    {
+      "key": "flatted_factory",
+      "label": "Flatted Factories",
+      "table": "Flatted factories table of the published plan",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "far": 1.5
+        },
+        {
+          "min": 12,
+          "max": null,
+          "min_exclusive": true,
+          "far": 1.75
+        }
+      ],
+      "coverage_method": "fixed",
+      "coverage_fixed_pct": 40,
+      "eligibility": {
+        "plot_area_min_m2": 1000
+      },
+      "setback_method": "industrial_table16",
+      "industrial_setbacks": [
+        {
+          "min": 1000,
+          "max": null,
+          "front": "8 m",
+          "rear_side": "4.5 m"
+        }
+      ],
+      "conditions": [
+        "Minimum plot 1,000 m². Front setback 8.0 m, rear and sides 4.5 m."
+      ],
+      "far_interpretation": "FAR for flatted factories from the published plan."
     }
   ],
   "premium_far_rule": {
@@ -1151,5 +1189,14 @@
     ],
     "source_id": "base_zr_table4",
     "note": "Public and semi-public buildings of 300 m² covered area and above must provide facilities for persons with disabilities."
+  },
+  "services_rule": {
+    "rainwater_min_plot_m2": 108,
+    "source_id": "base_zr_table4",
+    "note": "Rainwater harvesting is compulsory on plots of 9 m × 12 m and above. The plan also sets solar water heater quantities by use; SiteIQ does not size either."
+  },
+  "housing_typology_rule": {
+    "source_id": "base_zr_table4",
+    "note": "Semi-detached houses need 140 m² of combined plots. Row housing has 3 to 12 units, at least 210 m² combined and at most 108 m² per unit, with setbacks of 2.0 m front, 1.5 m rear and 2.0 m at end units. Coverage and FAR follow the individual plots."
   }
 }
