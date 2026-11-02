@@ -18,3 +18,11 @@ data/geocode_cache/
 uploads/
 tmp/
 temp/
+
+# Web interface
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+# Locally installed official GIS layers
+data/spatial/*.geojson

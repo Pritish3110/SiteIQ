@@ -9,8 +9,11 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, asdict
 from datetime import date
+import math
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+from . import __version__
 
 ROOT = Path(__file__).resolve().parents[1]
 RULES_DIR = ROOT / "rules"
@@ -25,11 +28,35 @@ def load_authority_registry() -> dict:
     return load_json(RULES_DIR / "authority_registry.json")
 
 
+# Source-status lifecycle. Only these statuses may produce a FAR candidate; anything else,
+# including a missing status, is refused so a draft or withdrawn profile can never calculate.
+CALCULATING_STATUSES = {"secondary_source_candidate", "official_source_found_pending_review", "partially_verified", "verified_operative"}
+NON_RULE_FILES = {"authority_registry.json", "statewide_rules.json"}
+
+
+def load_statewide_rules() -> dict:
+    return load_json(RULES_DIR / "statewide_rules.json")
+
+
+def rule_status_problem(profile: dict, on_date: date | None = None) -> Optional[str]:
+    """Return why this profile may not calculate on the given date, or None if it may."""
+    status = profile.get("source_status")
+    if status not in CALCULATING_STATUSES:
+        return f"This rule profile has source status '{status or 'not recorded'}', which is not allowed to produce a FAR."
+    on_date = on_date or date.today()
+    start, end = profile.get("effective_from"), profile.get("effective_to")
+    if start and date.fromisoformat(start) > on_date:
+        return f"This rule profile only takes effect from {start}."
+    if end and date.fromisoformat(end) < on_date:
+        return f"This rule profile stopped applying on {end}."
+    return None
+
+
 def load_rule_profile(profile_key: str) -> Optional[dict]:
     """Load a rule profile by key, if present."""
     candidates = list(RULES_DIR.glob("*.json"))
     for path in candidates:
-        if path.name == "authority_registry.json":
+        if path.name in NON_RULE_FILES:
             continue
         data = load_json(path)
         if data.get("profile_key") == profile_key:
@@ -158,6 +185,13 @@ def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road
     """
     if not profile:
         return {"status": "not_configured", "message": "No rule profile is configured for this planning authority. FAR was not calculated.", "matched_rule": None, "candidate_rules": [], "source": None, "maximum_far": None}
+    blocked = rule_status_problem(profile)
+    if blocked:
+        return {"status": "rule_status_blocked", "message": blocked + " SiteIQ did not calculate a FAR.", "matched_rule": None, "candidate_rules": [], "source": None, "maximum_far": None}
+    if not (math.isfinite(float(site_area_m2)) and math.isfinite(float(road_width_m))) or float(site_area_m2) <= 0 or float(road_width_m) <= 0:
+        return {"status": "invalid_input", "message": "Plot area and road width must be positive numbers. SiteIQ did not calculate a FAR.", "matched_rule": None, "candidate_rules": [], "source": None, "maximum_far": None}
+    if statutory_deduction_pct is not None and not 0 <= float(statutory_deduction_pct) <= 50:
+        return {"status": "invalid_input", "message": "A reservation assumption must be between 0% and 50%.", "matched_rule": None, "candidate_rules": [], "source": None, "maximum_far": None}
     cat = category_by_label(profile, zone)
     if not cat:
         return {"status": "zone_not_supported", "message": "Choose a land-use category from the selected authority's configured rule catalogue. No category was inferred.", "matched_rule": None, "candidate_rules": [], "source": None, "maximum_far": None}
@@ -275,6 +309,9 @@ def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road
     table_deduction = float(area_basis.get("deduct_pct", 0) or 0) if area_basis.get("type") == "net_after_deduction_pct" else 0.0
     user_deduction = float(statutory_deduction_pct or 0.0)
     deduction_pct = max(table_deduction, user_deduction)
+    # A figure typed by the user is an assumption and is reported as one, never as a rule.
+    deduction_source = "none" if deduction_pct <= 0 else ("configured_rule" if table_deduction >= user_deduction else "user_assumption")
+    details["deduction_source"] = deduction_source
     if deduction_pct > 0:
         calculation_area = max(0.0, float(site_area_m2) * (1.0 - deduction_pct / 100.0))
         details.update({
@@ -282,9 +319,9 @@ def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road
             "far_calculation_area_m2": round(calculation_area, 2),
             "excluded_area_m2": round(float(site_area_m2) - calculation_area, 2),
             "deduction_pct": deduction_pct,
-            "area_basis_note": area_basis.get("reason", f"FAR uses net site area after {deduction_pct:g}% statutory reservation deduction (e.g. 15% park/open space + 5% civic amenity)."),
+            "area_basis_note": area_basis.get("reason") if deduction_source == "configured_rule" else f"The user entered a {deduction_pct:g}% reservation assumption. It does not come from the configured rule.",
         })
-        message += f" FAR capacity is calculated on net area {calculation_area:,.2f} m² after {deduction_pct:g}% statutory reservation deduction; verify that the stated deduction and reservation basis match the operative plan."
+        message += f" FAR capacity is calculated on net area {calculation_area:,.2f} m² after a {deduction_pct:g}% deduction ({'from the configured rule' if deduction_source == 'configured_rule' else 'a user assumption, not a configured rule'}); verify it against the operative plan."
     capacity = calculation_area * float(far_value)
     matched = {
         "id": cat.get("key"), "far": float(far_value), "maximum_far": float(far_value),
@@ -373,7 +410,7 @@ def _nominal_table8_for_area(profile: dict, site_area_m2: float, frontage_m: Opt
     return {"status":"candidate_match_requires_verification","message":band.get("note","Table 8 nominal distances."),"front_m":band.get("front_m"),"rear_m":band.get("rear_m"),"left_m":band.get("left_m"),"right_m":band.get("right_m"),"all_round_m":None,"basis":band.get("note"),"source":src}
 
 
-def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m: Optional[float], depth_m: Optional[float], height_for_setback_m: Optional[float], stilt: bool, zone: str | None = None) -> dict:
+def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m: Optional[float], depth_m: Optional[float], height_for_setback_m: Optional[float], stilt: bool, zone: str | None = None, stilt_height_m: float | None = None) -> dict:
     """Select building setbacks from the configured zone-specific rule path."""
     if not profile:
         return {"status":"not_configured","message":"No authority-specific setback rules are configured.","front_m":None,"rear_m":None,"left_m":None,"right_m":None,"all_round_m":None,"source":None}
@@ -399,7 +436,12 @@ def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m:
 
     # Authority profiles may use different cut-off heights for their own setback tables.
     table8_max = float(profile.get("setback_table8_max_height_m", 12.0))
-    if height_for_setback_m <= table8_max:
+    table8_height = float(height_for_setback_m)
+    if stilt and stilt_height_m and profile.get("setback_table8_height_excludes_stilt"):
+        table8_height = max(0.0, table8_height - float(stilt_height_m))
+    small_plot = profile.get("setback_table8_small_plot") or {}
+    small_plot_applies = bool(small_plot) and site_area_m2 <= float(small_plot["max_area_m2"]) and float(height_for_setback_m) <= float(small_plot["max_total_height_m"])
+    if table8_height <= table8_max or small_plot_applies:
         return _nominal_table8_for_area(profile, site_area_m2, frontage_m, depth_m)
 
     src = source_by_id(profile, profile.get("setback_height_source_id") or 'udd235_setbacks')
@@ -529,6 +571,7 @@ def build_scenarios(site_area_m2: float, scenarios: List[dict], max_far_benchmar
             "benchmark_source": benchmark_source,
             "assumed_far": None,
             "stilt": bool(s.get("stilt", False)),
+            "stilt_height_m": s.get("stilt_height_m"),
             "basement_levels": int(s.get("basement_levels", 0) or 0),
             "setback_mode": s.get("setback_mode", "automatic"),
             "manual_all_round_setback_m": s.get("manual_all_round_setback_m"),
@@ -587,6 +630,7 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
             option_setbacks = calculate_setbacks(
                 profile, site_area, site.get("frontage_m"), site.get("depth_m"),
                 normalized.get("height_m"), bool(normalized.get("stilt", False)), zone=selected_zone,
+                stilt_height_m=normalized.get("stilt_height_m"),
             )
         normalized["setback_result"] = option_setbacks
         normalized["setback_status"] = option_setbacks.get("status", "not_configured")
@@ -647,23 +691,24 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
         else:
             single_plot = {"status": "not_in_configured_area_band", "message": "This MVP's Chapter 6-A note is configured only for the greater-than-2,000 m² up-to-4,000 m² band."}
 
-    fire_rule = profile.get("fire_noc_trigger") if profile else None
+    # The Fire Force Act applies statewide, so this check does not depend on the authority profile.
+    fire_rule = load_statewide_rules().get("fire_high_rise")
     proposed_heights = [s.get("height_m") for s in site.get("scenarios", []) if s.get("height_m") not in (None, "")]
     maximum_height = max([float(h) for h in proposed_heights], default=site.get("height_for_setback_m"))
-    fire_check = {"status": "not_configured", "message": "Authority-specific fire review remains pending."}
+    fire_check = {"status": "not_configured", "message": "No building height was entered, so the fire trigger was not tested."}
     if fire_rule and maximum_height is not None:
-        is_high_rise = float(maximum_height) >= fire_rule["height_min_m_inclusive"]
+        height = float(maximum_height)
+        is_high_rise = height >= float(fire_rule["noc_height_m"])
+        in_code_band = not is_high_rise and height >= float(fire_rule["nbc_high_rise_height_m"])
         fire_check = {
-            "status": "triggered_by_height_scenario" if is_high_rise else "below_configured_high_rise_threshold",
-            "threshold_m": fire_rule["height_min_m_inclusive"],
-            "maximum_scenario_height_m": float(maximum_height),
+            "status": "triggered_by_height_scenario" if is_high_rise else "nbc_band_requires_confirmation" if in_code_band else "below_configured_high_rise_threshold",
+            "threshold_m": fire_rule["noc_height_m"],
+            "nbc_threshold_m": fire_rule["nbc_high_rise_height_m"],
+            "maximum_scenario_height_m": height,
             "is_high_rise": is_high_rise,
             "fire_noc_required": is_high_rise,
-            "minimum_fire_driveway_width_m": 6.0 if is_high_rise else None,
-            "fire_turning_radius_inner_m": 9.0 if is_high_rise else None,
-            "fire_turning_radius_outer_m": 12.0 if is_high_rise else None,
-            "message": fire_rule["condition"] + (" [HIGH-RISE TRIGGERED: Mandatory Fire Department NOC and 6.0m clear all-round motorable driveway required with 9.0m/12.0m turning radii under Karnataka Fire Force Act 2023]." if is_high_rise else " [Below 21m high-rise threshold; check low-rise fire safety and access requirements]."),
-            "source": source_by_id(profile, fire_rule["source_id"])
+            "message": fire_rule["message_noc"] if is_high_rise else fire_rule["message_band"] if in_code_band else fire_rule["message_below"],
+            "source": fire_rule.get("source"),
         }
 
     checks = [
@@ -678,7 +723,7 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
     ]
     sources = (profile or {}).get("sources", [])
     report = {
-        "application": {"name":"SiteIQ", "version":"0.4.7", "assessment_date":date.today().isoformat(), "profile_status":(profile or {}).get("profile_status", "not configured")},
+        "application": {"name":"SiteIQ", "version":__version__, "assessment_date":date.today().isoformat(), "profile_status":(profile or {}).get("profile_status", "not configured"), "source_status":(profile or {}).get("source_status", "not_configured"), "profile_version":(profile or {}).get("profile_version") or (profile or {}).get("last_reviewed")},
         "project": site.get("project_name") or "Untitled Site Feasibility",
         "client": site.get("client") or "Not supplied",
         "site": {

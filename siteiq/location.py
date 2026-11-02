@@ -12,25 +12,57 @@ import re
 import time
 from pathlib import Path
 from typing import Any, Optional
-from urllib.parse import unquote, urlparse
+from urllib.parse import unquote, urljoin, urlparse
 
 import requests
-from shapely.geometry import Point, shape
+from shapely.geometry import Point, Polygon, shape
+from shapely.validation import make_valid
+
+from . import __version__
 
 ROOT = Path(__file__).resolve().parents[1]
 SPATIAL_DIR = ROOT / "data" / "spatial"
 CACHE_DIR = ROOT / "data" / "geocode_cache"
 AUTHORITY_LAYER = SPATIAL_DIR / "authority_boundaries.geojson"
 ZONE_LAYER = SPATIAL_DIR / "land_use_zones.geojson"
-USER_AGENT = "SiteIQ/0.4.7 (local architectural feasibility tool; user-triggered location lookup)"
+USER_AGENT = f"SiteIQ/{__version__} (local architectural feasibility tool; user-triggered location lookup)"
 _LAST_NOMINATIM_REQUEST = 0.0
+MAX_MAP_REDIRECTS = 10
+MAX_MAP_RESPONSE_BYTES = 2_000_000
+# Generous rectangle around Karnataka: catches swapped or mistyped coordinates, proves nothing about jurisdiction.
+KARNATAKA_BOUNDS = {"lat_min": 11.4, "lat_max": 18.6, "lon_min": 74.0, "lon_max": 78.7}
+NEAR_BOUNDARY_M = 500.0
+
+
+def _parse_dms(value: str) -> Optional[tuple[float, float]]:
+    pattern = r"""(\d{1,3})\s*[°d]\s*(\d{1,2})\s*['′m]\s*(\d{1,2}(?:\.\d+)?)\s*["″s]?\s*([NSEW])"""
+    parts = re.findall(pattern, value, flags=re.I)
+    if len(parts) != 2:
+        return None
+    values: dict[str, float] = {}
+    for deg, minutes, seconds, hemi in parts:
+        decimal = float(deg) + float(minutes) / 60 + float(seconds) / 3600
+        hemi = hemi.upper()
+        values["lat" if hemi in "NS" else "lon"] = -decimal if hemi in "SW" else decimal
+    if set(values) != {"lat", "lon"}:
+        return None
+    return values["lat"], values["lon"]
 
 
 def parse_coordinate_text(value: str | None) -> Optional[tuple[float, float]]:
-    """Parse user coordinates as latitude, longitude."""
+    """Parse a coordinate pair as latitude, longitude. The whole text must be a coordinate.
+
+    Numbers inside other text (for example an address) are never treated as coordinates.
+    """
     if not value:
         return None
-    m = re.search(r"(-?\d{1,2}(?:\.\d+)?)\s*[,;/ ]\s*(-?\d{1,3}(?:\.\d+)?)", value.strip())
+    text = value.strip()
+    if "°" in text or "′" in text or re.search(r"\d\s*['\"]", text):
+        dms = _parse_dms(text)
+        if dms and -90 <= dms[0] <= 90 and -180 <= dms[1] <= 180:
+            return dms
+        return None
+    m = re.fullmatch(r"\(?\s*(-?\d{1,3}(?:\.\d+)?)\s*[,;/ ]\s*(-?\d{1,3}(?:\.\d+)?)\s*\)?", text)
     if not m:
         return None
     lat, lon = float(m.group(1)), float(m.group(2))
@@ -39,62 +71,130 @@ def parse_coordinate_text(value: str | None) -> Optional[tuple[float, float]]:
     return lat, lon
 
 
-def _coords_from_text(text: str) -> Optional[tuple[float, float]]:
-    text = unquote(text or "")
-    # Prefer the explicit place/pin coordinates (!3d/!4d) over @viewport-centre
-    # coordinates when both are present in a Google Maps URL.
-    patterns = [
-        r"!3d\s*(-?\d{1,2}(?:\.\d+)?)!4d\s*(-?\d{1,3}(?:\.\d+)?)",
-        r"(?:[?&](?:q|query|ll|center|destination|origin|loc|location)=)(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
-        r"@\s*(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)",
-        r"(?:/search/)(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
-        r"(?:/place/)(?:[^/@]+/)?@?(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
-        r"(?:ll|center|q)%3D(-?\d{1,2}(?:\.\d+)?)(?:%2C|,)(-?\d{1,3}(?:\.\d+)?)",
-        r"(?:center=|center%3D)(-?\d{1,2}(?:\.\d+)?)(?:%2C|,)(-?\d{1,3}(?:\.\d+)?)",
-        r"\[\s*(-?\d{1,2}\.\d{4,})\s*,\s*(-?\d{1,3}\.\d{4,})\s*\]",
-    ]
-    for pattern in patterns:
-        m = re.search(pattern, text, flags=re.I)
-        if m:
-            lat, lon = float(m.group(1)), float(m.group(2))
-            if -90 <= lat <= 90 and -180 <= lon <= 180:
-                return lat, lon
+def coordinate_problem(lat: float, lon: float) -> Optional[str]:
+    """Explain why a coordinate cannot be a Karnataka site, or return None."""
+    b = KARNATAKA_BOUNDS
+    inside = b["lat_min"] <= lat <= b["lat_max"] and b["lon_min"] <= lon <= b["lon_max"]
+    if inside:
+        return None
+    if b["lat_min"] <= lon <= b["lat_max"] and b["lon_min"] <= lat <= b["lon_max"]:
+        return f"Coordinates {lat:.6f}, {lon:.6f} look swapped. Enter latitude first, then longitude."
+    return f"Coordinates {lat:.6f}, {lon:.6f} are outside Karnataka, which is the only state SiteIQ has rules for."
+
+
+PIN_PATTERN = r"!3d\s*(-?\d{1,2}(?:\.\d+)?)!4d\s*(-?\d{1,3}(?:\.\d+)?)"
+QUERY_PATTERNS = [
+    r"(?:[?&](?:q|query|ll|center|destination|origin|loc|location)=)(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
+    r"(?:/search/)(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
+    r"(?:/place/)(?:[^/@]+/)?@?(-?\d{1,2}(?:\.\d+)?)[,%20+ ]+(-?\d{1,3}(?:\.\d+)?)",
+    r"(?:ll|center|q)%3D(-?\d{1,2}(?:\.\d+)?)(?:%2C|,)(-?\d{1,3}(?:\.\d+)?)",
+]
+VIEWPORT_PATTERN = r"@\s*(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)"
+
+
+def _first_coordinate(pattern: str, text: str) -> Optional[tuple[float, float]]:
+    m = re.search(pattern, text, flags=re.I)
+    if m:
+        lat, lon = float(m.group(1)), float(m.group(2))
+        if -90 <= lat <= 90 and -180 <= lon <= 180:
+            return lat, lon
     return None
 
 
+def _coords_with_precision(text: str) -> tuple[Optional[tuple[float, float]], Optional[str]]:
+    """Return coordinates and whether they mark a pin or merely the centre of the map view."""
+    decoded = unquote(text or "")
+    pin = _first_coordinate(PIN_PATTERN, decoded)
+    if pin:
+        return pin, "pin"
+    for pattern in QUERY_PATTERNS:
+        found = _first_coordinate(pattern, decoded)
+        if found:
+            return found, "query"
+    viewport = _first_coordinate(VIEWPORT_PATTERN, decoded)
+    return (viewport, "viewport") if viewport else (None, None)
+
+
+def _coords_from_text(text: str) -> Optional[tuple[float, float]]:
+    return _coords_with_precision(text)[0]
+
+
+def _coords_from_map_html(html: str) -> tuple[Optional[tuple[float, float]], Optional[str]]:
+    """Read only the canonical link metadata; arbitrary numbers in page scripts are never trusted."""
+    for tag in re.findall(r"<(?:meta|link)\b[^>]*>", html or "", flags=re.I)[:200]:
+        if re.search(r"og:url|canonical|og:image", tag, flags=re.I):
+            content = re.search(r"(?:content|href)=[\"']([^\"']+)", tag, flags=re.I)
+            if content:
+                coords, precision = _coords_with_precision(content.group(1).replace("&amp;", "&"))
+                if coords and precision != "viewport":
+                    return coords, precision
+    return None, None
+
+
+def _is_allowed_map_url(url: str) -> bool:
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").casefold()
+    allowed = host in {"maps.app.goo.gl", "goo.gl", "google.com", "maps.google.co.in", "google.co.in"} or host.endswith(".google.com") or host.endswith(".google.co.in")
+    return parsed.scheme == "https" and allowed and parsed.username is None and parsed.port in (None, 443)
+
+
+def _fetch_map_page(url: str) -> tuple[str, str]:
+    """Follow redirects one hop at a time so every destination is checked against the allowlist."""
+    current = url
+    for _ in range(MAX_MAP_REDIRECTS + 1):
+        if not _is_allowed_map_url(current):
+            raise PermissionError("redirected outside the allowed Google Maps hosts")
+        response = requests.get(current, allow_redirects=False, stream=True, timeout=12, headers={"User-Agent": USER_AGENT})
+        try:
+            if response.status_code in {301, 302, 303, 307, 308} and response.headers.get("Location"):
+                current = urljoin(current, response.headers["Location"])
+                # A redirect target already carrying a pin needs no further request.
+                if _coords_with_precision(current)[1] == "pin" and _is_allowed_map_url(current):
+                    return current, ""
+                continue
+            body = b""
+            for chunk in response.iter_content(65536):
+                body += chunk
+                if len(body) >= MAX_MAP_RESPONSE_BYTES:
+                    break
+            return current, body.decode(response.encoding or "utf-8", errors="replace")
+        finally:
+            response.close()
+    raise RuntimeError("too many redirects")
+
+
 def coordinates_from_map_url(map_url: str | None, resolve_short_link: bool = True) -> dict:
-    """Extract coordinates from common Google Maps URLs; expand short links on demand."""
-    result = {"coordinates": None, "resolved_url": map_url or "", "method": None, "warning": None}
+    """Extract coordinates from a Google Maps URL, expanding short links only on demand."""
+    result = {"coordinates": None, "resolved_url": map_url or "", "method": None, "warning": None, "precision": None}
     if not map_url:
         return result
-    direct = _coords_from_text(map_url)
+    direct, precision = _coords_with_precision(map_url)
     if direct:
-        result.update(coordinates=direct, method="coordinates_embedded_in_map_url")
-        return result
-    if not resolve_short_link:
-        result["warning"] = "No coordinates were visible in the supplied map URL."
-        return result
-    try:
-        # Expand only expected map-provider hosts; do not let this local UI fetch arbitrary URLs.
-        parsed = urlparse(map_url)
-        host = (parsed.hostname or "").casefold()
-        allowed_host = host in {"maps.app.goo.gl", "goo.gl", "google.com", "www.google.com", "maps.google.com", "maps.google.co.in", "earth.google.com"} or host.endswith(".google.com") or host.endswith(".google.co.in")
-        if parsed.scheme != "https" or not allowed_host:
+        result.update(coordinates=direct, method="coordinates_embedded_in_map_url", precision=precision)
+    else:
+        if not resolve_short_link:
+            result["warning"] = "No coordinates were visible in the supplied map URL."
+            return result
+        if not _is_allowed_map_url(map_url):
             result["warning"] = "Only HTTPS Google Maps / Google Earth links can be expanded. Paste coordinates or use a searchable address instead."
             return result
-        # Only called after the user clicks Identify; no background scraping/polling.
-        response = requests.get(map_url, allow_redirects=True, timeout=12, headers={"User-Agent": USER_AGENT})
-        final_url = response.url or map_url
-        result["resolved_url"] = final_url
-        coords = _coords_from_text(final_url)
-        if coords is None:
-            coords = _coords_from_text(response.text[:2_000_000])
-        if coords:
-            result.update(coordinates=coords, method="expanded_map_link")
+        try:
+            final_url, html = _fetch_map_page(map_url)
+        except Exception as exc:
+            result["warning"] = f"Could not resolve the map short link ({type(exc).__name__}: {exc}). Paste latitude, longitude or provide a searchable address."
             return result
-        result["warning"] = "The map link opened, but its destination coordinates could not be extracted. Paste latitude, longitude or provide a searchable address."
-    except Exception as exc:
-        result["warning"] = f"Could not resolve the map short link ({type(exc).__name__}). Paste latitude, longitude or provide a searchable address."
+        result["resolved_url"] = final_url
+        coords, precision = _coords_with_precision(final_url)
+        if coords is None or precision == "viewport":
+            page_coords, page_precision = _coords_from_map_html(html)
+            if page_coords:
+                coords, precision = page_coords, page_precision
+        if coords is None:
+            result["warning"] = "The map link opened, but its destination coordinates could not be extracted. Paste latitude, longitude or provide a searchable address."
+            return result
+        result.update(coordinates=coords, method="expanded_map_link", precision=precision)
+    if result["precision"] == "viewport":
+        result["warning"] = "This link only gives the centre of the map view, not a dropped pin. Check that it marks the site, or paste a link with a pin."
     return result
 
 
@@ -183,6 +283,7 @@ def _point_matches(layer_path: Path, lat: float, lon: float, kind: str) -> dict:
         return {"status": "layer_error", "match": None, "matches": [], "layer": layer_path.name, "message": str(exc)}
     point = Point(lon, lat)
     matches = []
+    repaired = 0
     for feature in fc.get("features", []):
         if not feature or not feature.get("geometry"):
             continue
@@ -191,7 +292,11 @@ def _point_matches(layer_path: Path, lat: float, lon: float, kind: str) -> dict:
             continue
         try:
             geom = shape(feature["geometry"])
-            if geom.is_empty or not geom.is_valid or not geom.covers(point):
+            if not geom.is_valid:
+                # Working copy only: the layer on disk is unchanged, and the match is flagged.
+                geom = make_valid(geom)
+                repaired += 1
+            if geom.is_empty or not geom.covers(point):
                 continue
         except Exception:
             continue
@@ -211,7 +316,7 @@ def _point_matches(layer_path: Path, lat: float, lon: float, kind: str) -> dict:
             "confidence": "spatial_polygon_match",
         })
     if not matches:
-        return {"status": "no_polygon_match", "match": None, "matches": [], "layer": layer_path.name,
+        return {"status": "no_polygon_match", "match": None, "matches": [], "layer": layer_path.name, "invalid_features_repaired": repaired,
                 "message": "The point did not fall inside a configured feature in this layer."}
     matches.sort(key=lambda x: x["area_degrees2"])
     best_area = matches[0]["area_degrees2"]
@@ -219,8 +324,48 @@ def _point_matches(layer_path: Path, lat: float, lon: float, kind: str) -> dict:
     unique_values = {x["value"] for x in equally_specific}
     if len(unique_values) > 1:
         return {"status": "ambiguous_polygon_match", "match": None, "matches": equally_specific, "layer": layer_path.name,
-                "message": "More than one equally specific polygon matches this point. A human must resolve the overlap/boundary."}
-    return {"status": "matched_polygon_layer", "match": matches[0], "matches": matches, "layer": layer_path.name}
+                "invalid_features_repaired": repaired, "message": "More than one equally specific polygon matches this point. A human must resolve the overlap/boundary."}
+    return {"status": "matched_polygon_layer", "match": matches[0], "matches": matches, "layer": layer_path.name, "invalid_features_repaired": repaired}
+
+
+def parcel_jurisdiction_diagnostics(points_wgs84: list, holes_wgs84: list | None = None, authority_layer: Path = AUTHORITY_LAYER) -> dict:
+    """Test the whole parcel against the authority layer: coverage share, overlaps and nearby boundaries."""
+    if not authority_layer.exists():
+        return {"status": "layer_not_installed", "authorities": [], "message": "No official planning-boundary layer is installed, so the whole parcel could not be tested."}
+    try:
+        fc = _load_geojson(authority_layer)
+    except Exception as exc:
+        return {"status": "layer_error", "authorities": [], "message": str(exc)}
+    parcel = Polygon([tuple(p[:2]) for p in points_wgs84], [[tuple(p[:2]) for p in r] for r in (holes_wgs84 or [])])
+    if not parcel.is_valid or parcel.is_empty:
+        return {"status": "invalid_parcel", "authorities": [], "message": "The parcel geometry is invalid, so coverage could not be tested."}
+    metres_per_degree = 111_320.0
+    rows = []
+    near = []
+    for feature in fc.get("features", []):
+        if not feature or not feature.get("geometry"):
+            continue
+        props = feature.get("properties") or {}
+        try:
+            geom = shape(feature["geometry"])
+            geom = geom if geom.is_valid else make_valid(geom)
+            key = props.get("authority_key") or props.get("siteiq_authority_key") or props.get("rule_profile_key")
+            if not key:
+                continue
+            share = geom.intersection(parcel).area / parcel.area
+            distance_m = geom.boundary.distance(parcel) * metres_per_degree
+        except Exception:
+            continue
+        if share > 1e-4:
+            rows.append({"authority_key": str(key), "share_pct": round(share * 100, 2)})
+        if distance_m <= NEAR_BOUNDARY_M:
+            near.append({"authority_key": str(key), "distance_m": round(distance_m, 1)})
+    status = "no_coverage" if not rows else "straddles_authorities" if len(rows) > 1 else "partial_coverage" if rows[0]["share_pct"] < 99.9 else "fully_within"
+    return {"status": status, "authorities": rows, "near_boundaries": near, "near_threshold_m": NEAR_BOUNDARY_M,
+            "message": {"no_coverage": "The parcel does not overlap any polygon in the installed layer.",
+                        "straddles_authorities": "The parcel overlaps more than one authority. The authority must decide which rules apply.",
+                        "partial_coverage": "Only part of the parcel lies within the matched authority polygon.",
+                        "fully_within": "The whole parcel lies within one authority polygon."}[status]}
 
 
 def identify_spatial_context(lat: float, lon: float, authority_layer: Path = AUTHORITY_LAYER, zone_layer: Path = ZONE_LAYER) -> dict:
@@ -238,11 +383,21 @@ def _locality_candidate(reverse: dict) -> dict:
     More specific local planning authority names are checked before city-level labels.
     """
     addr = reverse.get("address") or {}
-    tokens = [str(addr.get(k, "")) for k in (
-        "city", "town", "municipality", "county", "state_district",
-        "suburb", "village", "hamlet", "township", "state"
-    )]
-    text = " ".join(tokens).casefold()
+    def is_place_name(value: str) -> bool:
+        # "Kanakapura Road" is a street inside Bengaluru, not the town of Kanakapura.
+        return not re.search(r"\b(road|rd|main|cross|layout|circle|street|nagar|extension)\b", value, flags=re.I)
+    admin = [str(addr.get(k, "")) for k in ("city", "town", "municipality", "county")]
+    local = [str(addr.get(k, "")) for k in ("suburb", "village", "hamlet", "township")]
+    city_text = " ".join(str(addr.get(k, "")) for k in ("city", "town")).casefold()
+    in_bengaluru_city = any(x in city_text for x in ("bengaluru", "bangalore"))
+    # Inside the city, suburb names say nothing about another planning area.
+    usable_local = [] if in_bengaluru_city else [v for v in local if v and is_place_name(v)]
+    district = str(addr.get("state_district", ""))
+    text = " ".join(admin + usable_local + [district]).casefold()
+    if in_bengaluru_city:
+        text = " ".join(admin).casefold()
+    # A district called Bengaluru Rural or South covers many separate planning areas.
+    bengaluru_scope = in_bengaluru_city or re.search(r"(bengaluru|bangalore)( urban)?( district)?$", district.strip(), flags=re.I) is not None
     # Check local planning areas before broad Bengaluru/Bangalore district labels.
     if "kanakapura" in text:
         return {"key": "kanakapura_planning_authority", "status": "provisional_geocoder_candidate", "confidence": "low",
@@ -295,10 +450,10 @@ def _locality_candidate(reverse: dict) -> dict:
     if any(x in text for x in ("hubballi", "hubli", "dharwad")):
         return {"key": "hubballi_dharwad_udau", "status": "provisional_geocoder_candidate", "confidence": "low",
                 "reason": "The mapped locality is labelled Hubballi/Dharwad. Confirm the notified planning area and operative local authority."}
-    if any(x in text for x in ("bengaluru", "bangalore")):
+    if bengaluru_scope:
         return {"key": "bengaluru_rmp2015", "status": "provisional_geocoder_candidate", "confidence": "low",
                 "reason": "The mapped locality is labelled Bengaluru/Bangalore, but this does not prove the parcel's current Greater Bengaluru, BDA or BMRDA planning boundary. SiteIQ will show official map sources to check."}
-    if "karnataka" in text:
+    if "karnataka" in str(addr.get("state", "")).casefold() or any(x in text for x in ("bengaluru", "bangalore")):
         return {"key": "other_karnataka", "status": "state_only_candidate", "confidence": "low",
                 "reason": "The location appears to be in Karnataka, but an exact planning authority cannot be inferred from locality text alone."}
     return {"key": None, "status": "not_identified", "confidence": "none",
@@ -417,6 +572,9 @@ def auto_identify_site(address: str = "", map_url: str = "", coordinates_text: s
     if coords is None:
         raise RuntimeError("Site location could not be resolved. Provide a Google Maps link, coordinate pair, or searchable address.")
     lat, lon = float(coords[0]), float(coords[1])
+    problem = coordinate_problem(lat, lon)
+    if problem:
+        raise RuntimeError(problem)
     # Reuse forward-geocoder address metadata to avoid a second Nominatim call in
     # the same lookup. If coordinates came from a map or user, request reverse geocoding once.
     if geocoded:
@@ -446,6 +604,7 @@ def auto_identify_site(address: str = "", map_url: str = "", coordinates_text: s
         if authority_key:
             authority_candidate = {"key": authority_key, "label": authority_result["match"].get("label") or authority_key, "status": "matched_polygon_layer", "confidence": "medium_high",
                                   "reason": "Point matched the installed authority boundary layer. Validate layer date and the distinction between municipal corporation and planning authority.",
+                                  "invalid_features_repaired": authority_result.get("invalid_features_repaired", 0),
                                   "source_title": authority_result["match"].get("source_title"), "source_url": authority_result["match"].get("source_url"),
                                   "source_date": authority_result["match"].get("source_date")}
         else:
@@ -495,7 +654,7 @@ def auto_identify_site(address: str = "", map_url: str = "", coordinates_text: s
         "map_url": map_lookup.get("resolved_url") or map_url or "",
         "location_source": location_source,
         "input_coordinate_comparison": input_coordinate_comparison,
-        "map_link_resolution": {"method": map_lookup.get("method"), "warning": map_lookup.get("warning"), "resolved_url": map_lookup.get("resolved_url") or map_url or ""},
+        "map_link_resolution": {"method": map_lookup.get("method"), "precision": map_lookup.get("precision"), "warning": map_lookup.get("warning"), "resolved_url": map_lookup.get("resolved_url") or map_url or ""},
         "geocoded_address": geocoded.get("display_name") if geocoded else reverse.get("display_name", ""),
         "reverse_geocode": reverse,
         "authority": authority_candidate,

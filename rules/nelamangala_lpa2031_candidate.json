@@ -716,5 +716,9 @@
     ]
   },
   "force_minimum_all_round_for_area_above_4000": false,
-  "profile_version": "0.1-candidate"
+  "profile_version": "0.1-candidate",
+  "source_status": "secondary_source_candidate",
+  "effective_from": null,
+  "effective_to": null,
+  "reviewed_by": null
 }

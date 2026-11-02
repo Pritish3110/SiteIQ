@@ -48,7 +48,7 @@ def test_benchmark_tc02_hoskote_industrial_statutory_deduction():
     assert profile is not None
     site_area = 8500.0
     road_width = 24.0
-    # Statutory deduction of 20% (15% open space/park + 5% civic amenity)
+    # A typed reduction is accepted as a labelled assumption, not as a rule.
     res = match_far_rule(
         profile, "Industrial Buildings (plot-area table)", site_area, road_width,
         statutory_deduction_pct=20.0,
@@ -59,6 +59,7 @@ def test_benchmark_tc02_hoskote_industrial_statutory_deduction():
     assert res["far_calculation_area_m2"] == pytest.approx(expected_net_area)
     assert res["maximum_far_area_m2"] == pytest.approx(expected_net_area * res["maximum_far"])
     assert res["matched_rule"]["details"]["deduction_pct"] == 20.0
+    assert res["matched_rule"]["details"]["deduction_source"] == "user_assumption"
 
 
 def test_benchmark_tc03_kanakapura_group_housing_threshold():
@@ -115,7 +116,7 @@ def test_benchmark_tc06_tumakuru_location_candidate_mapping():
 def test_benchmark_tc07_fire_force_act_2023_high_rise_triggers():
     """TC-07: Karnataka Fire Force (Amendment) Act 2023.
     Verifies building height >= 21m triggers High-Rise status, Fire NOC,
-    and 6.0m clear motorable fire-tender driveway.
+    and is sourced from the statewide rule file.
     """
     profile = load_rule_profile("bengaluru_rmp2015_partial")
     site = {
@@ -134,9 +135,9 @@ def test_benchmark_tc07_fire_force_act_2023_high_rise_triggers():
     assert fire["status"] == "triggered_by_height_scenario"
     assert fire["is_high_rise"] is True
     assert fire["fire_noc_required"] is True
-    assert fire["minimum_fire_driveway_width_m"] == 6.0
-    assert fire["fire_turning_radius_inner_m"] == 9.0
-    assert fire["fire_turning_radius_outer_m"] == 12.0
+    # Fire access dimensions are not sized by SiteIQ: the 6/9/12 m figures had no configured source.
+    assert "minimum_fire_driveway_width_m" not in fire
+    assert fire["source"]["notification"] == "Karnataka Act No. 24 of 2023"
 
 
 def test_benchmark_tc08_geometry_split_and_narrow_neck_detection():
@@ -175,7 +176,7 @@ def test_benchmark_tc10_statutory_net_vs_gross_area_accounting():
     # and plot area 2000m² - 4000m² has cap 3.0, plot area >4000m² has cap 3.25.
     # With road_width = 25.0, road FAR = 3.00, area cap = 3.25, min(3.25, 3.0) = 3.00!
     road_width = 25.0
-    # Apply standard 15% park + 5% CA = 20% statutory deduction
+    # A what-if reduction: RMP Chapter 7 itself only deducts the civic-amenity site from the FAR area.
     res = match_far_rule(
         profile, "Residential (Main)", gross_area, road_width,
         statutory_deduction_pct=20.0,

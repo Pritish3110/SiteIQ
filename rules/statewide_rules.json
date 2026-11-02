@@ -1,0 +1,73 @@
+{
+  "note": "Provisions outside the authority profiles. Each figure carries its source and how far it has been checked. None has been reviewed by a registered architect or lawyer.",
+  "fire_high_rise": {
+    "noc_height_m": 21.0,
+    "nbc_high_rise_height_m": 15.0,
+    "message_noc": "At 21 m or above this is a high-rise under the Karnataka Fire Force Act, so a Fire NOC is required. SiteIQ does not size fire access: take driveway, turning and hardstanding dimensions from NBC 2016 Part 4 and the fire department.",
+    "message_band": "From 15 m up to 21 m, NBC 2016 Part 4 treats the building as high-rise and the 2026 Bengaluru amendment requires NBC fire compliance. A 2011 notification set the NOC at 15 m, so confirm with the local fire station whether an NOC applies.",
+    "message_below": "Below 15 m the high-rise triggers are not met. Ordinary fire and access provisions still apply.",
+    "source": {
+      "id": "kff_act_2023",
+      "title": "Karnataka Fire Force (Amendment) Act 2023, section 13; NBC 2016 Part 4 clause 2.38",
+      "notification": "Karnataka Act No. 24 of 2023",
+      "clause": "Section 13(3) and explanation; NBC clause 2.38",
+      "status": "21 m checked against the 2023 ordinance text; 15 m checked against NBC 2016 Part 4.",
+      "url": "https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf"
+    }
+  },
+  "drain_buffers": {
+    "authority_scope": "bengaluru_and_bmr",
+    "buffers_m": {
+      "primary": 15.0,
+      "secondary": 10.0,
+      "tertiary": 5.0
+    },
+    "measured_from": "either side from the edge of the drain as per revenue records",
+    "source": {
+      "id": "udd468",
+      "title": "Zonal Regulations (Amendment) Regulations 2025: lakes and drains",
+      "notification": "UDD 468 MNJ 2025(E)",
+      "date": "2025-10-15",
+      "clause": "Regulation 3",
+      "document_page": "Karnataka Gazette Part IVA No. 656, pages 2-3",
+      "status": "Read directly from the gazette copy on 2026-11-02. Supersedes the 50/25/15 m centre-line figures and any NGT figure in Bengaluru and BMR planning areas; check for later orders or litigation.",
+      "url": "https://data.opencity.in/dataset/bengaluru-notification-of-drains-buffer-area-specifications-2025"
+    }
+  },
+  "lake_buffer": {
+    "authority_scope": "bengaluru_and_bmr",
+    "message": "UDD 468 leaves the lake buffer to the Karnataka Tank Conservation and Development Authority Act, measured from the lake as per revenue records. No distance is configured here: confirm the current KTCDA figure.",
+    "source": {
+      "id": "udd468",
+      "title": "UDD 468 MNJ 2025(E), buffer for lakes",
+      "notification": "UDD 468 MNJ 2025(E)",
+      "date": "2025-10-15",
+      "clause": "Regulation 3",
+      "status": "Read directly from the gazette copy on 2026-11-02.",
+      "url": "https://data.opencity.in/dataset/bengaluru-notification-of-drains-buffer-area-specifications-2025"
+    }
+  },
+  "environmental_clearance": {
+    "built_up_area_m2_min_exclusive": 20000.0,
+    "message": "Above 20,000 m² of built-up area (all floors, including basements and service areas) prior environmental clearance is likely under EIA Notification 2006 item 8(a). Confirm the category with SEIAA.",
+    "source": {
+      "id": "eia_2006",
+      "title": "EIA Notification 2006, Schedule item 8(a)",
+      "clause": "Item 8(a), building and construction projects",
+      "status": "Threshold taken from secondary summaries and NGT filings, not checked against the current MoEFCC text.",
+      "url": "https://www.greentribunal.gov.in/sites/default/files/news_updates/8421_0.pdf"
+    }
+  },
+  "rera": {
+    "land_area_m2": 500.0,
+    "apartments": 8,
+    "message": "RERA section 3(2)(a) exempts small projects, but regulators read the 500 m² and 8-apartment limits differently. Confirm registration with Karnataka RERA.",
+    "source": {
+      "id": "rera_2016",
+      "title": "Real Estate (Regulation and Development) Act 2016, section 3(2)(a)",
+      "clause": "Section 3(2)(a)",
+      "status": "Limits taken from secondary commentary, which records conflicting regulator readings.",
+      "url": "https://argus-p.com/papers-publications/thought-paper/rera-regime-the-exemption-conundrum/"
+    }
+  }
+}

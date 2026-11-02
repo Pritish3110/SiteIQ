@@ -31,6 +31,7 @@ from siteiq.location import (
     save_geojson_layer, AUTHORITY_LAYER, ZONE_LAYER,
 )
 from siteiq.location_ui import apply_location_identification
+from siteiq.service import assess, input_fingerprint
 
 st.set_page_config(
     page_title="SiteIQ | Architectural Feasibility Suite",
@@ -216,8 +217,8 @@ def _candidate_status(profile, category, area, road, surrounding_zone=None, prop
     return match_far_rule(profile, category, area, road, surrounding_zone=surrounding_zone, proposed_use=proposed_use, statutory_deduction_pct=statutory_deduction_pct)
 
 
-def _reset_assessment():
-    st.session_state.pop("siteiq_report", None)
+def candidate_holes_m(candidate: dict, factor: float) -> list:
+    return [[[float(p[0]) * factor, float(p[1]) * factor] for p in ring] for ring in (candidate.get("holes") or [])]
 
 
 def _identify_site_callback():
@@ -302,13 +303,13 @@ with header_left:
 
 with header_right:
     active_boundary_summary = st.session_state.get("siteiq_boundary")
-    current_auth_key = _val("authority_key", "bengaluru_rmp2015")
+    current_auth_key = _val("authority_key", "other_karnataka")
     auth_label = authority_labels.get(current_auth_key, current_auth_key)
     st.markdown(f"""
     <div style="text-align: right; font-size: 0.82rem; color: #4B5563; padding-top: 8px;">
         <div><strong>Active Profile:</strong> {auth_label[:35]}...</div>
         <div><strong>Geometry:</strong> {'Survey Polyline (' + str(round(active_boundary_summary['area_m2'])) + ' m²)' if active_boundary_summary else 'No boundary applied'}</div>
-        <div><span class="badge-verified">v0.5.0 Production Ready</span></div>
+        <div><span class="badge-provisional">Legacy interface · preliminary feasibility only</span></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -405,7 +406,7 @@ with tab_loc:
             st.error(f"Resolution Notice: {st.session_state['siteiq_location_error']}")
 
     with r_col:
-        st.markdown("**Verified Location & Authority Candidate**")
+        st.markdown("**Location & Authority Candidate**")
         detection = st.session_state.get("siteiq_location_detection")
         if detection:
             auth = detection.get("authority", {})
@@ -420,7 +421,7 @@ with tab_loc:
                 st.caption(auth.get("reason", ""))
 
                 if auth.get("status") == "matched_polygon_layer":
-                    st.markdown('<span class="badge-verified">Verified Boundary Match</span>', unsafe_allow_html=True)
+                    st.markdown('<span class="badge-provisional">Installed Layer Match · confirm layer date and source</span>', unsafe_allow_html=True)
                 else:
                     st.markdown('<span class="badge-provisional">Provisional Locality Match</span>', unsafe_allow_html=True)
 
@@ -593,6 +594,8 @@ with tab_bound:
                         "source_location_point_wgs84": candidate.get("source_location_point_wgs84") or candidate.get("source_centroid_wgs84"),
                         "source_location_method": candidate.get("source_location_method", "KML location point" if source_type == "kml" else None),
                         "source_fingerprint": fingerprint,
+                        "holes_m": candidate_holes_m(candidate, float(factor)),
+                        "source_holes_wgs84": candidate.get("source_holes_wgs84"),
                     }
                     st.session_state["siteiq_front_edges"] = [edge_labels[x] for x in front_labels]
                     st.session_state["siteiq_rear_edges"] = [edge_labels[x] for x in rear_labels]
@@ -632,7 +635,7 @@ with tab_zone:
 
     current_authority_default = _val("authority_key", None)
     if current_authority_default not in authority_labels:
-        current_authority_default = (detection or {}).get("suggested_authority_key") or "bengaluru_rmp2015"
+        current_authority_default = (detection or {}).get("suggested_authority_key") or "other_karnataka"
     if current_authority_default not in authority_labels:
         current_authority_default = "other_karnataka"
 
@@ -660,7 +663,7 @@ with tab_zone:
             category_items = land_use_categories(profile)
             category_labels = [c.get("label", c.get("key")) for c in category_items]
             previous_category = _val("land_use_category", "")
-            category_default = previous_category if previous_category in category_labels else ("Residential (Main)" if "Residential (Main)" in category_labels else ("Residential" if "Residential" in category_labels else category_labels[0]))
+            category_default = previous_category if previous_category in category_labels else "Select a land-use category"
             category_options = ["Select a land-use category"] + category_labels
             category_index = category_options.index(category_default) if category_default in category_options else 0
             land_use_category = st.selectbox("Regulatory Land-Use Category", category_options, index=category_index, key="siteiq_land_use_category")
@@ -680,18 +683,18 @@ with tab_zone:
             st.metric("Plot Area (from polyline)", f"{site_area_m2:,.2f} m²")
             site_area_source = "imported polyline area"
         else:
-            site_area_m2 = st.number_input("Verified Plot Area (m²)", min_value=0.0, value=float(_val("site_area_m2", 2200.0) or 2200.0), step=50.0, key="siteiq_site_area")
+            site_area_m2 = st.number_input("Verified Plot Area (m²)", min_value=0.0, value=float(_val("site_area_m2", 0.0) or 0.0), step=50.0, key="siteiq_site_area")
             site_area_source = "user-entered survey/title area"
 
-        road_width_m = st.number_input("Abutting Legal Road Width (m)", min_value=0.0, value=float(_val("road_width_m", 18.0) or 18.0), step=0.5, key="siteiq_road_width", help="Notified ROW / road width shown on master plan.")
+        road_width_m = st.number_input("Abutting Legal Road Width (m)", min_value=0.0, value=float(_val("road_width_m", 0.0) or 0.0), step=0.5, key="siteiq_road_width", help="Notified ROW / road width shown on master plan.")
 
         statutory_deduction_pct = st.number_input(
-            "Statutory Reservation Deduction % (e.g. 15% park + 5% CA)",
+            "Reservation assumption % (what-if, not a rule)",
             min_value=0.0, max_value=50.0,
             value=float(_val("statutory_deduction_pct", 0.0) or 0.0),
             step=1.0,
             key="siteiq_statutory_deduction_pct",
-            help="For layouts and group housing >4,000 m², KTCP regulations mandate surrender of 15% for parks and 5% for civic amenities. This deduction reduces the net FAR calculation area."
+            help="Only an assumption. Configured rules apply their own deduction automatically. Enter the figure from the operative plan if you want to test one."
         )
 
         approval_path_options = [
@@ -822,11 +825,25 @@ with tab_scen:
             })
 
     # High-rise check indicator
-    any_high_rise = any(s.get("height_m", 0) >= 21.0 for s in scenarios)
+    any_high_rise = any((s.get("height_m") or 0) >= 21.0 for s in scenarios)
     if any_high_rise:
-        st.markdown('<div class="badge-alert">🔥 HIGH-RISE DETECTED (≥21m): Triggers mandatory Fire Force Act 2023 NOC and 6.0m clear all-round motorable fire tender driveway.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="badge-alert">HIGH-RISE (21 m or above): Fire NOC required under the Karnataka Fire Force Act. Take fire access dimensions from NBC 2016 Part 4 and the fire department.</div>', unsafe_allow_html=True)
 
     st.markdown("---")
+    site_payload = {
+        "project_name": project_name.strip() or "Untitled site feasibility", "client": client_name.strip(),
+        "address": address.strip(), "map_url": map_url.strip(), "coordinates": coordinates.strip(),
+        "authority_key": authority_key, "zone": land_use_category, "land_use_category": land_use_category,
+        "official_zone": str(_val("official_zone", official_zone or "Not verified")), "surrounding_zone": surrounding_zone,
+        "proposed_use": proposed_use, "site_area_m2": float(site_area_m2), "site_area_source": site_area_source,
+        "road_width_m": float(road_width_m), "statutory_deduction_pct": float(statutory_deduction_pct) if statutory_deduction_pct > 0 else None,
+        "height_for_setback_m": scenarios[0].get("height_m") if scenarios else None,
+        "stilt": bool(scenarios[0].get("stilt", False)) if scenarios else False,
+        "basement": "Option-specific" if any(x.get("basement_levels", 0) > 0 for x in scenarios) else "No basement selected",
+        "approval_path": approval_path, "scenarios": scenarios,
+        "boundary": active_boundary, "location": detection,
+    }
+    current_fingerprint = input_fingerprint(site_payload)
     run_assessment = st.button("Run regulatory and option feasibility", type="primary", use_container_width=True)
     if run_assessment:
         if site_area_m2 <= 0:
@@ -836,76 +853,8 @@ with tab_scen:
         elif profile and (not land_use_category or land_use_category == "Select a land-use category"):
             st.error("Select the official regulatory land-use category.")
         else:
-            site = {
-                "project_name": project_name.strip() or "Untitled site feasibility", "client": client_name.strip(),
-                "address": address.strip(), "map_url": map_url.strip(), "coordinates": coordinates.strip(),
-                "authority_key": authority_key, "zone": land_use_category, "land_use_category": land_use_category,
-                "official_zone": str(_val("official_zone", official_zone or "Not verified")), "surrounding_zone": surrounding_zone,
-                "proposed_use": proposed_use, "site_area_m2": float(site_area_m2), "site_area_source": site_area_source,
-                "road_width_m": float(road_width_m), "statutory_deduction_pct": float(statutory_deduction_pct) if statutory_deduction_pct > 0 else None,
-                "frontage_m": float(_val("frontage_m", 0.0) or 0.0) if float(_val("frontage_m", 0.0) or 0.0) > 0 else None,
-                "depth_m": float(_val("depth_m", 0.0) or 0.0) if float(_val("depth_m", 0.0) or 0.0) > 0 else None,
-                "shape_type": "Irregular / non-rectangular" if active_boundary else str(_val("shape_type", "Not determined from imported geometry")),
-                "geometry_mode": "Use imported polygon" if active_boundary else "No imported polygon",
-                "height_for_setback_m": scenarios[0].get("height_m") if scenarios else None,
-                "stilt": bool(scenarios[0].get("stilt", False)) if scenarios else False,
-                "basement": "Option-specific" if any(x.get("basement_levels", 0) > 0 for x in scenarios) else "No basement selected",
-                "approval_path": approval_path, "authority_notes": str(_val("authority_notes", "")), "scenarios": scenarios,
-            }
-            report = build_report(site, registry=registry, profile=profile)
-            report["location_identification"] = detection
-            if active_boundary:
-                parcel = Polygon(active_boundary["points_m"])
-                front_edges = active_boundary.get("front_edges", [])
-                rear_edges = active_boundary.get("rear_edges", [])
-                option_data = []
-                envelope_map = {}
-                for opt in report.get("scenarios", []):
-                    building_env = calculate_setback_envelope(parcel, opt.get("setback_result", {}), front_edges, rear_edges)
-                    opt["boundary_envelope"] = building_env
-                    envelope_map[opt.get("name", "Option")] = building_env
-                    bres = opt.get("basement_setback_result", {})
-                    if int(opt.get("basement_levels", 0) or 0) > 0:
-                        basement_env = calculate_setback_envelope(parcel, bres, front_edges, rear_edges)
-                    else:
-                        basement_env = {"status": "no_basement", "message": "No basement selected for this option.", "area_m2": None, "geometry": None}
-                    opt["basement_boundary_envelope"] = basement_env
-                    if basement_env.get("geometry"):
-                        envelope_map[opt.get("name", "Option") + " basement"] = basement_env
-
-                    if opt.get("footprint_m2") is None and building_env.get("area_m2") is not None:
-                        opt["footprint_m2"] = round(float(building_env["area_m2"]), 2)
-                        opt["footprint_source"] = "preliminary setback envelope area"
-                        floors = opt.get("floors")
-                        if floors:
-                            opt["gross_concept_area_m2"] = round(opt["footprint_m2"] * int(floors), 2)
-                            opt["achieved_gross_far_ratio"] = round(opt["gross_concept_area_m2"] / site_area_m2, 3)
-                            cap = opt.get("far_capacity_m2")
-                            opt["scenario_headroom_m2"] = round(cap - opt["gross_concept_area_m2"], 2) if cap is not None else None
-                    elif opt.get("footprint_m2") is not None and building_env.get("area_m2") is not None:
-                        opt["footprint_source"] = "user-entered design footprint"
-                        opt["footprint_exceeds_envelope"] = float(opt["footprint_m2"]) > float(building_env["area_m2"]) + 0.5
-                        if opt["footprint_exceeds_envelope"]:
-                            opt["envelope_warning"] = "Entered footprint is larger than the calculated preliminary setback envelope. Reduce footprint or inspect geometry."
-
-                    option_data.append({"name": opt.get("name"), "envelope": building_env, "basement_envelope": basement_env})
-
-                report["boundary_analysis"] = {
-                    "source_file": active_boundary.get("source_file"), "source_type": active_boundary.get("source_type"),
-                    "source_units": active_boundary.get("source_units"), "scale_to_m": active_boundary.get("scale_to_m"),
-                    "area_m2": active_boundary.get("area_m2"), "perimeter_m": active_boundary.get("perimeter_m"),
-                    "vertex_count": active_boundary.get("vertex_count"), "is_convex": active_boundary.get("is_convex"),
-                    "validation_status": active_boundary.get("validation_status"), "validation_notes": active_boundary.get("validation_notes", []),
-                    "use_computed_area": active_boundary.get("use_computed_area", True),
-                    "front_edges": front_edges, "rear_edges": rear_edges,
-                    "geometry": {"type": "Polygon", "coordinates": [[list(pt) for pt in list(parcel.exterior.coords)]]},
-                    "options": option_data,
-                }
-                st.session_state["siteiq_active_envelope_layers"] = envelope_map
-
-            st.session_state["siteiq_report"] = report
-            st.session_state["siteiq_last_site"] = site
-            st.success("Feasibility assessment calculated successfully. Switch to Tab 6 (Feasibility Dossier) to inspect results and export reports.")
+            st.session_state["siteiq_report"] = assess(site_payload, registry=registry)
+            st.success("Feasibility assessment calculated. Switch to Tab 6 to inspect results and export reports.")
 
 # -----------------------------------------------------------------------------
 # TAB 6: COMPARATIVE FEASIBILITY & DOSSIER
@@ -916,7 +865,16 @@ with tab_dossier:
     st.markdown('<div class="section-caption">Comparative option metrics, 2D envelope diagrams, statutory audit traces, and exportable client deliverables.</div>', unsafe_allow_html=True)
 
     report = st.session_state.get("siteiq_report")
+    if report and report.get("input_fingerprint") != current_fingerprint:
+        # Inputs changed since this assessment ran, so its figures and exports are no longer valid.
+        st.session_state.pop("siteiq_report", None)
+        report = None
+        st.warning("Inputs changed, so the previous assessment was cleared. Run it again in Tab 5.")
     if report:
+        verdict = report.get("verdict", {})
+        st.markdown(f"**Status: {verdict.get('code', '').replace('_', ' ').title()}.** {verdict.get('message', '')}")
+        with st.expander("Compliance register", expanded=False):
+            st.dataframe(pd.DataFrame([{"Status": c["status"], "Check": c["title"], "Option": c.get("option") or "All", "Finding": c["message"]} for c in report.get("compliance_checks", [])]), use_container_width=True, hide_index=True)
         site = report["site"]
         far = report.get("far", {})
 
@@ -1009,4 +967,4 @@ with tab_dossier:
         st.info("No feasibility assessment calculated yet. Configure your project parameters in Tabs 1–5 and click **Run regulatory and option feasibility** in Tab 5.")
 
 st.markdown("---")
-st.markdown('<div style="text-align: center; font-size: 0.80rem; color: #9CA3AF;">SiteIQ v0.5.0 | Executive Architectural Feasibility Suite | Strict Zero-Hallucination Regulatory Model</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: center; font-size: 0.80rem; color: #9CA3AF;">SiteIQ legacy interface | Preliminary feasibility only, not sanction advice</div>', unsafe_allow_html=True)

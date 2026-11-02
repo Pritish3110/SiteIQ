@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from siteiq import __version__
 from siteiq.engine import (
     load_authority_registry, load_rule_profile, match_far_rule,
     calculate_setbacks, calculate_basement_setbacks, build_report,
@@ -84,7 +85,7 @@ def test_group_housing_build_report_uses_net_area_for_capacity_and_option_yield(
         "scenarios": [{"name":"Option 01","height_m":15,"floors":5,"footprint_m2":10000,"stilt":False,"basement_levels":1}],
     }
     report = build_report(site, registry=registry)
-    assert report["application"]["version"] == "0.4.7"
+    assert report["application"]["version"] == __version__
     assert report["maximum_far"] == 2.75
     assert report["maximum_far_area_m2"] == round(20684 * 0.95 * 2.75, 2)
     assert "provisional secondary-source" in report["scenarios"][0]["benchmark_source"]

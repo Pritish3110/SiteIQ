@@ -2,7 +2,7 @@
   "profile_key": "bengaluru_rmp2015_partial",
   "profile_name": "Bengaluru / Greater Bengaluru RMP 2015 - selected rules, 2026 update",
   "profile_status": "partial; selected tables transcribed; not a consolidated code",
-  "last_reviewed": "2026-10-16",
+  "last_reviewed": "2026-11-02",
   "important_note": "Only selected provisions from user-supplied RMP 2015 and amendments are configured. The FAR engine uses the table structure: road width determines the road-based FAR candidate and, where the table also states plot-area bands, the plot-area FAR limit caps that candidate; this follows Regulation 3.4(iii)-(iv) in the supplied RMP. Every result is a rule-based candidate subject to zone/jurisdiction and current-notification verification. For a category without a configured operative table, no maximum FAR is invented.",
   "sources": [
     {
@@ -55,6 +55,25 @@
       "clause": "Chapter 4, Regulations 4.1-4.10, Tables 10-19; Chapter 3, Regulation 3.4(iii)-(iv)",
       "status": "provided base source; apply supplied subsequent amendments and verify current operative text",
       "url": "https://eng.bdabangalore.org/masterplan.html"
+    },
+    {
+      "id": "rmp2015_online_copy",
+      "title": "Revised Master Plan 2015 Vol. III, Zoning of Land Use and Regulations (G.O. UDD 540 BEM AA SE 2004, 22-06-2007)",
+      "document": "Public copy hosted by OpenCity",
+      "clause": "Definitions 18 and 40; Regulations 3.4 and 3.9; Tables 10, 12, 14 and 23; Chapter 7",
+      "status": "Tables 10, 12 and 14 and Table 23 compared with this copy on 2026-11-02. Later amendments may change them.",
+      "url": "https://data.opencity.in/dataset/bengaluru-masterplan-zoning-regulations-2015"
+    },
+    {
+      "id": "udd235_online_copy",
+      "title": "UDD 235 MNJ 2025(E), 05-01-2026",
+      "notification": "UDD 235 MNJ 2025(E)",
+      "date": "2026-01-05",
+      "document": "Public scan hosted by OpenCity",
+      "document_page": "Pages 2-6",
+      "clause": "Tables 8 and 16; Table 9 notes; Regulations 3.9 and 3.10; Table 10 notes (b) and (c)",
+      "status": "Pages 2-6 compared with the configured rules on 2026-11-02.",
+      "url": "https://data.opencity.in/dataset/greater-bengaluru-amendment-regulations-2025"
     }
   ],
   "far_table_residential_main": [
@@ -220,11 +239,6 @@
     "alternative_guidance_value_charge_pct": 10,
     "condition": "Only if this is an eligible single-plot approval under Chapter 6-A and the provision is applicable; check property-record identity, registered deed history and prior approval/grandfather provisions.",
     "source_id": "udd272_single_plot"
-  },
-  "fire_noc_trigger": {
-    "height_min_m_inclusive": 21,
-    "condition": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed.",
-    "source_id": "kff_act_2023"
   },
   "land_use_categories": [
     {
@@ -1129,5 +1143,136 @@
       }
     ]
   },
-  "industrial_table16_amended_note": "Table 16 was substituted by UDD 235 MNJ 2025(E), dated 05.01.2026. For up to 500 m² the front setback is 12% of site depth and rear/sides 8% of site depth/width; remaining area bands retain specified fixed distances. Verify applicability and current consolidated text."
+  "industrial_table16_amended_note": "Table 16 was substituted by UDD 235 MNJ 2025(E), dated 05.01.2026. For up to 500 m² the front setback is 12% of site depth and rear/sides 8% of site depth/width; remaining area bands retain specified fixed distances. Verify applicability and current consolidated text.",
+  "source_status": "official_source_found_pending_review",
+  "effective_from": null,
+  "effective_to": null,
+  "reviewed_by": null,
+  "profile_version": "2026-11-02",
+  "setback_table8_height_excludes_stilt": true,
+  "setback_table8_small_plot": {
+    "max_area_m2": 250,
+    "max_total_height_m": 15,
+    "source_id": "udd235_online_copy",
+    "note": "Plots up to 250 m² with height up to 15 m including stilt use Table 8."
+  },
+  "stilt_definition": {
+    "max_clear_height_m_exclusive": 2.4,
+    "source_id": "rmp2015_online_copy",
+    "note": "RMP 2015 defines a stilt as non-habitable with height less than 2.4 m. Later notifications may differ."
+  },
+  "height_limits": [
+    {
+      "id": "road_below_9m",
+      "road_width_max_exclusive_m": 9.0,
+      "max_height_m": 15.0,
+      "includes_stilt": true,
+      "categories": [
+        "Residential (Main)"
+      ],
+      "source_id": "udd235_online_copy",
+      "note": "Table 10 note (b): road below 9.0 m restricts height to 15.0 m including stilt."
+    },
+    {
+      "id": "small_plot_height",
+      "site_area_max_m2": 250,
+      "max_height_m": 12.0,
+      "includes_stilt": false,
+      "source_id": "udd235_online_copy",
+      "note": "Table 9 note 1: plots up to 250 m² are limited to 12.0 m excluding stilt."
+    }
+  ],
+  "apartment_rules": {
+    "categories": [
+      "Residential (Main)"
+    ],
+    "minimum_road_width_m": 9.0,
+    "source_id": "udd235_online_copy",
+    "note": "Table 10 note (c) as substituted by UDD 235.",
+    "bands": [
+      {
+        "min_exclusive": 200,
+        "max_exclusive": 360,
+        "rings": [
+          "I",
+          "II",
+          "III"
+        ],
+        "max_units": 6
+      },
+      {
+        "min_inclusive": 360,
+        "rings": [
+          "I",
+          "II"
+        ],
+        "max_units": null
+      },
+      {
+        "min_exclusive": 360,
+        "max_inclusive": 750,
+        "rings": [
+          "III"
+        ],
+        "max_units": 8
+      },
+      {
+        "min_exclusive": 750,
+        "rings": [
+          "III"
+        ],
+        "max_units": null
+      }
+    ]
+  },
+  "basement_limits": {
+    "max_levels": 5,
+    "no_parking_below_site_area_m2": 200,
+    "source_id": "rmp2015_online_copy",
+    "note": "Regulation 3.9: up to 5 levels for car parking; no basement car parking on sites below 200 m². UDD 235 bars basements in notified flood-prone or low-lying areas."
+  },
+  "parking_rule": {
+    "source_id": "rmp2015_online_copy",
+    "note": "Table 23. One car space of 2.5 m × 5.5 m. Part areas count when they exceed 50% of the standard.",
+    "floor_area_per_car_m2": {
+      "Commercial / office": 50,
+      "Industrial / warehouse": 100,
+      "Public / semi-public use": 100
+    },
+    "multi_dwelling": {
+      "uses": [
+        "Residential apartments"
+      ],
+      "unit_area_per_car_m2": 150,
+      "small_unit_max_m2": 50,
+      "small_units_per_car": 2,
+      "visitor_pct": 10
+    }
+  },
+  "ramp_rule": {
+    "source_id": "udd235_online_copy",
+    "bands": [
+      {
+        "max_cars": 25,
+        "text": "One ramp 3.5 m wide"
+      },
+      {
+        "max_cars": 200,
+        "text": "Two ramps 3.5 m wide or one ramp 6 m wide"
+      },
+      {
+        "max_cars": 400,
+        "text": "Four ramps 3.5 m wide or two ramps 6 m wide"
+      },
+      {
+        "max_cars": 800,
+        "text": "Six ramps 3.5 m wide or three ramps 6 m wide"
+      },
+      {
+        "max_cars": null,
+        "text": "Eight ramps 3.5 m wide or four ramps 6 m wide"
+      }
+    ]
+  },
+  "development_plan_note": "RMP 2015 Chapter 7 (Table 20): residential development plan reserves 10% park and at least 5% civic amenity, with FAR calculated after deducting the civic-amenity site only. It does not support a blanket 20% FAR deduction."
 }

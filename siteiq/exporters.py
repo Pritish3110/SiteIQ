@@ -18,14 +18,57 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
 
-NAVY = colors.HexColor('#1F3338')
-TEAL = colors.HexColor('#256F67')
-MINT = colors.HexColor('#E9F1EE')
-ORANGE = colors.HexColor('#D97743')
-PALE = colors.HexColor('#F4F6F5')
-GREY = colors.HexColor('#5D686A')
-RED = colors.HexColor('#9E4C43')
+from . import __version__
+
+NAVY = colors.HexColor('#111111')
+TEAL = colors.HexColor('#111111')
+MINT = colors.HexColor('#F2F2F2')
+ORANGE = colors.HexColor('#555555')
+PALE = colors.HexColor('#F5F5F5')
+GREY = colors.HexColor('#656565')
+RED = colors.HexColor('#111111')
 WHITE = colors.white
+
+
+STATUS_LABELS = {"PASS": "Pass", "FAIL": "Fail", "NEEDS_INPUT": "Needs input", "NOT_CONFIGURED": "Not configured", "REFER": "Confirm"}
+VERDICT_LABELS = {"BLOCKED": "Blocked", "INCOMPLETE": "Incomplete", "PROVISIONAL": "Provisional", "READY_FOR_REVIEW": "Ready for review"}
+CHECK_ORDER = {"FAIL": 0, "NEEDS_INPUT": 1, "REFER": 2, "NOT_CONFIGURED": 3, "PASS": 4}
+
+
+def _sorted_checks(report: dict) -> list[dict]:
+    return sorted(report.get("compliance_checks") or [], key=lambda c: CHECK_ORDER.get(c.get("status"), 9))
+
+
+def _verdict_line(report: dict) -> str | None:
+    verdict = report.get("verdict")
+    if not verdict:
+        return None
+    return f"{VERDICT_LABELS.get(verdict['code'], verdict['code'])}: {verdict['message']}"
+
+
+def _compliance_story(report: dict, styles) -> list:
+    """Full check register: every provision and its outcome, so nothing unassessed reads as a pass."""
+    checks = _sorted_checks(report)
+    if not checks:
+        return []
+    rows = [[_p(h, styles["ClientTableHead"]) for h in ("Status", "Check", "Option", "Finding", "Source")]]
+    for c in checks:
+        src = c.get("source") or {}
+        rows.append([
+            _p(f"<b>{STATUS_LABELS.get(c['status'], c['status'])}</b>", styles["ClientTableSmall"]),
+            _p(_html(c.get("title", "")), styles["ClientTableSmall"]),
+            _p(_html(c.get("option") or "All"), styles["ClientTableSmall"]),
+            _p(_html(c.get("message", "")), styles["ClientTableSmall"]),
+            _p(_html(src.get("notification") or src.get("title") or "—"), styles["ClientTableSmall"]),
+        ])
+    table = Table(rows, colWidths=[20*mm, 40*mm, 22*mm, 131*mm, 60*mm], repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND',(0,0),(-1,0),NAVY),('LINEBELOW',(0,0),(-1,-1),0.3,colors.HexColor('#CCCCCC')),
+        ('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),4),('RIGHTPADDING',(0,0),(-1,-1),4),('TOPPADDING',(0,0),(-1,-1),3),('BOTTOMPADDING',(0,0),(-1,-1),3),
+    ]))
+    counts = (report.get("verdict") or {}).get("counts", {})
+    summary = " · ".join(f"{counts.get(k, 0)} {STATUS_LABELS[k].lower()}" for k in ("FAIL", "NEEDS_INPUT", "REFER", "NOT_CONFIGURED", "PASS"))
+    return [PageBreak(), _p("COMPLIANCE REGISTER", styles["ClientTitle"]), _p(_html(summary), styles["ClientSubtitle"]), table]
 
 
 def _fmt(value, suffix=""):
@@ -158,6 +201,12 @@ def build_pdf_report(report: dict) -> bytes:
     story.append(_p("SITE FEASIBILITY | CLIENT SUMMARY", styles["ClientTitle"]))
     story.append(_p(f"{_html(report.get('project','Untitled site'))}  |  Prepared { _html(report.get('application',{}).get('assessment_date','')) }  |  Early-stage review", styles["ClientSubtitle"]))
 
+    verdict_line = _verdict_line(report)
+    if verdict_line:
+        verdict_table = Table([[_p(f"<b>{_html(verdict_line)}</b>", styles["Callout"])]], colWidths=[273*mm])
+        verdict_table.setStyle(TableStyle([('BOX',(0,0),(-1,-1),1.2,NAVY),('LEFTPADDING',(0,0),(-1,-1),9),('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6)]))
+        story += [verdict_table, Spacer(1, 2*mm)]
+
     if far.get("status") == "no_matching_table_row":
         banner_title = "Current position: one key rule still needs confirmation"
     elif far.get("status") == "not_configured":
@@ -173,8 +222,8 @@ def build_pdf_report(report: dict) -> bytes:
         [_p(_html(_plain_far_summary(report)), styles["Callout"])],
     ], colWidths=[273*mm])
     callout.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,-1),colors.HexColor('#FFF2E8')),
-        ('BOX',(0,0),(-1,-1),0.6,colors.HexColor('#E8B08B')),
+        ('BACKGROUND',(0,0),(-1,-1),colors.HexColor('#F5F5F5')),
+        ('BOX',(0,0),(-1,-1),0.6,colors.HexColor('#BDBDBD')),
         ('LEFTPADDING',(0,0),(-1,-1),9),('RIGHTPADDING',(0,0),(-1,-1),9),
         ('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6),
     ]))
@@ -187,7 +236,7 @@ def build_pdf_report(report: dict) -> bytes:
     mt = Table(metrics, colWidths=[47*mm, 53*mm, 83*mm, 90*mm], rowHeights=[8*mm, 10*mm])
     mt.setStyle(TableStyle([
         ('BACKGROUND',(0,0),(-1,0),TEAL),('BACKGROUND',(0,1),(-1,1),MINT),
-        ('BOX',(0,0),(-1,-1),0.4,colors.HexColor('#D7E0DC')),('INNERGRID',(0,0),(-1,-1),0.4,colors.HexColor('#D7E0DC')),
+        ('BOX',(0,0),(-1,-1),0.4,colors.HexColor('#DDDDDD')),('INNERGRID',(0,0),(-1,-1),0.4,colors.HexColor('#DDDDDD')),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),
     ]))
     story += [mt, Spacer(1, 2*mm)]
@@ -224,7 +273,7 @@ def build_pdf_report(report: dict) -> bytes:
     # Simple project facts that don't require interpretation.
     address = site.get("address") or "Not provided"
     if site.get("map_url"):
-        address += f" | <link href=\"{_html(site['map_url'])}\" color=\"#256F67\">Open map</link>"
+        address += f" | <link href=\"{_html(site['map_url'])}\" color=\"#585858\">Open map</link>"
     facts = [
         [_p("Site location", styles["ClientTable"]), _p(address, styles["ClientTable"])],
         [_p("Planning zone entered", styles["ClientTable"]), _p(_html(site.get("zone") or "Not verified") + " (must be checked against the official map)", styles["ClientTable"])],
@@ -232,7 +281,7 @@ def build_pdf_report(report: dict) -> bytes:
     ]
     ft = Table(facts, colWidths=[48*mm,225*mm])
     ft.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(0,-1),PALE),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(0,-1),PALE),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#DDDDDD')),
         ('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4),
     ]))
     story += [Spacer(1, 2*mm), ft, Spacer(1, 2*mm)]
@@ -245,8 +294,8 @@ def build_pdf_report(report: dict) -> bytes:
     ]
     step_table = Table([[ _p(f"<b>{i+1}.</b>  {_html(item)}", styles["ClientBody"]) ] for i,item in enumerate(steps)], colWidths=[273*mm])
     step_table.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),0.4,colors.HexColor('#D7E0DC')),
-        ('INNERGRID',(0,0),(-1,-1),0.3,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),0.4,colors.HexColor('#DDDDDD')),
+        ('INNERGRID',(0,0),(-1,-1),0.3,colors.HexColor('#DDDDDD')),
         ('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),2),
     ]))
     story.append(step_table)
@@ -283,7 +332,7 @@ def build_pdf_report(report: dict) -> bytes:
         ])
     tbl = Table(rows, colWidths=[26*mm,34*mm,35*mm,38*mm,54*mm,86*mm], repeatRows=1)
     tbl.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0),NAVY),('GRID',(0,0),(-1,-1),0.4,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(-1,0),NAVY),('GRID',(0,0),(-1,-1),0.4,colors.HexColor('#DDDDDD')),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),
         ('LEFTPADDING',(0,0),(-1,-1),5),('RIGHTPADDING',(0,0),(-1,-1),5),('TOPPADDING',(0,0),(-1,-1),7),('BOTTOMPADDING',(0,0),(-1,-1),7),
     ]))
@@ -299,8 +348,8 @@ def build_pdf_report(report: dict) -> bytes:
     note_data = [[_p("• " + n, styles["ClientBody"])] for n in notes]
     note_tbl = Table(note_data, colWidths=[273*mm])
     note_tbl.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,-1),MINT),('BOX',(0,0),(-1,-1),0.4,colors.HexColor('#D7E0DC')),
-        ('INNERGRID',(0,0),(-1,-1),0.3,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(-1,-1),MINT),('BOX',(0,0),(-1,-1),0.4,colors.HexColor('#DDDDDD')),
+        ('INNERGRID',(0,0),(-1,-1),0.3,colors.HexColor('#DDDDDD')),
         ('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),2),
     ]))
     story += [note_tbl, Spacer(1, 2*mm)]
@@ -332,7 +381,7 @@ def build_pdf_report(report: dict) -> bytes:
         ])
     bt = Table(basis_rows, colWidths=[30*mm,125*mm,118*mm], repeatRows=1)
     bt.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0),TEAL),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(-1,0),TEAL),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#DDDDDD')),
         ('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),
         ('LEFTPADDING',(0,0),(-1,-1),5),('RIGHTPADDING',(0,0),(-1,-1),5),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),
     ]))
@@ -360,7 +409,7 @@ def build_pdf_report(report: dict) -> bytes:
                 [_p("Area difference vs input", styles["ClientTable"]), _p((f"{boundary.get('area_difference_from_input_pct'):.2f}%" if boundary.get("area_difference_from_input_pct") is not None else "Not compared"), styles["ClientTable"])],
             ]
             gt = Table(geom_rows, colWidths=[77*mm,70*mm], repeatRows=1)
-            gt.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),TEAL),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),('GRID',(0,0),(-1,-1),0.4,colors.HexColor('#D7E0DC')),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('LEFTPADDING',(0,0),(-1,-1),5),('RIGHTPADDING',(0,0),(-1,-1),5),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
+            gt.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),TEAL),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),('GRID',(0,0),(-1,-1),0.4,colors.HexColor('#DDDDDD')),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('LEFTPADDING',(0,0),(-1,-1),5),('RIGHTPADDING',(0,0),(-1,-1),5),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
             option_rows = [[_p("Option", styles["ClientTableHead"]), _p("Envelope area", styles["ClientTableHead"]), _p("Status", styles["ClientTableHead"])]]
             for item in boundary.get("options", []):
                 env = item.get("envelope", {})
@@ -368,7 +417,7 @@ def build_pdf_report(report: dict) -> bytes:
                 status_label = "Calculated — preliminary" if env.get("status") == "calculated_preliminary" else _status_text(env.get("status"))
                 option_rows.append([_p(_html(item.get("name")), styles["ClientTable"]), _p(area_label, styles["ClientTable"]), _p(status_label, styles["ClientTableSmall"])])
             opt_tbl = Table(option_rows, colWidths=[39*mm,45*mm,63*mm], repeatRows=1)
-            opt_tbl.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),('GRID',(0,0),(-1,-1),0.4,colors.HexColor('#D7E0DC')),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('LEFTPADDING',(0,0),(-1,-1),4),('RIGHTPADDING',(0,0),(-1,-1),4),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
+            opt_tbl.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),('GRID',(0,0),(-1,-1),0.4,colors.HexColor('#DDDDDD')),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('LEFTPADDING',(0,0),(-1,-1),4),('RIGHTPADDING',(0,0),(-1,-1),4),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
             note = _p(_html(boundary.get("limitation", "Validate this geometry against the authenticated survey and current rules.")), styles["ClientSmall"])
             right_content = Table([[gt], [Spacer(1, 3*mm)], [_p("PRELIMINARY ENVELOPE AREAS", styles["ClientH3"])], [opt_tbl], [Spacer(1, 3*mm)], [note]], colWidths=[150*mm])
             right_content.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),0),('TOPPADDING',(0,0),(-1,-1),1),('BOTTOMPADDING',(0,0),(-1,-1),1)]))
@@ -408,7 +457,7 @@ def build_pdf_report(report: dict) -> bytes:
         c_rows.append([_p(_html(ch.get("item")), styles["ClientTable"]), _p(_html(why), styles["ClientTable"]), _p(_html(action), styles["ClientTable"]), _p(_html(status_label), styles["ClientTable"])])
     ct = Table(c_rows, colWidths=[49*mm,72*mm,115*mm,37*mm], repeatRows=1)
     ct.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0),NAVY),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(-1,0),NAVY),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#DDDDDD')),
         ('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),
         ('LEFTPADDING',(0,0),(-1,-1),5),('RIGHTPADDING',(0,0),(-1,-1),5),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),
     ]))
@@ -422,7 +471,7 @@ def build_pdf_report(report: dict) -> bytes:
     gl_data = [[_p(f"<b>{_html(term)}</b>", styles["ClientTable"]), _p(_html(defn), styles["ClientTable"])] for term,defn in glossary]
     gl = Table(gl_data, colWidths=[45*mm,228*mm])
     gl.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(0,-1),MINT),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(0,-1),MINT),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#DDDDDD')),
         ('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4),
     ]))
     story.append(gl)
@@ -448,16 +497,16 @@ def build_pdf_report(report: dict) -> bytes:
         if src.get("notification"):
             docref = _html(src.get("notification")) + "<br/>" + docref
         url = src.get("url") or ""
-        link = f"<link href=\"{_html(url)}\" color=\"#256F67\">Open source / authority page</link>" if url else "No link configured"
+        link = f"<link href=\"{_html(url)}\" color=\"#585858\">Open source / authority page</link>" if url else "No link configured"
         status = _html(src.get("status", ""))
         src_rows.append([
-            _p(title + (f"<br/><font color='#5D686A'>{clause}</font>" if clause else ""), styles["ClientTableSmall"]),
+            _p(title + (f"<br/><font color='#656565'>{clause}</font>" if clause else ""), styles["ClientTableSmall"]),
             _p(docref, styles["ClientTableSmall"]),
             _p((status + "<br/>" if status else "") + link, styles["ClientTableSmall"]),
         ])
     st = Table(src_rows, colWidths=[101*mm,78*mm,94*mm], repeatRows=1)
     st.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0),TEAL),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(-1,0),TEAL),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#DDDDDD')),
         ('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),
         ('LEFTPADDING',(0,0),(-1,-1),4),('RIGHTPADDING',(0,0),(-1,-1),4),('TOPPADDING',(0,0),(-1,-1),3),('BOTTOMPADDING',(0,0),(-1,-1),3),
     ]))
@@ -472,7 +521,7 @@ def build_pdf_report(report: dict) -> bytes:
             prem_text += f"<br/><b>Illustrative total FAR ceiling:</b> {float(premium['potential_total_far_candidate']):.2f}"
             prem_text += f"<br/><b>Illustrative total floor area:</b> {float(premium.get('potential_total_floor_area_candidate_m2',0)):,.0f} m²"
         if prem_src.get("url"):
-            prem_text += f'<br/><link href="{_html(prem_src.get("url"))}" color="#256F67">Open source reference</link>'
+            prem_text += f'<br/><link href="{_html(prem_src.get("url"))}" color="#585858">Open source reference</link>'
         story.append(_p(prem_text, styles["ClientBody"]))
     location_id = report.get("location_identification")
     if location_id:
@@ -493,13 +542,13 @@ def build_pdf_report(report: dict) -> bytes:
         auth_status = _html(_status_text(auth.get("status", "")))
         auth_reason = _html(_brief(auth.get("reason", "")))
         if auth.get("source_url"):
-            auth_reason += f'<br/><link href="{_html(auth.get("source_url"))}" color="#256F67">Source</link>'
+            auth_reason += f'<br/><link href="{_html(auth.get("source_url"))}" color="#585858">Source</link>'
         ident_rows.append([_p("Authority / rules profile", styles["ClientTableSmall"]), _p(_html(auth.get("label") or auth.get("key") or "Not identified"), styles["ClientTableSmall"]), _p(auth_status + ("<br/>" + auth_reason if auth_reason else ""), styles["ClientTableSmall"])])
         zone = location_id.get("zone", {})
         zone_status = _html(_status_text(zone.get("status", "")))
         zone_reason = _html(_brief(zone.get("reason", "")))
         if zone.get("source_url"):
-            zone_reason += f'<br/><link href="{_html(zone.get("source_url"))}" color="#256F67">Source</link>'
+            zone_reason += f'<br/><link href="{_html(zone.get("source_url"))}" color="#585858">Source</link>'
         ident_rows.append([_p("Land-use zone", styles["ClientTableSmall"]), _p(_html(zone.get("value", "Not verified")), styles["ClientTableSmall"]), _p(zone_status + ("<br/>" + zone_reason if zone_reason else ""), styles["ClientTableSmall"])])
         route = location_id.get("approval_route", {})
         route_status = _html(_status_text(route.get("status", "")))
@@ -507,7 +556,7 @@ def build_pdf_report(report: dict) -> bytes:
         ident_rows.append([_p("Approval route", styles["ClientTableSmall"]), _p(_html(route.get("suggested_value", "Not confirmed")), styles["ClientTableSmall"]), _p(route_status + ("<br/>" + route_reason if route_reason else ""), styles["ClientTableSmall"])])
         it = Table(ident_rows, colWidths=[43*mm,60*mm,170*mm], repeatRows=1)
         it.setStyle(TableStyle([
-            ('BACKGROUND',(0,0),(-1,0),NAVY),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#D7E0DC')),
+            ('BACKGROUND',(0,0),(-1,0),NAVY),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#DDDDDD')),
             ('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),
             ('LEFTPADDING',(0,0),(-1,-1),3),('RIGHTPADDING',(0,0),(-1,-1),3),('TOPPADDING',(0,0),(-1,-1),2),('BOTTOMPADDING',(0,0),(-1,-1),2),
         ]))
@@ -521,15 +570,15 @@ def build_pdf_report(report: dict) -> bytes:
                 title = _html(source.get("title", "Official source"))
                 note = _html(_brief(source.get("note", "Reference page only; confirm applicability."), 150))
                 url = source.get("url") or ""
-                link = f'<link href="{_html(url)}" color="#256F67">Open official page</link>' if url else "No link configured"
+                link = f'<link href="{_html(url)}" color="#585858">Open official page</link>' if url else "No link configured"
                 ps_rows.append([
                     _p(title, styles["ClientTableSmall"]),
                     _p(note, styles["ClientTableSmall"]),
-                    _p(link + "<br/><font color='#5D686A'>Reference page; not a verified geometry match</font>", styles["ClientTableSmall"]),
+                    _p(link + "<br/><font color='#656565'>Reference page; not a verified geometry match</font>", styles["ClientTableSmall"]),
                 ])
             pst = Table(ps_rows, colWidths=[62*mm, 155*mm, 54*mm], repeatRows=1)
             pst.setStyle(TableStyle([
-                ('BACKGROUND',(0,0),(-1,0),TEAL),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#D7E0DC')),
+                ('BACKGROUND',(0,0),(-1,0),TEAL),('GRID',(0,0),(-1,-1),0.35,colors.HexColor('#DDDDDD')),
                 ('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[WHITE,PALE]),
                 ('LEFTPADDING',(0,0),(-1,-1),3),('RIGHTPADDING',(0,0),(-1,-1),3),('TOPPADDING',(0,0),(-1,-1),2),('BOTTOMPADDING',(0,0),(-1,-1),2),
             ]))
@@ -537,19 +586,21 @@ def build_pdf_report(report: dict) -> bytes:
     story += [Spacer(1, 1*mm)]
     final_box = Table([[_p("<b>Important:</b> This is a preliminary feasibility aid, not a sanction report or confirmation of development rights. Verify operative regulations and authority interpretation before commercial commitments or submission.", styles["Callout"])]], colWidths=[273*mm])
     final_box.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),0.5,colors.HexColor('#D7E0DC')),
+        ('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),0.5,colors.HexColor('#DDDDDD')),
         ('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8),('TOPPADDING',(0,0),(-1,-1),7),('BOTTOMPADDING',(0,0),(-1,-1),7),
     ]))
     story.append(final_box)
 
+    story += _compliance_story(report, styles)
+
     def footer(canvas, doc_):
         canvas.saveState()
         w, h = landscape(A4)
-        canvas.setStrokeColor(colors.HexColor('#D8E0DD'))
+        canvas.setStrokeColor(colors.HexColor('#DDDDDD'))
         canvas.line(12*mm, 9.5*mm, w-12*mm, 9.5*mm)
         canvas.setFont("Helvetica", 7)
         canvas.setFillColor(GREY)
-        canvas.drawString(12*mm, 5.5*mm, "SITEIQ | Client-friendly preliminary feasibility | Confirm operative rule before sanction use")
+        canvas.drawString(12*mm, 5.5*mm, f"SITEIQ v{__version__} | Rule status: {report.get('application', {}).get('source_status', 'not recorded')} | Preliminary feasibility; confirm operative rules before sanction use")
         canvas.drawRightString(w-12*mm, 5.5*mm, f"Page {doc_.page}")
         canvas.restoreState()
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
@@ -560,7 +611,7 @@ def _hex(rgb):
     return RGBColor(*rgb)
 
 
-def _add_text(slide, x, y, w, h, text, size=12, color=(31,51,56), bold=False, font="Aptos", align=None):
+def _add_text(slide, x, y, w, h, text, size=12, color=(46,46,46), bold=False, font="Aptos", align=None):
     box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = box.text_frame
     tf.clear()
@@ -585,7 +636,7 @@ def _add_rect(slide, x, y, w, h, fill, line=None, radius=False):
     return shape
 
 
-def _set_cell(cell, text, font_size=9, color=(31,51,56), bold=False, fill=None):
+def _set_cell(cell, text, font_size=9, color=(46,46,46), bold=False, fill=None):
     cell.text = str(text)
     cell.margin_left = Inches(0.06); cell.margin_right = Inches(0.06); cell.margin_top = Inches(0.035); cell.margin_bottom = Inches(0.035)
     cell.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -607,20 +658,20 @@ def build_pptx_report(report: dict) -> bytes:
     site = report["site"]
     scenarios = report.get("scenarios", [])
     target_m2, target_far = _scenario_target(report)
-    dark=(31,51,56); teal=(37,111,103); mint=(233,241,238); orange=(217,119,67); grey=(93,104,106); pale=(244,246,245); white=(255,255,255); red=(158,76,67); line=(216,224,220)
+    dark=(46,46,46); teal=(88,88,88); mint=(238,238,238); orange=(142,142,142); grey=(101,101,101); pale=(245,245,245); white=(255,255,255); red=(99,99,99); line=(221,221,221)
     far = report.get("far", {})
 
     # Slide 1: executive summary.
     s = prs.slides.add_slide(blank)
     _add_rect(s,0,0,13.333,7.5,dark)
     _add_rect(s,0,0,0.16,7.5,orange)
-    _add_text(s,0.65,0.55,11.8,0.35,"SITEIQ  /  SITE FEASIBILITY",13,(180,215,204),True)
+    _add_text(s,0.65,0.55,11.8,0.35,"SITEIQ  /  SITE FEASIBILITY",13,(203,203,203),True)
     _add_text(s,0.65,1.05,11.8,0.65,report.get("project","Site feasibility"),29,white,True)
-    _add_text(s,0.65,1.75,11.8,0.36,"A plain-English early feasibility review  |  " + report.get("application",{}).get("assessment_date",""),11,(205,216,213))
+    _add_text(s,0.65,1.75,11.8,0.36,"A plain-English early feasibility review  |  " + report.get("application",{}).get("assessment_date",""),11,(212,212,212))
     cards=[(0.65,"PLOT AREA",f"{site['site_area_m2']:,.0f} m²"),(3.65,"ROAD WIDTH",f"{site['road_width_m']:.2f} m"),(6.65,"PROJECT",site.get("proposed_use","Not supplied")),(9.65,"SITE SHAPE",site.get("shape_type","Unknown"))]
     for x,label,value in cards:
-        _add_rect(s,x,2.5,2.72,1.12,(48,70,73),line=(68,95,94),radius=True)
-        _add_text(s,x+0.12,2.62,2.48,0.22,label,8.5,(177,211,200),True)
+        _add_rect(s,x,2.5,2.72,1.12,(64,64,64),line=(87,87,87),radius=True)
+        _add_text(s,x+0.12,2.62,2.48,0.22,label,8.5,(200,200,200),True)
         _add_text(s,x+0.12,2.94,2.48,0.52,value,13.5,white,True)
     if far.get("status") != "candidate_match_requires_verification":
         status = "FAR RULE NEEDS CONFIRMATION"
@@ -628,8 +679,8 @@ def build_pptx_report(report: dict) -> bytes:
         status = "PROVISIONAL TABLE CANDIDATE — VERIFY SOURCE"
     else:
         status = "FAR CANDIDATE FOUND — VERIFY BEFORE DESIGN FREEZE"
-    _add_rect(s,0.65,4.0,12.0,0.55,(255,242,232),line=(232,176,139),radius=True)
-    _add_text(s,0.85,4.12,11.6,0.25,status,11,(112,70,43),True)
+    _add_rect(s,0.65,4.0,12.0,0.55,(245,245,245),line=(189,189,189),radius=True)
+    _add_text(s,0.85,4.12,11.6,0.25,status,11,(79,79,79),True)
     if target_m2 is not None:
         overs = [o for o in scenarios if o.get("scenario_headroom_m2") is not None and o["scenario_headroom_m2"] < 0]
         if report.get("maximum_far") is None:
@@ -648,7 +699,7 @@ def build_pptx_report(report: dict) -> bytes:
     else:
         summary = "The current rule profile cannot establish a reliable maximum FAR. Confirm the applicable authority, official zone and current table before choosing a design option."
     _add_text(s,0.78,4.9,11.75,0.92,summary,16,white,False)
-    _add_text(s,0.7,6.25,11.8,0.55,"Purpose: support an early design discussion. This report is not a sanction, legal opinion or confirmation of development rights.",10,(212,221,218))
+    _add_text(s,0.7,6.25,11.8,0.55,"Purpose: support an early design discussion. This report is not a sanction, legal opinion or confirmation of development rights.",10,(218,218,218))
 
     # Slide 2: findings explained.
     s=prs.slides.add_slide(blank); _add_rect(s,0,0,13.333,7.5,pale)
@@ -715,7 +766,7 @@ def build_pptx_report(report: dict) -> bytes:
             png_bytes = boundary_preview_png(parcel, env_map, figsize=(10, 6.5), dpi=180)
             s=prs.slides.add_slide(blank); _add_rect(s,0,0,13.333,7.5,white)
             _add_text(s,0.45,0.35,12.3,0.45,"03  /  SITE BOUNDARY & SETBACK ENVELOPES",17,dark,True)
-            _add_text(s,0.45,0.84,12.2,0.32,"Imported geometry is scaled and checked; the coloured inner lines are preliminary setback envelopes.",9,grey)
+            _add_text(s,0.45,0.84,12.2,0.32,"Imported geometry is scaled and checked; the inner lines are preliminary setback envelopes.",9,grey)
             s.shapes.add_picture(BytesIO(png_bytes), Inches(0.45), Inches(1.35), height=Inches(5.35))
             _add_rect(s,4.75,1.32,8.12,5.55,mint,line=line,radius=True)
             _add_text(s,5.03,1.58,7.5,0.32,"BOUNDARY CHECK",11,teal,True)
@@ -733,7 +784,7 @@ def build_pptx_report(report: dict) -> bytes:
                 y+=0.66
             _add_text(s,5.03,5.45,7.5,0.25,"IMPORTANT",9,orange,True)
             _add_text(s,5.03,5.78,7.45,0.83,"Check the outline against the authenticated survey. Variable setbacks near complex concave corners are an approximation and require CAD review. A setback envelope is not the final building footprint.",8.8,dark)
-            _add_text(s,0.55,7.08,12.15,0.18,"SITEIQ v0.4.7 | Boundary geometry is preliminary; confirm dimensions, source units and operative regulations",7.1,grey)
+            _add_text(s,0.55,7.08,12.15,0.18,f"SITEIQ v{__version__} | Boundary geometry is preliminary; confirm dimensions, source units and operative regulations",7.1,grey)
         except Exception:
             pass
 
@@ -810,7 +861,7 @@ def build_pptx_report(report: dict) -> bytes:
         route_id = location_id.get("approval_route", {})
         limit_lines.append(f"Location lookup: {location_id.get('coordinates', {}).get('text', 'not resolved')}; authority {auth_id.get('status', 'unknown')}; zone {zone_id.get('status', 'unknown')}; route {route_id.get('status', 'unknown')}.")
     _add_text(s,0.72,5.78,11.8,0.83,"\n".join("• "+x for x in limit_lines),8.6,dark)
-    _add_text(s,0.55,7.08,12.15,0.18,"SITEIQ v0.4.7 | Preliminary feasibility only | Verify operative Gazette and authority interpretation before sanction use",7.1,grey)
+    _add_text(s,0.55,7.08,12.15,0.18,f"SITEIQ v{__version__} | Preliminary feasibility only | Verify operative Gazette and authority interpretation before sanction use",7.1,grey)
 
     premium = far.get("premium_far")
     if premium:
@@ -833,8 +884,24 @@ def build_pptx_report(report: dict) -> bytes:
         _add_text(s,0.68,4.68,11.9,0.4,"SOURCE / VERIFICATION",9,teal,True)
         _add_text(s,0.68,5.05,11.9,0.68,src_note,8.8,dark)
         _add_text(s,0.65,6.18,12.0,0.65,"Premium charges, TDR combination, site eligibility, exact operative Table 27 and any cap/exception are not calculated in this MVP. Confirm the final Gazette text and authority's interpretation.",9,grey)
-        _add_text(s,0.55,7.08,12.15,0.18,"SITEIQ v0.4.7 | Optional FAR scenario excluded from base benchmark",7.1,grey)
+        _add_text(s,0.55,7.08,12.15,0.18,f"SITEIQ v{__version__} | Optional FAR scenario excluded from base benchmark",7.1,grey)
 
+    checks = _sorted_checks(report)
+    if checks:
+        open_items = [c for c in checks if c["status"] != "PASS"]
+        s = prs.slides.add_slide(blank)
+        _add_text(s,0.45,0.35,12.3,0.45,"COMPLIANCE REGISTER",18,dark,True)
+        _add_text(s,0.45,0.84,12.2,0.36,_verdict_line(report) or "",10,grey)
+        shown = open_items[:14]
+        rows = [["STATUS","CHECK","OPTION","FINDING"]] + [[STATUS_LABELS.get(c["status"],c["status"]),c.get("title",""),c.get("option") or "All",str(c.get("message",""))[:150]] for c in shown]
+        table = s.shapes.add_table(len(rows),4,Inches(0.45),Inches(1.3),Inches(12.42),Inches(5.3)).table
+        for col,width in enumerate((1.25,2.5,1.2,7.47)):
+            table.columns[col].width = Inches(width)
+        for r,row in enumerate(rows):
+            for col,value in enumerate(row):
+                _set_cell(table.cell(r,col),value,8,(255,255,255) if r==0 else dark,r==0,dark if r==0 else None)
+        if len(open_items) > len(shown):
+            _add_text(s,0.45,6.95,12.2,0.3,f"{len(open_items)-len(shown)} more open items are listed in the PDF report and assessment JSON.",9,grey)
     out=BytesIO(); prs.save(out); return out.getvalue()
 
 # ---------------------------------------------------------------------------
@@ -891,7 +958,7 @@ def _draw_geo_preview_pdf(c, x, y, w, h, boundary_geom: dict | None, envelope_ge
     parcel = _geojson_polygon_lists(boundary_geom)
     envs = _geojson_polygon_lists(envelope_geom)
     if not parcel:
-        c.setStrokeColor(colors.HexColor('#B8C7C1'))
+        c.setStrokeColor(colors.HexColor('#C2C2C2'))
         c.setDash(3, 2)
         c.roundRect(x + 7, y + 7, w - 14, h - 14, 5, stroke=1, fill=0)
         c.setDash()
@@ -911,8 +978,8 @@ def _draw_geo_preview_pdf(c, x, y, w, h, boundary_geom: dict | None, envelope_ge
         for i, (px, py) in enumerate(poly):
             (path.moveTo if i == 0 else path.lineTo)(ox + px * scale, oy + py * scale)
         path.close()
-        c.setFillColor(colors.HexColor('#E9F1EE'))
-        c.setStrokeColor(colors.HexColor('#1F3338'))
+        c.setFillColor(colors.HexColor('#EEEEEE'))
+        c.setStrokeColor(colors.HexColor('#2E2E2E'))
         c.setLineWidth(1.25)
         c.drawPath(path, stroke=1, fill=1)
     for poly in envs:
@@ -920,7 +987,7 @@ def _draw_geo_preview_pdf(c, x, y, w, h, boundary_geom: dict | None, envelope_ge
         for i, (px, py) in enumerate(poly):
             (path.moveTo if i == 0 else path.lineTo)(ox + px * scale, oy + py * scale)
         path.close()
-        c.setFillColor(colors.Color(0.15, 0.44, 0.40, alpha=0.18))
+        c.setFillColor(colors.Color(0.1, 0.1, 0.1, alpha=0.12))
         c.setStrokeColor(TEAL)
         c.setLineWidth(1.5)
         c.drawPath(path, stroke=1, fill=1)
@@ -940,23 +1007,23 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
     boundary_geom = boundary.get("geometry")
     margin = 9 * mm
     gap = 4 * mm
-    dark = colors.HexColor('#1F3338')
-    teal = colors.HexColor('#256F67')
-    mint = colors.HexColor('#E9F1EE')
-    pale = colors.HexColor('#F4F6F5')
-    line = colors.HexColor('#D7E0DC')
-    orange = colors.HexColor('#D97743')
-    grey = colors.HexColor('#5D686A')
-    red = colors.HexColor('#9E4C43')
+    dark = colors.HexColor('#2E2E2E')
+    teal = colors.HexColor('#585858')
+    mint = colors.HexColor('#EEEEEE')
+    pale = colors.HexColor('#F5F5F5')
+    line = colors.HexColor('#DDDDDD')
+    orange = colors.HexColor('#8E8E8E')
+    grey = colors.HexColor('#656565')
+    red = colors.HexColor('#636363')
     white = colors.white
 
-    c.setFillColor(colors.HexColor('#FAFBFA')); c.rect(0, 0, page_w, page_h, stroke=0, fill=1)
+    c.setFillColor(colors.HexColor('#FBFBFB')); c.rect(0, 0, page_w, page_h, stroke=0, fill=1)
     c.setFillColor(dark); c.rect(0, page_h - 4 * mm, page_w, 4 * mm, stroke=0, fill=1)
     c.setFillColor(teal); c.setFont("Helvetica-Bold", 8.5); c.drawString(margin, page_h - 13 * mm, "SITEIQ  /  RESIDENTIAL FEASIBILITY")
     c.setFillColor(dark); c.setFont("Helvetica-Bold", 22)
     c.drawString(margin, page_h - 24 * mm, str(report.get("project", "Site feasibility"))[:70])
     c.setFillColor(grey); c.setFont("Helvetica", 8.5)
-    c.drawString(margin, page_h - 30 * mm, "BUILDING ENVELOPE + FAR COMPARISON  ·  PRELIMINARY DESIGN STUDY — NOT SANCTION")
+    c.drawString(margin, page_h - 30 * mm, (_verdict_line(report) or "BUILDING ENVELOPE + FAR COMPARISON  ·  PRELIMINARY DESIGN STUDY — NOT SANCTION")[:150])
     c.setFillColor(dark); c.roundRect(page_w - margin - 55*mm, page_h - 28*mm, 55*mm, 12*mm, 4, stroke=0, fill=1)
     c.setFillColor(white); c.setFont("Helvetica-Bold", 8)
     c.drawCentredString(page_w - margin - 27.5*mm, page_h - 21.5*mm, f"ASSESSMENT  {report.get('application', {}).get('assessment_date', '')}")
@@ -978,7 +1045,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
         x = margin + i * cell_w
         if i: c.setStrokeColor(line); c.setLineWidth(0.5); c.line(x, strip_y + 2*mm, x, strip_y + 12*mm)
         c.setFillColor(grey); c.setFont("Helvetica-Bold", 6.7); c.drawString(x + 3*mm, strip_y + 9.2*mm, label)
-        c.setFillColor(dark); c.setFont("Helvetica-Bold", 11 if i in (0, 3, 4) else 9)
+        c.setFillColor(dark); c.setFont("Helvetica-Bold", 11 if i in (2,2,2) else 9)
         c.drawString(x + 3*mm, strip_y + 3.6*mm, value[:32])
 
     # Option cards.
@@ -987,7 +1054,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
     card_y = card_top - card_h
     n = max(1, len(options))
     card_w = (strip_w - gap * (n - 1)) / n
-    color_cycle = [teal, colors.HexColor('#507BA2'), orange, colors.HexColor('#886AB0')]
+    color_cycle = [teal, colors.HexColor('#737373'), orange, colors.HexColor('#7B7B7B')]
     for i, opt in enumerate(options):
         x = margin + i * (card_w + gap)
         accent = color_cycle[i % len(color_cycle)]
@@ -1035,7 +1102,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
                 y -= line_h
         delta_text, delta = _option_delta(opt, target_m2)
         badge_y = card_y + 3*mm
-        c.setFillColor((mint if delta is None or delta <= 0 else colors.HexColor('#FCE9E2')))
+        c.setFillColor((mint if delta is None or delta <= 0 else colors.HexColor('#EEEEEE')))
         c.roundRect(x + 3*mm, badge_y, card_w - 6*mm, 8*mm, 3, stroke=0, fill=1)
         c.setFillColor((teal if delta is None or delta <= 0 else red)); c.setFont("Helvetica-Bold", 7.1)
         c.drawCentredString(x + card_w/2, badge_y + 2.8*mm, delta_text[:50])
@@ -1069,7 +1136,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
         c.setFillColor(dark); c.setFont("Helvetica-Bold", 7); c.drawRightString(chart_x + chart_w - 4*mm, yy + 1.2*mm, f"{value:,.0f} m²")
 
     c.setFillColor(dark); c.roundRect(panel_x, low_y, panel_w, low_h, 4, stroke=0, fill=1)
-    c.setFillColor(colors.HexColor('#BFD9D0')); c.setFont("Helvetica-Bold", 10); c.drawString(panel_x + 4*mm, low_y + low_h - 7*mm, "WHAT THE OPTIONS TELL US")
+    c.setFillColor(colors.HexColor('#D0D0D0')); c.setFont("Helvetica-Bold", 10); c.drawString(panel_x + 4*mm, low_y + low_h - 7*mm, "WHAT THE OPTIONS TELL US")
     findings = []
     if target_m2 is not None and options:
         above = [o for o in options if o.get("gross_concept_area_m2") is not None and float(o["gross_concept_area_m2"]) > target_m2 + 0.5]
@@ -1095,7 +1162,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
 
     c.setFillColor(grey); c.setFont("Helvetica", 6.5)
     footer = "*Provisional FAR transcribed from a secondary plan copy; confirm current official rules." if far.get("rule_source_quality") == "secondary_copy_pending_official_validation" else "Verify current authority, zone and operative rules before sanction use."
-    c.drawString(margin, 7*mm, f"SITEIQ v0.4.7 · {report.get('application', {}).get('assessment_date', '')} · Preliminary study — not sanction · {footer}")
+    c.drawString(margin, 7*mm, f"SITEIQ v{__version__} · {report.get('application', {}).get('assessment_date', '')} · Preliminary study — not sanction · {footer}")
     c.drawRightString(page_w - margin, 7*mm, "Rule-derived benchmark remains subject to jurisdiction and operative-source verification")
     c.showPage(); c.save()
     return buf.getvalue()
@@ -1155,12 +1222,12 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
     target_m2, target_far = _scenario_target(report)
     boundary = report.get("boundary_analysis") or {}
     boundary_geom = boundary.get("geometry")
-    dark=(31,51,56); teal=(37,111,103); mint=(233,241,238); pale=(244,246,245); grey=(93,104,106); white=(255,255,255); orange=(217,119,67); red=(158,76,67); line=(216,224,220)
-    _add_rect(slide,0,0,16.54,11.69,(250,251,250))
+    dark=(46,46,46); teal=(88,88,88); mint=(238,238,238); pale=(245,245,245); grey=(101,101,101); white=(255,255,255); orange=(142,142,142); red=(99,99,99); line=(221,221,221)
+    _add_rect(slide,0,0,16.54,11.69,(251,251,251))
     _add_rect(slide,0,0,16.54,0.12,dark)
     _add_text(slide,0.4,0.22,10.5,0.25,"SITEIQ  /  RESIDENTIAL FEASIBILITY",9,teal,True)
     _add_text(slide,0.4,0.48,11.6,0.52,report.get("project","Site feasibility"),25,dark,True)
-    _add_text(slide,0.4,1.03,13.0,0.24,"BUILDING ENVELOPE + FAR COMPARISON  ·  PRELIMINARY DESIGN STUDY — NOT SANCTION",9,grey)
+    _add_text(slide,0.4,1.03,13.0,0.24,(_verdict_line(report) or "BUILDING ENVELOPE + FAR COMPARISON  ·  PRELIMINARY DESIGN STUDY — NOT SANCTION")[:150],9,grey)
     _add_rect(slide,12.6,0.38,3.5,0.55,dark,radius=True)
     _add_text(slide,12.75,0.52,3.2,0.22,f"ASSESSMENT  {report.get('application',{}).get('assessment_date','')}",8,white,True,align=PP_ALIGN.CENTER)
 
@@ -1183,7 +1250,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
 
     card_x0=0.4; card_y=2.16; card_h=5.38; gap=0.14
     n=max(1,len(options)); card_w=(15.74-gap*(n-1))/n
-    accents=[teal,(80,123,162),(217,119,67),(136,106,176)]
+    accents=[teal,(115,115,115),(142,142,142),(123,123,123)]
     for i,opt in enumerate(options):
         x=card_x0+i*(card_w+gap); accent=accents[i%len(accents)]
         _add_rect(slide,x,card_y,card_w,card_h,white,line=line,radius=True)
@@ -1218,7 +1285,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
             _add_text(slide,x+0.14,yy+0.17,card_w-0.28,0.30,value,8.4,dark,True)
             yy+=0.48
         delta_text, delta=_option_delta(opt,target_m2)
-        fill=mint if delta is None or delta<=0 else (252,233,226)
+        fill=mint if delta is None or delta<=0 else (238,238,238)
         textcolor=teal if delta is None or delta<=0 else red
         _add_rect(slide,x+0.12,card_y+card_h-0.49,card_w-0.24,0.34,fill,radius=True)
         _add_text(slide,x+0.18,card_y+card_h-0.42,card_w-0.36,0.2,delta_text,8,textcolor,True,align=PP_ALIGN.CENTER)
@@ -1245,7 +1312,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
         _add_text(slide,7.55,yy-0.01,1.45,0.22,f"{val:,.0f} m²",8,dark,True,align=PP_ALIGN.RIGHT)
 
     _add_rect(slide,panel_x,band_y,panel_w,band_h,dark,radius=True)
-    _add_text(slide,panel_x+0.25,band_y+0.2,panel_w-0.5,0.25,"WHAT THE OPTIONS TELL US",10,(191,217,208),True)
+    _add_text(slide,panel_x+0.25,band_y+0.2,panel_w-0.5,0.25,"WHAT THE OPTIONS TELL US",10,(208,208,208),True)
     findings=[]
     if target_m2 is not None and options:
         over=[o for o in options if o.get("gross_concept_area_m2") is not None and o["gross_concept_area_m2"]>target_m2+0.5]
@@ -1268,6 +1335,6 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
         _add_text(slide,panel_x+0.25,yy,panel_w-0.5,0.50,"• "+f,8.2,white)
         yy+=0.59
     board_footer = "*FAR transcribed from a secondary plan copy; confirm current official rules." if report.get("far", {}).get("rule_source_quality") == "secondary_copy_pending_official_validation" else "Preliminary study — verify official zone and operative rules before sanction."
-    _add_text(slide,0.4,11.2,15.1,0.18,f"SITEIQ v0.4.7 · {report.get('application',{}).get('assessment_date','')} · {board_footer}",7,grey)
+    _add_text(slide,0.4,11.2,15.1,0.18,f"SITEIQ v{__version__} · {report.get('application',{}).get('assessment_date','')} · {board_footer}",7,grey)
 
     out=BytesIO(); prs.save(out); return out.getvalue()
