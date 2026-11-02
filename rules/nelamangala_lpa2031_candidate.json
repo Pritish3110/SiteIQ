@@ -1,11 +1,11 @@
 {
   "profile_key": "nelamangala_lpa2031_candidate",
-  "profile_name": "Nelamangala LPA Master Plan 2031 — provisional source-based profile",
+  "profile_name": "Nelamangala LPA Master Plan 2031 — published plan, review pending",
   "authority_key": "nelamangala_planning_authority",
-  "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance.",
-  "rule_source_quality": "secondary_copy_pending_official_validation",
-  "last_reviewed": "2026-10-16",
-  "important_note": "Nelamangala Master Plan 2031 rules are transcribed from secondary copies for preliminary feasibility candidates. They are not an officially verified consolidated current code. Current operative zoning regulations, all subsequent amendments, exact planning jurisdiction and official land-use category must be verified before using results for design freeze or sanction.",
+  "profile_status": "PROVISIONAL FAR CANDIDATE. Tables compared on 2026-11-02 with the plan published on the authority's website, but not independently reviewed. Later amendments, jurisdiction, zoning and notified road width still need confirmation.",
+  "rule_source_quality": "official_authority_copy_pending_review",
+  "last_reviewed": "2026-11-02",
+  "important_note": "Source: Master Plan 2031, Nelamangala LPA, Zoning Regulations. Later amendments have not been checked.",
   "setback_table8_max_height_m": 10.0,
   "setback_height_source_id": "base_zr_table3",
   "setback_table9_height_bands": [
@@ -98,38 +98,38 @@
     {
       "id": "base_zr_table4",
       "title": "Master Plan for Nelamangala Local Planning Area 2031 — Zoning Regulations, Table 4",
-      "document": "Secondary copy of Nelamangala LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Nelamangala LPA, Zoning Regulations",
       "document_page": "Page 184 (copy pagination)",
       "clause": "Chapter 15, Table 4 — maximum FAR and road width by use",
-      "status": "A current Nelamangala Planning Authority site confirms work under the approved Master Plan 2031, but the table transcription here comes from a secondary copy; current consolidated amendments require authority verification.",
-      "url": "https://www.scribd.com/document/293839941/Npa-Zoning-Regulation-2031"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://nelamangala.tpa.gov.in/sites/nelamangala.tpa.gov.in/files/1%20NPA_ZONING_REGULATION_2031.pdf"
     },
     {
       "id": "nelamangala_table5",
       "title": "Master Plan for Nelamangala LPA 2031 — Group Housing, Table 5",
-      "document": "Secondary copy of Nelamangala LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Nelamangala LPA, Zoning Regulations",
       "document_page": "Page 185 (copy pagination)",
       "clause": "Chapter 15.3.1, Table 5 — group-housing FAR/coverage",
-      "status": "Secondary transcription; group housing applies at 1 ha or above and requires minimum 12 m approach road; verify operative current version.",
-      "url": "https://www.scribd.com/document/293839941/Npa-Zoning-Regulation-2031"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://nelamangala.tpa.gov.in/sites/nelamangala.tpa.gov.in/files/1%20NPA_ZONING_REGULATION_2031.pdf"
     },
     {
       "id": "base_zr_table3",
       "title": "Master Plan for Nelamangala LPA 2031 — all-round setback Table 3",
-      "document": "Secondary copy of Nelamangala LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Nelamangala LPA, Zoning Regulations",
       "document_page": "Page 183 (copy pagination)",
       "clause": "Chapter 15, Table 3 — setbacks for buildings above 10 m",
-      "status": "Secondary transcription; current validity and exact application must be confirmed.",
-      "url": "https://www.scribd.com/document/293839941/Npa-Zoning-Regulation-2031"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://nelamangala.tpa.gov.in/sites/nelamangala.tpa.gov.in/files/1%20NPA_ZONING_REGULATION_2031.pdf"
     },
     {
       "id": "nelamangala_group_reservation",
       "title": "Nelamangala LPA 2031 — group housing reservation and net FAR basis",
-      "document": "Secondary copy of Nelamangala LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Nelamangala LPA, Zoning Regulations",
       "document_page": "Group housing rules surrounding Table 5",
       "clause": "Chapter 15.3.1(b)-(i)",
-      "status": "Secondary transcription: 15% combined for parks/open spaces and civic amenities, at least 10% parks/open space and 5% civic amenity; FAR after civic amenity deduction.",
-      "url": "https://www.scribd.com/document/293839941/Npa-Zoning-Regulation-2031"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://nelamangala.tpa.gov.in/sites/nelamangala.tpa.gov.in/files/1%20NPA_ZONING_REGULATION_2031.pdf"
     },
     {
       "id": "premium_far_bmr_lpa_2025_2026",
@@ -297,7 +297,8 @@
           ],
           "far_interpretation": "Group-housing FAR table selected for apartment/group-housing use on sites of at least 1 hectare; floor-area capacity is calculated on net site area after the civic-amenity deduction."
         }
-      ]
+      ],
+      "setback_use_group": "residential"
     },
     {
       "key": "commercial",
@@ -349,7 +350,8 @@
         "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
         "Road width must be the legally recognised width of the abutting public road, not a map estimate."
       ],
-      "far_interpretation": "Commercial FAR by public road width; special non-residential development-plan provisions may apply to sites over 1 hectare and must be selected/verified separately."
+      "far_interpretation": "Commercial FAR by public road width; special non-residential development-plan provisions may apply to sites over 1 hectare and must be selected/verified separately.",
+      "setback_use_group": "commercial"
     },
     {
       "key": "public_semi_public",
@@ -402,7 +404,8 @@
         "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
         "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
       ],
-      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column.",
+      "setback_use_group": "public"
     },
     {
       "key": "transportation_communication",
@@ -455,7 +458,8 @@
         "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
         "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
       ],
-      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column.",
+      "setback_use_group": "public"
     },
     {
       "key": "public_utilities",
@@ -508,7 +512,8 @@
         "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
         "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
       ],
-      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column.",
+      "setback_use_group": "public"
     },
     {
       "key": "agricultural",
@@ -716,9 +721,234 @@
     ]
   },
   "force_minimum_all_round_for_area_above_4000": false,
-  "profile_version": "0.1-candidate",
-  "source_status": "secondary_source_candidate",
+  "profile_version": "2026-11-02",
+  "source_status": "official_source_found_pending_review",
   "effective_from": null,
   "effective_to": null,
-  "reviewed_by": null
+  "reviewed_by": null,
+  "official_document_url": "https://nelamangala.tpa.gov.in/sites/nelamangala.tpa.gov.in/files/1%20NPA_ZONING_REGULATION_2031.pdf",
+  "setback_low_rise_table": {
+    "depth_bands": [
+      {
+        "min": 0,
+        "max": 6,
+        "residential": [
+          1,
+          0
+        ],
+        "commercial": [
+          1,
+          0
+        ],
+        "public": [
+          1.5,
+          0
+        ]
+      },
+      {
+        "min": 6,
+        "max": 9,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          1.5,
+          0
+        ],
+        "public": [
+          1.5,
+          1.5
+        ]
+      },
+      {
+        "min": 9,
+        "max": 12,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          1.5,
+          1
+        ],
+        "public": [
+          2,
+          1.5
+        ]
+      },
+      {
+        "min": 12,
+        "max": 18,
+        "min_exclusive": true,
+        "residential": [
+          1.5,
+          1.5
+        ],
+        "commercial": [
+          2.5,
+          1.5
+        ],
+        "public": [
+          2.5,
+          1.5
+        ]
+      },
+      {
+        "min": 18,
+        "max": 24,
+        "min_exclusive": true,
+        "residential": [
+          2.5,
+          2
+        ],
+        "commercial": [
+          3,
+          2
+        ],
+        "public": [
+          3,
+          2
+        ]
+      },
+      {
+        "min": 24,
+        "max": null,
+        "min_exclusive": true,
+        "residential": [
+          3.5,
+          3
+        ],
+        "commercial": [
+          3.5,
+          2.5
+        ],
+        "public": [
+          4,
+          3
+        ]
+      }
+    ],
+    "width_bands": [
+      {
+        "min": 0,
+        "max": 6,
+        "residential": [
+          0,
+          0
+        ],
+        "commercial": [
+          0,
+          0
+        ],
+        "public": [
+          0,
+          1
+        ]
+      },
+      {
+        "min": 6,
+        "max": 9,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          0,
+          1
+        ],
+        "public": [
+          1,
+          1.5
+        ]
+      },
+      {
+        "min": 9,
+        "max": 12,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          1,
+          1
+        ],
+        "public": [
+          1.5,
+          1.75
+        ]
+      },
+      {
+        "min": 12,
+        "max": 18,
+        "min_exclusive": true,
+        "residential": [
+          1.5,
+          2
+        ],
+        "commercial": [
+          1.5,
+          2
+        ],
+        "public": [
+          1.75,
+          2.5
+        ]
+      },
+      {
+        "min": 18,
+        "max": 24,
+        "min_exclusive": true,
+        "residential": [
+          2,
+          3
+        ],
+        "commercial": [
+          2,
+          2.5
+        ],
+        "public": [
+          2.5,
+          3
+        ]
+      },
+      {
+        "min": 24,
+        "max": null,
+        "min_exclusive": true,
+        "residential": [
+          2,
+          3
+        ],
+        "commercial": [
+          2,
+          3
+        ],
+        "public": [
+          3,
+          4
+        ]
+      }
+    ],
+    "source_id": "base_zr_table3",
+    "note": "Table 2: buildings up to 10 m, by site depth and width. Plots of 4,000 m² and above need at least 5.0 m on all sides."
+  },
+  "minimum_all_round_setback": {
+    "site_area_min_m2": 4000,
+    "setback_m": 5.0,
+    "note": "Table 2 note: plots of 4,000 m² and above need at least 5.0 m on all sides."
+  },
+  "apartment_rules": {
+    "categories": [
+      "Residential"
+    ],
+    "road_width_min_exclusive_m": 9.0,
+    "plot_min_exclusive_m2": 750,
+    "source_id": "base_zr_table4",
+    "note": "Table 2 note: apartments only on plots above 750 m² and on roads wider than 9 m."
+  }
 }

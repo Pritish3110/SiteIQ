@@ -30,6 +30,7 @@ RED = colors.HexColor('#111111')
 WHITE = colors.white
 
 
+PROVISIONAL_QUALITIES = {"secondary_copy_pending_official_validation", "official_authority_copy_pending_review"}
 STATUS_LABELS = {"PASS": "Pass", "FAIL": "Fail", "NEEDS_INPUT": "Needs input", "NOT_CONFIGURED": "Not configured", "REFER": "Confirm"}
 VERDICT_LABELS = {"BLOCKED": "Blocked", "INCOMPLETE": "Incomplete", "PROVISIONAL": "Provisional", "READY_FOR_REVIEW": "Ready for review"}
 CHECK_ORDER = {"FAIL": 0, "NEEDS_INPUT": 1, "REFER": 2, "NOT_CONFIGURED": 3, "PASS": 4}
@@ -101,8 +102,8 @@ def _plain_far_summary(report: dict) -> str:
     if far.get("status") == "candidate_match_requires_verification":
         row = far.get("matched_rule") or {}
         profile_quality = far.get("rule_source_quality")
-        prefix = "A provisional FAR candidate transcribed from a secondary plan copy is" if profile_quality == "secondary_copy_pending_official_validation" else "The selected configured table gives a maximum FAR candidate of"
-        if profile_quality == "secondary_copy_pending_official_validation":
+        prefix = "A provisional FAR candidate from the authority's published plan is" if profile_quality in PROVISIONAL_QUALITIES else "The selected configured table gives a maximum FAR candidate of"
+        if profile_quality in PROVISIONAL_QUALITIES:
             message = f"{prefix} {row.get('far', 'not stated')}. The current operative version and amendments have not been confirmed."
         else:
             message = f"{prefix} {row.get('far', 'not stated')}."
@@ -211,8 +212,8 @@ def build_pdf_report(report: dict) -> bytes:
         banner_title = "Current position: one key rule still needs confirmation"
     elif far.get("status") == "not_configured":
         banner_title = "Current position: this authority's rules are not yet configured"
-    elif far.get("status") == "candidate_match_requires_verification" and far.get("rule_source_quality") == "secondary_copy_pending_official_validation":
-        banner_title = "Current position: provisional FAR candidate — source checks required"
+    elif far.get("status") == "candidate_match_requires_verification" and far.get("rule_source_quality") in PROVISIONAL_QUALITIES:
+        banner_title = "Current position: provisional FAR candidate, source checks required"
     elif far.get("status") == "candidate_match_requires_verification":
         banner_title = "Current position: possible rule found, confirmation still needed"
     else:
@@ -247,8 +248,8 @@ def build_pdf_report(report: dict) -> bytes:
             row = far.get("matched_rule") or {}
             basis_area = row.get("far_calculation_area_m2") or site.get("site_area_m2")
             basis_label = "net FAR calculation area" if abs(float(basis_area) - float(site.get("site_area_m2") or 0)) > 0.01 else "plot area"
-            provisional = far.get("rule_source_quality") == "secondary_copy_pending_official_validation"
-            rule_note = " This is a provisional candidate transcribed from a secondary plan copy; the current operative rules require confirmation." if provisional else " This is a rule-based candidate, not an approval."
+            provisional = far.get("rule_source_quality") in PROVISIONAL_QUALITIES
+            rule_note = " This is a provisional candidate from the authority's published plan, not independently reviewed." if provisional else " This is a rule-based candidate, not an approval."
             body = (
                 f"The selected rule profile identifies a maximum FAR candidate of <b>{target_far:.2f}</b>, "
                 f"which gives a preliminary benchmark of <b>{target_m2:,.0f} m²</b> of floor area using the {basis_label} of <b>{float(basis_area):,.0f} m²</b>. "
@@ -307,8 +308,8 @@ def build_pdf_report(report: dict) -> bytes:
     if target_m2 is not None:
         if report.get("maximum_far") is None:
             source_wording = "manual comparison assumption"
-        elif far.get("rule_source_quality") == "secondary_copy_pending_official_validation":
-            source_wording = "provisional FAR table candidate from secondary source"
+        elif far.get("rule_source_quality") in PROVISIONAL_QUALITIES:
+            source_wording = "provisional FAR table candidate"
         else:
             source_wording = "rule-derived FAR candidate"
         story.append(_p(f"Comparison benchmark: <b>{target_m2:,.0f} m²</b> of floor area (FAR {target_far:.2f}; {source_wording}). Confirm the rule before using this figure as a project limit.", styles["ClientBody"]))
@@ -681,7 +682,7 @@ def build_pptx_report(report: dict) -> bytes:
         _add_text(s,x+0.12,2.94,2.48,0.52,value,13.5,white,True)
     if far.get("status") != "candidate_match_requires_verification":
         status = "FAR RULE NEEDS CONFIRMATION"
-    elif far.get("rule_source_quality") == "secondary_copy_pending_official_validation":
+    elif far.get("rule_source_quality") in PROVISIONAL_QUALITIES:
         status = "PROVISIONAL TABLE CANDIDATE — VERIFY SOURCE"
     else:
         status = "FAR CANDIDATE FOUND — VERIFY BEFORE DESIGN FREEZE"
@@ -691,7 +692,7 @@ def build_pptx_report(report: dict) -> bytes:
         overs = [o for o in scenarios if o.get("scenario_headroom_m2") is not None and o["scenario_headroom_m2"] < 0]
         if report.get("maximum_far") is None:
             benchmark_label = "manual comparison assumption"
-        elif far.get("rule_source_quality") == "secondary_copy_pending_official_validation":
+        elif far.get("rule_source_quality") in PROVISIONAL_QUALITIES:
             benchmark_label = "provisional table candidate (secondary source)"
         else:
             benchmark_label = "configured rule candidate"
@@ -1036,7 +1037,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
 
     # Summary strip: max FAR only if it comes from a configured rule lookup.
     strip_y = page_h - 47 * mm
-    far_label = "PROVISIONAL FAR*" if far.get("rule_source_quality") == "secondary_copy_pending_official_validation" else "MAX FAR CANDIDATE"
+    far_label = "PROVISIONAL FAR*" if far.get("rule_source_quality") in PROVISIONAL_QUALITIES else "MAX FAR CANDIDATE"
     labels = [
         ("SITE AREA", f"{site.get('site_area_m2', 0):,.0f} m²"),
         ("ROAD WIDTH", f"{site.get('road_width_m', 0):.2f} m"),
@@ -1167,7 +1168,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
         y -= 2*mm
 
     c.setFillColor(grey); c.setFont("Helvetica", 6.5)
-    footer = "*Provisional FAR transcribed from a secondary plan copy; confirm current official rules." if far.get("rule_source_quality") == "secondary_copy_pending_official_validation" else "Verify current authority, zone and operative rules before sanction use."
+    footer = "*Provisional FAR from the published plan; confirm current official rules." if far.get("rule_source_quality") in PROVISIONAL_QUALITIES else "Verify current authority, zone and operative rules before sanction use."
     c.drawString(margin, 7*mm, f"SITEIQ v{__version__} · {report.get('application', {}).get('assessment_date', '')} · Preliminary study — not sanction · {footer}")
     c.drawRightString(page_w - margin, 7*mm, "Rule-derived benchmark remains subject to jurisdiction and operative-source verification")
     c.showPage(); c.save()
@@ -1237,7 +1238,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
     _add_rect(slide,12.6,0.38,3.5,0.55,dark,radius=True)
     _add_text(slide,12.75,0.52,3.2,0.22,f"ASSESSMENT  {report.get('application',{}).get('assessment_date','')}",8,white,True,align=PP_ALIGN.CENTER)
 
-    far_label = "PROVISIONAL FAR*" if report.get("far", {}).get("rule_source_quality") == "secondary_copy_pending_official_validation" else "MAX FAR CANDIDATE"
+    far_label = "PROVISIONAL FAR*" if report.get("far", {}).get("rule_source_quality") in PROVISIONAL_QUALITIES else "MAX FAR CANDIDATE"
     metrics=[
         ("SITE AREA", f"{site.get('site_area_m2',0):,.0f} m²"),
         ("ROAD WIDTH", f"{site.get('road_width_m',0):.2f} m"),
@@ -1340,7 +1341,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
     for f in findings[:4]:
         _add_text(slide,panel_x+0.25,yy,panel_w-0.5,0.38,"• "+f,7.8,white)
         yy+=0.40
-    board_footer = "*FAR transcribed from a secondary plan copy; confirm current official rules." if report.get("far", {}).get("rule_source_quality") == "secondary_copy_pending_official_validation" else "Preliminary study — verify official zone and operative rules before sanction."
+    board_footer = "*Provisional FAR from the published plan; confirm current official rules." if report.get("far", {}).get("rule_source_quality") in PROVISIONAL_QUALITIES else "Preliminary study — verify official zone and operative rules before sanction."
     _add_text(slide,0.4,11.2,15.1,0.18,f"SITEIQ v{__version__} · {report.get('application',{}).get('assessment_date','')} · {board_footer}",7,grey)
 
     out=BytesIO(); prs.save(out); return out.getvalue()

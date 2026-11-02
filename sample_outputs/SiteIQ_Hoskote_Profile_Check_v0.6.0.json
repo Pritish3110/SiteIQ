@@ -3,9 +3,9 @@
     "name": "SiteIQ",
     "version": "0.6.0",
     "assessment_date": "2026-11-02",
-    "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance.",
-    "source_status": "secondary_source_candidate",
-    "profile_version": "0.1-candidate"
+    "profile_status": "PROVISIONAL FAR CANDIDATE. Tables compared on 2026-11-02 with the plan published on the authority's website, but not independently reviewed. Later amendments, jurisdiction, zoning and notified road width still need confirmation.",
+    "source_status": "official_source_found_pending_review",
+    "profile_version": "2026-11-02"
   },
   "project": "Hoskote LPA FAR Profile Check — illustrative, not a design",
   "client": "Internal rule-profile test",
@@ -14,9 +14,9 @@
     "map_url": "",
     "coordinates": "13.0733543, 77.7823976",
     "authority": "Hoskote Planning Authority",
-    "authority_status": "provisional_rules_profile_enabled_secondary_source",
-    "authority_scope_note": "Hoskote LPA 2031 candidate rules are transcribed from secondary copies of the final-plan zoning document. FAR can be shown as a provisional candidate, not an operative entitlement, until the exact Hoskote LPA boundary, current approved plan and amendments are verified. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
-    "rule_profile": "Hoskote LPA Master Plan 2031 — provisional source-based profile",
+    "authority_status": "provisional_rules_profile_enabled_official_copy",
+    "authority_scope_note": "Hoskote LPA 2031 rules were compared with the plan on the authority's website. FAR can be shown as a provisional candidate, not an operative entitlement, until the exact Hoskote LPA boundary, current approved plan and amendments are verified. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
+    "rule_profile": "Hoskote LPA Master Plan 2031 — published plan, review pending",
     "site_area_m2": 20684.15,
     "site_area_source": "sample KML boundary area; illustrative profile test",
     "road_width_m": 36.0,
@@ -53,11 +53,11 @@
       "source": {
         "id": "hoskote_table5",
         "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Group Housing, Table 5",
-        "document": "Secondary copies of Hoskote LPA 2031 zoning regulations",
+        "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
         "document_page": "Zonal Regulations page 36",
         "clause": "Chapter 1.6, Table 5 — Group housing FAR/coverage and minimum road width",
-        "status": "Secondary copies disagree on whether the minimum group-housing road threshold is 9 m or 12 m. SiteIQ conservatively uses 12 m until the authority confirms. The rows above 18 m agree between copies.",
-        "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+        "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+        "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
       }
     },
     "conditions": [
@@ -66,23 +66,23 @@
       "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
       "For apartment/group housing sites of 1 hectare or more, the group-housing pathway may apply; SiteIQ switches to the configured group-housing table for a residential-apartment use.",
       "Site area is 1 hectare or more, so the Master Plan copy treats an apartment building of this size as group housing.",
-      "Group-housing approach road minimum configured conservatively as 12 m. Hoskote copies disagree between 9 m and 12 m; the stricter 12 m is used until authority confirmation.",
       "Source requires 15% combined reservation for park/open space and civic amenity, with at least 10% for parks/open space and 5% for civic amenity. FAR basis is net of the 5% civic-amenity reservation; the park area is not additionally deducted in this calculation based on the transcribed wording.",
-      "A development plan for building blocks, access roads, parks/open spaces and civic amenity areas is required before building-plan approval under the source text."
+      "A development plan for building blocks, access roads, parks/open spaces and civic amenity areas is required before building-plan approval under the source text.",
+      "The authority's site hosts two copies. The signed final adds a row of FAR 1.5 at 9 m and a 9 m approach road; the other requires 12 m. SiteIQ keeps 12 m until the authority confirms."
     ],
     "far_interpretation": "Group-housing FAR table selected for apartment/group-housing use on sites of at least 1 hectare; floor-area capacity is calculated on net site area after the civic-amenity deduction.",
     "source": {
       "id": "hoskote_table5",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Group Housing, Table 5",
-      "document": "Secondary copies of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 36",
       "clause": "Chapter 1.6, Table 5 — Group housing FAR/coverage and minimum road width",
-      "status": "Secondary copies disagree on whether the minimum group-housing road threshold is 9 m or 12 m. SiteIQ conservatively uses 12 m until the authority confirms. The rows above 18 m agree between copies.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
-    "profile_name": "Hoskote LPA Master Plan 2031 — provisional source-based profile",
-    "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance.",
-    "rule_source_quality": "secondary_copy_pending_official_validation",
+    "profile_name": "Hoskote LPA Master Plan 2031 — published plan, review pending",
+    "profile_status": "PROVISIONAL FAR CANDIDATE. Tables compared on 2026-11-02 with the plan published on the authority's website, but not independently reviewed. Later amendments, jurisdiction, zoning and notified road width still need confirmation.",
+    "rule_source_quality": "official_authority_copy_pending_review",
     "selected_path": "hoskote_table5",
     "status": "candidate_match_requires_verification",
     "message": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after a 5% deduction (from the configured rule); verify it against the operative plan.",
@@ -173,11 +173,11 @@
     "source": {
       "id": "base_zr_table3",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Table 3",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 34",
       "clause": "Chapter 1.5, Table 3 — all-round setbacks for buildings above 10 m",
-      "status": "Secondary transcription; verify against current official regulation and height definition.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     }
   },
   "envelope": {
@@ -252,38 +252,38 @@
     {
       "id": "base_zr_table4",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Zonal Regulations, Table 4",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 35",
       "clause": "Chapter 1.5, Table 4 — Maximum FAR and road widths for different uses",
-      "status": "Secondary mirror transcription. Base document is labelled final, but current operative version and later amendments have not been independently verified with the authority.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "hoskote_table5",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Group Housing, Table 5",
-      "document": "Secondary copies of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 36",
       "clause": "Chapter 1.6, Table 5 — Group housing FAR/coverage and minimum road width",
-      "status": "Secondary copies disagree on whether the minimum group-housing road threshold is 9 m or 12 m. SiteIQ conservatively uses 12 m until the authority confirms. The rows above 18 m agree between copies.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "base_zr_table3",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Table 3",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 34",
       "clause": "Chapter 1.5, Table 3 — all-round setbacks for buildings above 10 m",
-      "status": "Secondary transcription; verify against current official regulation and height definition.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "hoskote_group_reservation",
       "title": "Hoskote LPA 2031 — group housing civic amenity and park reservation",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations pages 36-37",
       "clause": "Chapter 1.6, group housing conditions",
-      "status": "Secondary transcription; minimum 15% combined for parks/open space and civic amenity, with at least 10% park/open space and 5% civic amenity; FAR calculated on net area after civic amenity deduction.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "premium_far_bmr_lpa_2025_2026",
@@ -307,11 +307,11 @@
     {
       "id": "hoskote_nonres_dev_table",
       "title": "Hoskote LPA 2031 — Non-Residential Development Plan over 1 hectare",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Chapter 1.7 / Table 6A (copy pagination)",
       "clause": "Non-residential development plan on site area above 1 hectare, excluding industrial",
-      "status": "Secondary transcription; exact operative copy and current amendments require confirmation.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     }
   ],
   "authority_sources": [
@@ -383,7 +383,7 @@
     {
       "key": "industrial_buildings",
       "label": "Industrial Buildings (plot-area table)",
-      "table": "Industrial Buildings Table 9/11 (source copy)",
+      "table": "Table 11 of the signed final plan",
       "method": "plot_area"
     },
     {
@@ -401,7 +401,7 @@
   ],
   "limits": [
     "This is an early-stage feasibility aid, not sanction advice or a legal opinion.",
-    "Bengaluru RMP 2015 has a partial configured profile. Hoskote, Kanakapura, Nelamangala and Anekal use provisional FAR candidate profiles transcribed from secondary Master Plan 2031 copies; operative notification, amendments, zoning and authority coverage require confirmation. Other authority profiles remain unconfigured.",
+    "Bengaluru RMP 2015 has a partial configured profile. Hoskote, Kanakapura, Nelamangala and Anekal use provisional FAR candidates compared with the Master Plan 2031 text each authority publishes; later amendments, zoning and authority coverage require confirmation. Other authority profiles remain unconfigured.",
     "A rule-based FAR is a candidate from the configured source, not a sanctioned entitlement. Confirm the exact authority, official land-use classification, notification validity and applicable conditions.",
     "SiteIQ can use a validated imported boundary area and calculate preliminary envelopes. Complex concave geometry, frontage-specific interpretations and all statutory overlays still need architect/authority review.",
     "Gross area is footprint times above-ground floor count; FAR exclusions, ancillary areas, floor-by-floor variations, parking, structure and service constraints are not fully modelled."

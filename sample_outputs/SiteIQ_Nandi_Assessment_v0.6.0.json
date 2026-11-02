@@ -604,19 +604,19 @@
     {
       "key": "residential_development_plan",
       "label": "Residential Development Plan (>10,000 m² pathway)",
-      "table": "Chapter 7 (Development Plan)",
-      "method": "special_no_generic_far"
+      "table": "Table 20, Chapter 7",
+      "method": "road_width"
     },
     {
       "key": "nonresidential_development_plan",
       "label": "Non-residential Development Plan / Flatted Factory (>10,000 m² pathway)",
-      "table": "Chapter 7 (Development Plan)",
-      "method": "special_no_generic_far"
+      "table": "Table 21, Chapter 7",
+      "method": "road_width"
     }
   ],
   "limits": [
     "This is an early-stage feasibility aid, not sanction advice or a legal opinion.",
-    "Bengaluru RMP 2015 has a partial configured profile. Hoskote, Kanakapura, Nelamangala and Anekal use provisional FAR candidate profiles transcribed from secondary Master Plan 2031 copies; operative notification, amendments, zoning and authority coverage require confirmation. Other authority profiles remain unconfigured.",
+    "Bengaluru RMP 2015 has a partial configured profile. Hoskote, Kanakapura, Nelamangala and Anekal use provisional FAR candidates compared with the Master Plan 2031 text each authority publishes; later amendments, zoning and authority coverage require confirmation. Other authority profiles remain unconfigured.",
     "A rule-based FAR is a candidate from the configured source, not a sanctioned entitlement. Confirm the exact authority, official land-use classification, notification validity and applicable conditions.",
     "SiteIQ can use a validated imported boundary area and calculate preliminary envelopes. Complex concave geometry, frontage-specific interpretations and all statutory overlays still need architect/authority review.",
     "Gross area is footprint times above-ground floor count; FAR exclusions, ancillary areas, floor-by-floor variations, parking, structure and service constraints are not fully modelled."

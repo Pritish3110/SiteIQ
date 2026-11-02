@@ -1,11 +1,11 @@
 {
   "profile_key": "hoskote_lpa2031_candidate",
-  "profile_name": "Hoskote LPA Master Plan 2031 — provisional source-based profile",
+  "profile_name": "Hoskote LPA Master Plan 2031 — published plan, review pending",
   "authority_key": "hoskote_planning_authority",
-  "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance.",
-  "rule_source_quality": "secondary_copy_pending_official_validation",
-  "last_reviewed": "2026-10-16",
-  "important_note": "Hoskote Master Plan 2031 rules are transcribed from secondary copies for preliminary feasibility candidates. They are not an officially verified consolidated current code. Current operative zoning regulations, all subsequent amendments, exact planning jurisdiction and official land-use category must be verified before using results for design freeze or sanction.",
+  "profile_status": "PROVISIONAL FAR CANDIDATE. Tables compared on 2026-11-02 with the plan published on the authority's website, but not independently reviewed. Later amendments, jurisdiction, zoning and notified road width still need confirmation.",
+  "rule_source_quality": "official_authority_copy_pending_review",
+  "last_reviewed": "2026-11-02",
+  "important_note": "Source: Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed). Later amendments have not been checked.",
   "setback_table8_max_height_m": 10.0,
   "setback_height_source_id": "base_zr_table3",
   "setback_table9_height_bands": [
@@ -98,38 +98,38 @@
     {
       "id": "base_zr_table4",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Zonal Regulations, Table 4",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 35",
       "clause": "Chapter 1.5, Table 4 — Maximum FAR and road widths for different uses",
-      "status": "Secondary mirror transcription. Base document is labelled final, but current operative version and later amendments have not been independently verified with the authority.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "hoskote_table5",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Group Housing, Table 5",
-      "document": "Secondary copies of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 36",
       "clause": "Chapter 1.6, Table 5 — Group housing FAR/coverage and minimum road width",
-      "status": "Secondary copies disagree on whether the minimum group-housing road threshold is 9 m or 12 m. SiteIQ conservatively uses 12 m until the authority confirms. The rows above 18 m agree between copies.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "base_zr_table3",
       "title": "Master Plan (Final) for Hoskote Local Planning Area 2031 — Table 3",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations page 34",
       "clause": "Chapter 1.5, Table 3 — all-round setbacks for buildings above 10 m",
-      "status": "Secondary transcription; verify against current official regulation and height definition.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "hoskote_group_reservation",
       "title": "Hoskote LPA 2031 — group housing civic amenity and park reservation",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Zonal Regulations pages 36-37",
       "clause": "Chapter 1.6, group housing conditions",
-      "status": "Secondary transcription; minimum 15% combined for parks/open space and civic amenity, with at least 10% park/open space and 5% civic amenity; FAR calculated on net area after civic amenity deduction.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     },
     {
       "id": "premium_far_bmr_lpa_2025_2026",
@@ -153,11 +153,11 @@
     {
       "id": "hoskote_nonres_dev_table",
       "title": "Hoskote LPA 2031 — Non-Residential Development Plan over 1 hectare",
-      "document": "Secondary copy of Hoskote LPA 2031 zoning regulations",
+      "document": "Master Plan 2031, Hoskote LPA, Zonal Regulations Vol. III (final, signed)",
       "document_page": "Chapter 1.7 / Table 6A (copy pagination)",
       "clause": "Non-residential development plan on site area above 1 hectare, excluding industrial",
-      "status": "Secondary transcription; exact operative copy and current amendments require confirmation.",
-      "url": "https://www.scribd.com/document/680458988/Zonal-Regulations-of-Hoskote-Local-Planning-Area"
+      "status": "Compared on 2026-11-02 with the plan published by the authority. Later amendments not checked.",
+      "url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf"
     }
   ],
   "land_use_categories": [
@@ -299,13 +299,14 @@
           ],
           "conditions": [
             "Site area is 1 hectare or more, so the Master Plan copy treats an apartment building of this size as group housing.",
-            "Group-housing approach road minimum configured conservatively as 12 m. Hoskote copies disagree between 9 m and 12 m; the stricter 12 m is used until authority confirmation.",
             "Source requires 15% combined reservation for park/open space and civic amenity, with at least 10% for parks/open space and 5% for civic amenity. FAR basis is net of the 5% civic-amenity reservation; the park area is not additionally deducted in this calculation based on the transcribed wording.",
-            "A development plan for building blocks, access roads, parks/open spaces and civic amenity areas is required before building-plan approval under the source text."
+            "A development plan for building blocks, access roads, parks/open spaces and civic amenity areas is required before building-plan approval under the source text.",
+            "The authority's site hosts two copies. The signed final adds a row of FAR 1.5 at 9 m and a 9 m approach road; the other requires 12 m. SiteIQ keeps 12 m until the authority confirms."
           ],
           "far_interpretation": "Group-housing FAR table selected for apartment/group-housing use on sites of at least 1 hectare; floor-area capacity is calculated on net site area after the civic-amenity deduction."
         }
-      ]
+      ],
+      "setback_use_group": "residential"
     },
     {
       "key": "commercial",
@@ -357,7 +358,8 @@
         "The FAR lookup assumes the selected regulatory land-use category is confirmed from the applicable notified land-use map.",
         "Road width must be the legally recognised width of the abutting public road, not a map estimate."
       ],
-      "far_interpretation": "Commercial FAR by public road width; special non-residential development-plan provisions may apply to sites over 1 hectare and must be selected/verified separately."
+      "far_interpretation": "Commercial FAR by public road width; special non-residential development-plan provisions may apply to sites over 1 hectare and must be selected/verified separately.",
+      "setback_use_group": "commercial"
     },
     {
       "key": "public_semi_public",
@@ -410,7 +412,8 @@
         "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
         "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
       ],
-      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column.",
+      "setback_use_group": "public"
     },
     {
       "key": "transportation_communication",
@@ -463,7 +466,8 @@
         "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
         "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
       ],
-      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column.",
+      "setback_use_group": "public"
     },
     {
       "key": "public_utilities",
@@ -516,7 +520,8 @@
         "Road width must be the legally recognised width of the abutting public road, not a map estimate.",
         "Table 4 presents a combined FAR column for Public/Semi-public, Traffic & Transportation and Public Utility uses; confirm the use-specific provisions elsewhere in the plan."
       ],
-      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column."
+      "far_interpretation": "FAR from the combined Public/Semi-public, Transportation and Public Utility column.",
+      "setback_use_group": "public"
     },
     {
       "key": "agricultural",
@@ -557,51 +562,57 @@
     {
       "key": "industrial_buildings",
       "label": "Industrial Buildings (plot-area table)",
-      "table": "Industrial Buildings Table 9/11 (source copy)",
+      "table": "Table 11 of the signed final plan",
       "source_id": "base_zr_table4",
       "method": "plot_area",
       "plot_area_far_caps": [
         {
           "min": 0,
           "max": 230,
-          "min_exclusive": false,
           "far": 1.0,
-          "min_road_width_m": 9.0
+          "min_road_width_m": 12
         },
         {
           "min": 230,
           "max": 1000,
           "min_exclusive": true,
           "far": 1.25,
-          "min_road_width_m": 9.0
+          "min_road_width_m": 12
         },
         {
           "min": 1000,
           "max": 2000,
           "min_exclusive": true,
           "far": 1.25,
-          "min_road_width_m": 12.0
+          "min_road_width_m": 12
         },
         {
           "min": 2000,
           "max": 4000,
           "min_exclusive": true,
           "far": 1.25,
-          "min_road_width_m": 12.0
+          "min_road_width_m": 12
         },
         {
           "min": 4000,
           "max": 8000,
           "min_exclusive": true,
           "far": 1.0,
-          "min_road_width_m": 15.0
+          "min_road_width_m": 12
         },
         {
           "min": 8000,
+          "max": 40000,
+          "min_exclusive": true,
+          "far": 1.0,
+          "min_road_width_m": 15
+        },
+        {
+          "min": 40000,
           "max": null,
           "min_exclusive": true,
           "far": 1.0,
-          "min_road_width_m": 15.0
+          "min_road_width_m": 18
         }
       ],
       "coverage_method": "plot_area",
@@ -621,22 +632,10 @@
           "min": 1000,
           "max": 2000,
           "min_exclusive": true,
-          "coverage_pct": 55
-        },
-        {
-          "min": 2000,
-          "max": 4000,
-          "min_exclusive": true,
           "coverage_pct": 50
         },
         {
-          "min": 4000,
-          "max": 8000,
-          "min_exclusive": true,
-          "coverage_pct": 45
-        },
-        {
-          "min": 8000,
+          "min": 2000,
           "max": null,
           "min_exclusive": true,
           "coverage_pct": 45
@@ -792,9 +791,235 @@
     ]
   },
   "force_minimum_all_round_for_area_above_4000": false,
-  "profile_version": "0.1-candidate",
-  "source_status": "secondary_source_candidate",
+  "profile_version": "2026-11-02",
+  "source_status": "official_source_found_pending_review",
   "effective_from": null,
   "effective_to": null,
-  "reviewed_by": null
+  "reviewed_by": null,
+  "official_document_url": "https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf",
+  "setback_low_rise_table": {
+    "depth_bands": [
+      {
+        "min": 0,
+        "max": 6,
+        "residential": [
+          1,
+          0
+        ],
+        "commercial": [
+          1,
+          0
+        ],
+        "public": [
+          1.5,
+          0
+        ]
+      },
+      {
+        "min": 6,
+        "max": 9,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          1.5,
+          0
+        ],
+        "public": [
+          1.5,
+          1.5
+        ]
+      },
+      {
+        "min": 9,
+        "max": 12,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          1.5,
+          1
+        ],
+        "public": [
+          2,
+          1.5
+        ]
+      },
+      {
+        "min": 12,
+        "max": 18,
+        "min_exclusive": true,
+        "residential": [
+          1.5,
+          1.5
+        ],
+        "commercial": [
+          2.5,
+          1.5
+        ],
+        "public": [
+          2.5,
+          1.5
+        ]
+      },
+      {
+        "min": 18,
+        "max": 24,
+        "min_exclusive": true,
+        "residential": [
+          2.5,
+          2
+        ],
+        "commercial": [
+          3,
+          2
+        ],
+        "public": [
+          3,
+          2
+        ]
+      },
+      {
+        "min": 24,
+        "max": null,
+        "min_exclusive": true,
+        "residential": [
+          3.5,
+          3
+        ],
+        "commercial": [
+          3.5,
+          2.5
+        ],
+        "public": [
+          4,
+          3
+        ]
+      }
+    ],
+    "width_bands": [
+      {
+        "min": 0,
+        "max": 6,
+        "residential": [
+          0,
+          0
+        ],
+        "commercial": [
+          0,
+          0
+        ],
+        "public": [
+          0,
+          1
+        ]
+      },
+      {
+        "min": 6,
+        "max": 9,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          0,
+          1
+        ],
+        "public": [
+          1,
+          1.5
+        ]
+      },
+      {
+        "min": 9,
+        "max": 12,
+        "min_exclusive": true,
+        "residential": [
+          1,
+          1
+        ],
+        "commercial": [
+          1,
+          1
+        ],
+        "public": [
+          1.5,
+          1.75
+        ]
+      },
+      {
+        "min": 12,
+        "max": 18,
+        "min_exclusive": true,
+        "residential": [
+          1.5,
+          2
+        ],
+        "commercial": [
+          1.5,
+          2
+        ],
+        "public": [
+          1.75,
+          2.5
+        ]
+      },
+      {
+        "min": 18,
+        "max": 24,
+        "min_exclusive": true,
+        "residential": [
+          2,
+          3
+        ],
+        "commercial": [
+          2,
+          2.5
+        ],
+        "public": [
+          2.5,
+          3
+        ]
+      },
+      {
+        "min": 24,
+        "max": null,
+        "min_exclusive": true,
+        "residential": [
+          2,
+          3
+        ],
+        "commercial": [
+          2,
+          3
+        ],
+        "public": [
+          3,
+          4
+        ]
+      }
+    ],
+    "source_id": "base_zr_table3",
+    "note": "Table 2: buildings up to 10 m, by site depth and width. Plots of 4,000 m² and above need at least 5.0 m on all sides."
+  },
+  "minimum_all_round_setback": {
+    "site_area_min_m2": 4000,
+    "setback_m": 5.0,
+    "note": "Table 2 note: plots of 4,000 m² and above need at least 5.0 m on all sides."
+  },
+  "apartment_rules": {
+    "categories": [
+      "Residential"
+    ],
+    "road_width_min_exclusive_m": 9.0,
+    "plot_min_exclusive_m2": 750,
+    "municipal_plot_min_exclusive_m2": 360,
+    "source_id": "base_zr_table4",
+    "note": "Table 2 note: apartments on plots above 360 m² within CMC limits and above 750 m² beyond them, on roads wider than 9 m."
+  }
 }

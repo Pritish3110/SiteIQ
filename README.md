@@ -20,17 +20,17 @@ rules/*.json holds authority profiles; rules/statewide_rules.json holds statewid
 | Profile | Current state | Can return a FAR candidate? |
 |---|---|---:|
 | Bengaluru / Greater Bengaluru RMP 2015 | Partial configured provisions from user-supplied RMP/amendments | Yes, selected categories only |
-| Hoskote LPA Master Plan 2031 | Provisional transcription from secondary copies; official current version/amendments pending | Yes, for configured category/table paths, with warnings |
-| Kanakapura LPA Master Plan 2031 | Provisional transcription from secondary copies; official current version/amendments pending | Yes, for configured category/table paths, with warnings |
-| Nelamangala LPA Master Plan 2031 | Provisional transcription from secondary copies; official current version/amendments pending | Yes, for configured category/table paths, with warnings |
-| Anekal LPA Master Plan 2031 | Provisional general table; group-housing path unresolved due source-copy conflicts | Some configured general categories only |
+| Hoskote LPA Master Plan 2031 | Compared with the plan on the authority's website; review and later amendments pending | Yes, for configured categories, with warnings |
+| Kanakapura LPA Master Plan 2031 | Compared with the plan on the authority's website; review and later amendments pending | Yes, for configured categories, with warnings |
+| Nelamangala LPA Master Plan 2031 | Compared with the plan on the authority's website; review and later amendments pending | Yes, for configured categories, with warnings |
+| Anekal LPA Master Plan 2031 | Compared with the plan on the authority's website; review and later amendments pending | Yes, for configured categories, with warnings |
 | BDA LPA, Mysuru, Hubballi-Dharwad and other listed authorities | Registry/source queue only; no verified full rule profile | No |
 
-A FAR returned from a provisional profile is a **candidate from a secondary source**, not a statutory entitlement. Confirm exact planning jurisdiction, official zone, current Gazette/approved plan, amendments and notified road width before relying on it. No authority inherits Bengaluru FAR by default.
+A FAR returned from a provisional profile is a **candidate**, not a statutory entitlement. Confirm exact planning jurisdiction, official zone, current Gazette/approved plan, amendments and notified road width before relying on it. No authority inherits Bengaluru FAR by default.
 
 ## Important source-status rules
 - The 24 March 2026 UDD 559 BMR 2025(E) Uniform Zonal Regulations proposal is recorded as **draft-only** and is not applied to calculations unless a final notification and commencement for the specific authority are verified.
-- The provisional LPA profiles use secondary copies of Master Plan 2031 zoning regulations to reduce initial manual work and surface candidate rules. The source provenance/status is recorded in each profile, and the UI/report display warning text.
+- The LPA profiles were compared with the Master Plan 2031 text on each authority's website. Later amendments have not been checked, so results stay provisional.
 - Land-use zone is not considered verified unless an appropriate official zoning polygon layer or equivalent authoritative result is available.
 - Authority boundary, ward/corporation boundaries and planning-area boundaries are distinct. Administrative KMLs from OpenCity are useful clues but do not establish legal planning jurisdiction or FAR zoning on their own.
 

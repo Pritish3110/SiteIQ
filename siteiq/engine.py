@@ -239,8 +239,9 @@ def match_far_rule(profile: Optional[dict], zone: str, site_area_m2: float, road
     if max_area is not None and site_area_m2 > float(max_area):
         return {**base, "status": "outside_configured_table_scope", "message": f"This table is configured only up to {float(max_area):,.0f} m². A different development-plan or special pathway may apply; SiteIQ did not reuse this FAR.", "matched_rule": None, "candidate_rules": [], "maximum_far": None}
     min_area = eligibility.get("plot_area_min_m2")
-    if min_area is not None and site_area_m2 < float(min_area):
-        return {**base, "status": "outside_configured_table_scope", "message": f"This table is configured from {float(min_area):,.0f} m² and above. SiteIQ did not reuse this FAR.", "matched_rule": None, "candidate_rules": [], "maximum_far": None}
+    below_min = min_area is not None and (site_area_m2 <= float(min_area) if eligibility.get("plot_area_min_exclusive") else site_area_m2 < float(min_area))
+    if below_min:
+        return {**base, "status": "outside_configured_table_scope", "message": f"This table is configured for plots {'over' if eligibility.get('plot_area_min_exclusive') else 'from'} {float(min_area):,.0f} m². SiteIQ did not reuse this FAR.", "matched_rule": None, "candidate_rules": [], "maximum_far": None}
     min_road = eligibility.get("road_width_min_m")
     if min_road is not None and road_width_m < float(min_road):
         return {**base, "status": "minimum_road_width_not_met", "message": f"This rule path requires an abutting road of at least {float(min_road):g} m. The entered road width is {road_width_m:g} m, so this FAR row was not applied.", "matched_rule": None, "candidate_rules": [], "maximum_far": None}
@@ -410,6 +411,28 @@ def _nominal_table8_for_area(profile: dict, site_area_m2: float, frontage_m: Opt
     return {"status":"candidate_match_requires_verification","message":band.get("note","Table 8 nominal distances."),"front_m":band.get("front_m"),"rear_m":band.get("rear_m"),"left_m":band.get("left_m"),"right_m":band.get("right_m"),"all_round_m":None,"basis":band.get("note"),"source":src}
 
 
+def _low_rise_table_setbacks(profile: dict, site_area_m2: float, frontage_m: Optional[float], depth_m: Optional[float], group: Optional[str]) -> dict:
+    """Setbacks read from a table keyed on site depth and width, by use group (LPA Table 2)."""
+    table = profile["setback_low_rise_table"]
+    src = source_by_id(profile, table.get("source_id"))
+    empty = {"front_m": None, "rear_m": None, "left_m": None, "right_m": None, "all_round_m": None, "source": src}
+    minimum = profile.get("minimum_all_round_setback") or {}
+    if minimum and site_area_m2 >= float(minimum["site_area_min_m2"]):
+        d = float(minimum["setback_m"])
+        return {"status": "nominal_height_band_requires_authority_check", "message": minimum["note"], "front_m": d, "rear_m": d, "left_m": d, "right_m": d, "all_round_m": d, "basis": minimum["note"], "source": src}
+    if not group:
+        return {**empty, "status": "rule_not_configured_for_area", "message": "The low-rise setback table does not list this land-use category."}
+    if not frontage_m or not depth_m or frontage_m <= 0 or depth_m <= 0:
+        return {**empty, "status": "missing_inputs", "message": "Frontage and depth are needed for this setback table. Tag a road edge on the boundary, or enter them."}
+    depth_row = _find_band(table["depth_bands"], depth_m)
+    width_row = _find_band(table["width_bands"], frontage_m)
+    if len(depth_row) != 1 or len(width_row) != 1:
+        return {**empty, "status": "rule_not_configured_for_area", "message": "The site depth or width did not match one row of the setback table."}
+    front, rear = depth_row[0][group]
+    left, right = width_row[0][group]
+    return {"status": "nominal_calculation_requires_site_geometry_check", "message": table["note"], "front_m": float(front), "rear_m": float(rear), "left_m": float(left), "right_m": float(right), "all_round_m": None, "basis": table["note"], "source": src}
+
+
 def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m: Optional[float], depth_m: Optional[float], height_for_setback_m: Optional[float], stilt: bool, zone: str | None = None, stilt_height_m: float | None = None) -> dict:
     """Select building setbacks from the configured zone-specific rule path."""
     if not profile:
@@ -441,6 +464,8 @@ def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m:
         table8_height = max(0.0, table8_height - float(stilt_height_m))
     small_plot = profile.get("setback_table8_small_plot") or {}
     small_plot_applies = bool(small_plot) and site_area_m2 <= float(small_plot["max_area_m2"]) and float(height_for_setback_m) <= float(small_plot["max_total_height_m"])
+    if table8_height <= table8_max and profile.get("setback_low_rise_table"):
+        return _low_rise_table_setbacks(profile, site_area_m2, frontage_m, depth_m, (cat or {}).get("setback_use_group"))
     if table8_height <= table8_max or small_plot_applies:
         return _nominal_table8_for_area(profile, site_area_m2, frontage_m, depth_m)
 
@@ -458,6 +483,9 @@ def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m:
             return {"status":"nominal_height_band_requires_authority_check","message":"Minimum all-round setback for the selected height and plot-area band; confirm current operative row and height definition.","front_m":d,"rear_m":d,"left_m":d,"right_m":d,"all_round_m":d,"basis":band.get('note','Table 9 height band'),"source":src}
         if 'all_round_m' in band:
             d = float(band['all_round_m'])
+            minimum = profile.get("minimum_all_round_setback") or {}
+            if minimum and site_area_m2 >= float(minimum["site_area_min_m2"]):
+                d = max(d, float(minimum["setback_m"]))
             return {"status":"nominal_height_band_requires_authority_check","message":band.get('note','All-round setback from supplied Table 9; confirm exact height definition and applicable row.'),"front_m":d,"rear_m":d,"left_m":d,"right_m":d,"all_round_m":d,"basis":band.get('note','Table 9 all-round setback'),"source":src}
         if 'front_min_m' in band:
             t8 = _nominal_table8_for_area(profile, site_area_m2, frontage_m, depth_m)
@@ -661,9 +689,9 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
         scenario_inputs.append(normalized)
 
     scenarios = build_scenarios(site_area, scenario_inputs, max_far_benchmark=max_far_benchmark, max_far_capacity_m2=max_far_capacity, far_calculation_area_m2=far_calculation_area)
-    if max_far_benchmark is not None and far_result.get("rule_source_quality") == "secondary_copy_pending_official_validation":
+    if max_far_benchmark is not None and far_result.get("rule_source_quality") in {"secondary_copy_pending_official_validation", "official_authority_copy_pending_review"}:
         for item in scenarios:
-            item["benchmark_source"] = "provisional secondary-source rule candidate; official applicability pending"
+            item["benchmark_source"] = "provisional rule candidate; official applicability pending"
     for out_scenario, raw in zip(scenarios, scenario_inputs):
         for key in ("setback_result","setback_status","setback_summary","basement_setback_result","basement_setback_status","basement_setback_summary","setback_mode","manual_all_round_setback_m","basement_setback_mode","manual_basement_front_m","manual_basement_nonfront_m"):
             out_scenario[key] = raw.get(key)
@@ -745,7 +773,7 @@ def build_report(site: dict, registry: Optional[dict] = None, profile: Optional[
         "land_use_categories": [{"key":c.get("key"),"label":c.get("label"),"table":c.get("table"),"method":c.get("method")} for c in land_use_categories(profile)],
         "limits": [
             "This is an early-stage feasibility aid, not sanction advice or a legal opinion.",
-            "Bengaluru RMP 2015 has a partial configured profile. Hoskote, Kanakapura, Nelamangala and Anekal use provisional FAR candidate profiles transcribed from secondary Master Plan 2031 copies; operative notification, amendments, zoning and authority coverage require confirmation. Other authority profiles remain unconfigured.",
+            "Bengaluru RMP 2015 has a partial configured profile. Hoskote, Kanakapura, Nelamangala and Anekal use provisional FAR candidates compared with the Master Plan 2031 text each authority publishes; later amendments, zoning and authority coverage require confirmation. Other authority profiles remain unconfigured.",
             "A rule-based FAR is a candidate from the configured source, not a sanctioned entitlement. Confirm the exact authority, official land-use classification, notification validity and applicable conditions.",
             "SiteIQ can use a validated imported boundary area and calculate preliminary envelopes. Complex concave geometry, frontage-specific interpretations and all statutory overlays still need architect/authority review.",
             "Gross area is footprint times above-ground floor count; FAR exclusions, ancillary areas, floor-by-floor variations, parking, structure and service constraints are not fully modelled.",

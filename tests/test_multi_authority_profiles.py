@@ -15,7 +15,7 @@ def test_hoskote_general_residential_far_uses_road_width_table():
     assert result["status"] == "candidate_match_requires_verification"
     assert result["maximum_far"] == 2.25
     assert result["maximum_far_area_m2"] == 4950.0
-    assert result["rule_source_quality"] == "secondary_copy_pending_official_validation"
+    assert result["rule_source_quality"] == "official_authority_copy_pending_review"
     assert result["source"]["id"] == "base_zr_table4"
 
 
@@ -38,19 +38,21 @@ def test_hoskote_group_housing_below_minimum_road_width_does_not_assign_far():
     assert result["maximum_far"] is None
 
 
-def test_anekal_group_housing_conflicting_secondary_copies_remains_unresolved():
+def test_anekal_group_housing_uses_table_6_of_the_published_plan_on_gross_area():
     profile = load_rule_profile("anekal_lpa2031_candidate")
-    result = match_far_rule(profile, "Residential", 20684, 36, proposed_use="Residential apartments")
-    assert result["status"] == "special_case_no_generic_far"
-    assert result["maximum_far"] is None
+    result = match_far_rule(profile, "Residential", 20684, 18.5, proposed_use="Residential apartments")
+    assert result["maximum_far"] == 2.5
+    assert result["far_calculation_area_m2"] == 20684
+    assert any("gross area" in c for c in result["conditions"])
 
 
 def test_lpa_height_setbacks_follow_lpa_table_3_not_bengaluru_area_override():
+    # Published Table 2 note: plots of 4,000 m² and above need at least 5.0 m, which lifts the 4.5 m Table 3 row.
     profile = load_rule_profile("hoskote_lpa2031_candidate")
     result12 = calculate_setbacks(profile, 20684, 120, 171, 12, False, zone="Residential")
     result15 = calculate_setbacks(profile, 20684, 120, 171, 15, False, zone="Residential")
     result18 = calculate_setbacks(profile, 20684, 120, 171, 18, False, zone="Residential")
-    assert result12["all_round_m"] == 4.5
+    assert result12["all_round_m"] == 5.0
     assert result15["all_round_m"] == 5.0
     assert result18["all_round_m"] == 6.0
     assert result15["source"]["id"] == "base_zr_table3"
@@ -88,7 +90,7 @@ def test_group_housing_build_report_uses_net_area_for_capacity_and_option_yield(
     assert report["application"]["version"] == __version__
     assert report["maximum_far"] == 2.75
     assert report["maximum_far_area_m2"] == round(20684 * 0.95 * 2.75, 2)
-    assert "provisional secondary-source" in report["scenarios"][0]["benchmark_source"]
+    assert "provisional rule" in report["scenarios"][0]["benchmark_source"]
     assert report["scenarios"][0]["far_capacity_m2"] == round(20684 * 0.95 * 2.75, 2)
     assert report["scenarios"][0]["achieved_gross_far_ratio"] == round(50000 / (20684 * 0.95), 3)
 
@@ -100,7 +102,7 @@ def test_kanakapura_and_nelamangala_profiles_return_provisional_group_housing_ca
         assert result["status"] == "candidate_match_requires_verification"
         assert result["maximum_far"] == 2.5
         assert result["selected_path"] in {"kanakapura_table6", "nelamangala_table5"}
-        assert result["rule_source_quality"] == "secondary_copy_pending_official_validation"
+        assert result["rule_source_quality"] == "official_authority_copy_pending_review"
 
 
 def test_provisional_lpa_group_housing_scenario_labels_net_far_basis():
@@ -114,9 +116,9 @@ def test_provisional_lpa_group_housing_scenario_labels_net_far_basis():
     }
     report = build_report(site, registry=registry)
     option = report["scenarios"][0]
-    assert report["far"]["rule_source_quality"] == "secondary_copy_pending_official_validation"
+    assert report["far"]["rule_source_quality"] == "official_authority_copy_pending_review"
     assert report["maximum_far"] == 2.75
     assert option["far_ratio_basis"].startswith("net FAR calculation area")
     assert option["far_calculation_area_m2"] == round(20684 * 0.95, 2)
     assert option["achieved_far_ratio"] == round(50000 / (20684 * 0.95), 3)
-    assert "provisional secondary-source" in option["benchmark_source"]
+    assert "provisional rule" in option["benchmark_source"]

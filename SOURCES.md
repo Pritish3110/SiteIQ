@@ -110,6 +110,10 @@ Only the items below were read from the document itself for this release. Everyt
 | [Karnataka Fire Force ordinance 2023](https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf) | 21 m high-rise and NOC trigger | From search summary of the text |
 | [NBC 2016 Part 4](https://nmcnagpur.gov.in/assets/300/2025/03/mediafiles/NBC2016-Part-IV.pdf) | Clause 2.38, high-rise from 15 m | Read directly; licensed BIS text, so not stored in this repo |
 
-**Not obtained:** official Hoskote, Kanakapura, Nelamangala and Anekal regulations, and any official planning-boundary or land-use GIS layer. The BDA site refused connections. These four profiles remain secondary-source candidates.
+**Planning authority plans, read from each authority's website:** [Hoskote](https://hoskote.tpa.gov.in/sites/hoskote.tpa.gov.in/files/HOSKOTE_ZR%20REPORT_-2031_finalsigned.pdf), [Kanakapura](https://kanakapura.tpa.gov.in/sites/kanakapura.tpa.gov.in/files/Zoning%20Regulations-Final.pdf), [Nelamangala](https://nelamangala.tpa.gov.in/sites/nelamangala.tpa.gov.in/files/1%20NPA_ZONING_REGULATION_2031.pdf) and [Anekal](https://anekal.tpa.gov.in/sites/anekal.tpa.gov.in/files/Zonal%20Regulations.pdf). Tables 2, 3, 4 and the group-housing table were compared with the profiles. This corrected the Hoskote industrial table, resolved the Anekal group-housing table, and added low-rise setbacks and apartment rules. Later amendments were not checked.
+
+**Open conflicts:** Hoskote's site hosts two copies. The signed final allows group housing from a 9 m road at FAR 1.5, and the other requires 12 m; SiteIQ keeps 12 m. The Anekal text does not say FAR uses net area, so SiteIQ uses gross area and flags it.
+
+**Not encoded:** IT/BT tables, the Hoskote industrial development plan (Table 6B) and basement rules for the four planning authorities. No official planning-boundary or land-use GIS layer was obtained. The BDA site refused connections.
 
 **Taken from secondary sources only:** the EIA 20,000 m² trigger and the RERA 500 m² and 8-unit limits. Both checks say so and ask you to confirm.

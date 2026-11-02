@@ -118,7 +118,7 @@ def rule_checks(site: dict, profile: Optional[dict], far: dict, area: float, roa
     elif status == "verified_operative":
         out.append(_check("rule.profile", "Rules", "Rule profile", PASS, "This profile has been reviewed against the operative documents."))
     else:
-        label = {"secondary_source_candidate": "transcribed from secondary copies", "official_source_found_pending_review": "compared with public copies of the source documents, but not independently reviewed", "partially_verified": "only partly verified"}.get(status, str(status))
+        label = {"secondary_source_candidate": "transcribed from secondary copies", "official_source_found_pending_review": "compared with the published source documents, but not independently reviewed", "partially_verified": "only partly verified"}.get(status, str(status))
         out.append(_check("rule.profile", "Rules", "Rule profile", REFER, f"This profile is {label}. Do not freeze a design on it. {profile.get('profile_name', '')}".strip()))
     if site.get("zone_confirmed"):
         out.append(_check("rule.zone", "Rules", "Land-use zone", PASS, "You confirmed the category against the notified land-use map."))
@@ -353,7 +353,16 @@ def option_checks(site: dict, profile: Optional[dict], far: dict, scenario: dict
     if is_apartment and apartment and category in apartment.get("categories", []):
         src = source_by_id(profile, apartment.get("source_id"))
         ring = site.get("rmp_ring")
-        if road < float(apartment["minimum_road_width_m"]):
+        if "bands" not in apartment:
+            if road <= float(apartment["road_width_min_exclusive_m"]):
+                add("option.apartment", "Apartment eligibility", FAIL, f"{apartment['note']} The road is {road:g} m.", src)
+            elif area <= float(apartment.get("municipal_plot_min_exclusive_m2", apartment["plot_min_exclusive_m2"])):
+                add("option.apartment", "Apartment eligibility", FAIL, f"{apartment['note']} The plot is {area:,.0f} m².", src)
+            elif area <= float(apartment["plot_min_exclusive_m2"]):
+                add("option.apartment", "Apartment eligibility", REFER, f"{apartment['note']} At {area:,.0f} m² this depends on whether the plot is within CMC limits.", src)
+            else:
+                add("option.apartment", "Apartment eligibility", PASS, f"Plot and road meet the rule. {apartment['note']}", src)
+        elif road < float(apartment["minimum_road_width_m"]):
             add("option.apartment", "Apartment eligibility", FAIL, f"Apartments need a road of at least {apartment['minimum_road_width_m']:g} m.", src)
         elif ring not in {"I", "II", "III"}:
             add("option.apartment", "Apartment eligibility", NEEDS_INPUT, "Select the RMP ring. Apartment rules differ between Rings I, II and III.", src)

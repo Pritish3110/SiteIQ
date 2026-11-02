@@ -12,6 +12,9 @@
 - Auto-footprints respect the ground-coverage limit. Far ratios use one denominator.
 - Plots up to 250 m² with height up to 15 m use Table 8, and Table 8 height excludes the stilt when its height is entered.
 
+- Planning authority rules were compared with each authority's published plan: Hoskote's industrial table was corrected, Anekal group housing now has a FAR, and low-rise setbacks and apartment rules were added.
+- RMP Tables 20 and 21 now give a FAR for development plans.
+
 **Added.** A compliance register with a verdict, where anything unevaluated never counts as a pass. Checks from source documents: road-width height limit, apartment rules by ring, basement limits, Table 23 parking, ramps, drain buffers (UDD 468), plus EIA and RERA triggers. Warnings near rule thresholds. No-build depths along named edges. Whole-parcel authority overlap checks. Stricter locality matching, coordinate validation and map-link fetching.
 
 ## v0.4.7 — 2026-10-16

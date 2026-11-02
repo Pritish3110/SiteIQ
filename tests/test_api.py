@@ -39,7 +39,7 @@ def test_other_websites_cannot_call_the_api():
 
 
 def test_authority_detail():
-    assert client.get("/api/authorities/hoskote_planning_authority").json()["source_status"] == "secondary_source_candidate"
+    assert client.get("/api/authorities/hoskote_planning_authority").json()["source_status"] == "official_source_found_pending_review"
     assert client.get("/api/authorities/nope").status_code == 404
 
 

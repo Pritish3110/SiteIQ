@@ -40,7 +40,7 @@ def test_kanakapura_master_plan_has_provisional_candidate_profile_not_official_a
     assert authority.get("rule_profile") == "kanakapura_lpa2031_candidate"
     profile = load_rule_profile(authority["rule_profile"])
     assert profile is not None
-    assert profile["rule_source_quality"] == "secondary_copy_pending_official_validation"
+    assert profile["rule_source_quality"] == "official_authority_copy_pending_review"
     assert "PROVISIONAL" in profile["profile_status"]
     # An old review-candidate metadata file remains as source history, not the active profile.
     candidate_path = ROOT / "rules" / "candidate_profiles" / "kanakapura_mp2031_review_candidate.json"
@@ -63,7 +63,7 @@ def test_four_lpa_profiles_are_enabled_as_provisional_candidates_only():
         authority = find_authority(registry, key)
         profile = load_rule_profile(authority.get("rule_profile"))
         assert profile is not None
-        assert profile["rule_source_quality"] == "secondary_copy_pending_official_validation"
+        assert profile["rule_source_quality"] == "official_authority_copy_pending_review"
         assert "provisional" in authority["status"]
 
 

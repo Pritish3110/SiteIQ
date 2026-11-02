@@ -72,8 +72,8 @@
       "name": "Planning Authority Kanakapura",
       "region": "Kanakapura, Karnataka",
       "rule_profile": "kanakapura_lpa2031_candidate",
-      "status": "provisional_rules_profile_enabled_secondary_source",
-      "scope_note": "Kanakapura LPA 2031 candidate rules are transcribed from secondary/tribunal-hosted copies. FAR is provisional only; verify the precise planning boundary, operative final notification and later amendments before reliance. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
+      "status": "provisional_rules_profile_enabled_official_copy",
+      "scope_note": "Kanakapura LPA 2031 rules were compared with the plan on the authority's website. FAR is provisional only; verify the precise planning boundary, operative final notification and later amendments before reliance. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
       "sources": [
         {
           "title": "Planning Authority Kanakapura — official district administration directory",
@@ -105,7 +105,7 @@
       ],
       "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
       "coverage_group": "BMRDA local planning areas",
-      "rule_source_status": "secondary_copy_pending_official_validation"
+      "rule_source_status": "official_authority_copy_pending_review"
     },
     {
       "key": "mysuru_development_authority",
@@ -163,10 +163,10 @@
       "name": "Anekal Planning Authority",
       "region": "Anekal, Karnataka",
       "rule_profile": "anekal_lpa2031_candidate",
-      "status": "provisional_rules_profile_enabled_secondary_source",
+      "status": "provisional_rules_profile_enabled_official_copy",
       "coverage_group": "BMRDA local planning areas",
-      "rule_source_status": "secondary_copy_pending_official_validation",
-      "scope_note": "Anekal LPA 2031 candidate rules are transcribed from a secondary Master Plan copy. General table FARs are provisional; the group-housing FAR pathway is deliberately not auto-calculated because secondary copies conflict. Verify the operative approved plan and amendments. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
+      "rule_source_status": "official_authority_copy_pending_review",
+      "scope_note": "Anekal LPA 2031 rules were compared with the plan on the authority's website. General table FARs are provisional; the group-housing FAR pathway is deliberately not auto-calculated because secondary copies conflict. Verify the operative approved plan and amendments. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
       "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
       "sources": [
         {
@@ -275,10 +275,10 @@
       "name": "Hoskote Planning Authority",
       "region": "Hoskote, Karnataka",
       "rule_profile": "hoskote_lpa2031_candidate",
-      "status": "provisional_rules_profile_enabled_secondary_source",
+      "status": "provisional_rules_profile_enabled_official_copy",
       "coverage_group": "BMRDA local planning areas",
-      "rule_source_status": "secondary_copy_pending_official_validation",
-      "scope_note": "Hoskote LPA 2031 candidate rules are transcribed from secondary copies of the final-plan zoning document. FAR can be shown as a provisional candidate, not an operative entitlement, until the exact Hoskote LPA boundary, current approved plan and amendments are verified. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
+      "rule_source_status": "official_authority_copy_pending_review",
+      "scope_note": "Hoskote LPA 2031 rules were compared with the plan on the authority's website. FAR can be shown as a provisional candidate, not an operative entitlement, until the exact Hoskote LPA boundary, current approved plan and amendments are verified. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
       "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
       "sources": [
         {
@@ -331,10 +331,10 @@
       "name": "Nelamangala Planning Authority",
       "region": "Nelamangala, Karnataka",
       "rule_profile": "nelamangala_lpa2031_candidate",
-      "status": "provisional_rules_profile_enabled_secondary_source",
+      "status": "provisional_rules_profile_enabled_official_copy",
       "coverage_group": "BMRDA local planning areas",
-      "rule_source_status": "secondary_copy_pending_official_validation",
-      "scope_note": "Nelamangala LPA 2031 candidate rules are transcribed from secondary copies. FAR is provisional only; verify the precise planning boundary, operative final notification and later amendments before reliance. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile. Official-domain authority-hosted reference located for the Approved Master Plan 2031; not treated as validation of the secondary-transcribed FAR/setback tables.",
+      "rule_source_status": "official_authority_copy_pending_review",
+      "scope_note": "Nelamangala LPA 2031 rules were compared with the plan on the authority's website. FAR is provisional only; verify the precise planning boundary, operative final notification and later amendments before reliance. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile. Official-domain authority-hosted reference located for the Approved Master Plan 2031; not treated as validation of the secondary-transcribed FAR/setback tables.",
       "next_action": "Confirm exact parcel within the notified LPA; obtain the authority-issued approved Master Plan/zonal regulations and amendments; reconcile this provisional table transcription; then promote the profile only after rule-by-rule validation.",
       "sources": [
         {

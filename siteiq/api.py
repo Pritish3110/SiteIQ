@@ -197,7 +197,7 @@ def authority_detail(key: str) -> dict:
         "profile_name": (profile or {}).get("profile_name"), "profile_status": (profile or {}).get("profile_status"),
         "source_status": (profile or {}).get("source_status", "not_configured"),
         "status_problem": rule_status_problem(profile) if profile else None,
-        "has_apartment_rings": bool((profile or {}).get("apartment_rules")),
+        "has_apartment_rings": bool(((profile or {}).get("apartment_rules") or {}).get("bands")),
         "categories": [{"key": c.get("key"), "label": c.get("label"), "table": c.get("table"), "method": c.get("method")} for c in land_use_categories(profile)],
         "sources": (profile or {}).get("sources", []),
     }

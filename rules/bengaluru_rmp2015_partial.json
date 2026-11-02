@@ -1035,26 +1035,202 @@
     {
       "key": "residential_development_plan",
       "label": "Residential Development Plan (>10,000 m² pathway)",
-      "table": "Chapter 7 (Development Plan)",
-      "source_id": "rmp2015_tables10_19",
-      "method": "special_no_generic_far",
-      "setback_method": "authority_decided",
+      "table": "Table 20, Chapter 7",
+      "source_id": "rmp2015_online_copy",
+      "method": "road_width",
+      "setback_method": "table8_9",
       "conditions": [
-        "The 2025 amendment redefines Development Plan for a single plot over 10,000 m². Chapter 7 requires a separate fully checked rule path."
+        "Table 20 is titled for sites over 20,000 m². The 2025 amendment is recorded as redefining Development Plan above 10,000 m², so sites from 10,000 to 20,000 m² get no FAR here until the authority confirms.",
+        "10% park and open space, and at least 5% civic amenity.",
+        "The table's bands leave exactly 12 m unassigned, so no FAR is given at that width."
       ],
-      "far_interpretation": "The standard small/medium plot FAR tables are not used for this approval pathway; Chapter 7 configuration is incomplete."
+      "far_interpretation": "FAR from Table 20 by road width, on land after deducting the civic amenity site.",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "max_exclusive": true,
+          "far": 2.0
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_method": "road_width",
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 12,
+          "max_exclusive": true,
+          "coverage_pct": 60
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "min_exclusive": true,
+          "coverage_pct": 55
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "coverage_pct": 55
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        }
+      ],
+      "eligibility": {
+        "plot_area_min_m2": 20000,
+        "plot_area_min_exclusive": true
+      },
+      "far_area_basis": {
+        "type": "net_after_deduction_pct",
+        "deduct_pct": 5.0,
+        "reason": "Regulation 7.1: FAR is calculated after deducting the civic amenity site, a minimum of 5%. A larger site reduces the FAR area further."
+      }
     },
     {
       "key": "nonresidential_development_plan",
       "label": "Non-residential Development Plan / Flatted Factory (>10,000 m² pathway)",
-      "table": "Chapter 7 (Development Plan)",
-      "source_id": "rmp2015_tables10_19",
-      "method": "special_no_generic_far",
-      "setback_method": "authority_decided",
+      "table": "Table 21, Chapter 7",
+      "source_id": "rmp2015_online_copy",
+      "method": "road_width",
+      "setback_method": "table8_9",
       "conditions": [
-        "Use Chapter 7 and current amended definition/threshold. The complete specific FAR table for the applicable pathway is not configured in this MVP."
+        "Table 21 is titled for sites over 12,000 m². Confirm this against the 2025 amended definition of Development Plan.",
+        "10% parks and open space, plus 5% of the plot for surface parking.",
+        "The table's bands leave exactly 9 m unassigned, so no FAR is given at that width."
       ],
-      "far_interpretation": "The standard zone tables are not enough; Chapter 7 review is required."
+      "far_interpretation": "FAR from Table 21 by road width, on the site excluding parks and open space.",
+      "road_far_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "max_exclusive": true,
+          "far": 1.5
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "far": 1.75
+        },
+        {
+          "min": 12,
+          "max": 15,
+          "min_exclusive": true,
+          "far": 2.0
+        },
+        {
+          "min": 15,
+          "max": 18,
+          "min_exclusive": true,
+          "far": 2.25
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 2.5
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 3.0
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 3.25
+        }
+      ],
+      "coverage_method": "road_width",
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 9,
+          "max_exclusive": true,
+          "coverage_pct": 60
+        },
+        {
+          "min": 9,
+          "max": 12,
+          "min_exclusive": true,
+          "coverage_pct": 55
+        },
+        {
+          "min": 12,
+          "max": 15,
+          "min_exclusive": true,
+          "coverage_pct": 55
+        },
+        {
+          "min": 15,
+          "max": 18,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "coverage_pct": 50
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "coverage_pct": 45
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "coverage_pct": 45
+        }
+      ],
+      "eligibility": {
+        "plot_area_min_m2": 12000,
+        "plot_area_min_exclusive": true
+      },
+      "far_area_basis": {
+        "type": "net_after_deduction_pct",
+        "deduct_pct": 10.0,
+        "reason": "Regulation 7.2: FAR is calculated on the site excluding the 10% reserved for parks and open spaces."
+      }
     }
   ],
   "setback_table8_area_bands": [

@@ -446,3 +446,67 @@ def test_every_rule_table_has_no_overlapping_bands():
                     for value in [r.get(k) for r in rows for k in ("min", "max")]:
                         if value is not None and value > 0:
                             assert len(_find_band(rows, value)) <= 1, (authority["key"], category["label"], table, value)
+
+
+# Rules read from the plans each planning authority publishes
+LPAS = ["hoskote", "kanakapura", "nelamangala", "anekal"]
+
+
+@pytest.mark.parametrize("name", LPAS)
+@pytest.mark.parametrize("road,far", [(9, 1.5), (9.01, 1.75), (12, 1.75), (18, 2.0), (24, 2.25), (24.01, 2.5)])
+def test_lpa_table_4_residential(name, road, far):
+    assert match_far_rule(load_rule_profile(f"{name}_lpa2031_candidate"), "Residential", 2000, road)["maximum_far"] == far
+
+
+@pytest.mark.parametrize("name", LPAS)
+@pytest.mark.parametrize("category,depth,width,expected", [
+    ("Residential", 30, 20, (3.5, 3.0, 2.0, 3.0)), ("Residential", 10, 8, (1.0, 1.0, 1.0, 1.0)), ("Commercial", 15, 10, (2.5, 1.5, 1.0, 1.0)), ("Public Utilities", 20, 13, (3.0, 2.0, 1.75, 2.5)),
+])
+def test_lpa_table_2_low_rise_setbacks(name, category, depth, width, expected):
+    result = calculate_setbacks(load_rule_profile(f"{name}_lpa2031_candidate"), 600, width, depth, 9, False, zone=category)
+    assert (result["front_m"], result["rear_m"], result["left_m"], result["right_m"]) == expected
+
+
+@pytest.mark.parametrize("name", LPAS)
+def test_lpa_large_plots_need_at_least_5m_all_round(name):
+    profile = load_rule_profile(f"{name}_lpa2031_candidate")
+    assert calculate_setbacks(profile, 4000, 50, 80, 9, False, zone="Residential")["all_round_m"] == 5.0
+    assert calculate_setbacks(profile, 4000, 50, 80, 12, False, zone="Residential")["all_round_m"] == 5.0
+    assert calculate_setbacks(profile, 3999, 50, 80, 12, False, zone="Residential")["all_round_m"] == 4.5
+
+
+@pytest.mark.parametrize("area,road,expected", [(800.0, 12.0, "PASS"), (750.0, 12.0, "FAIL"), (800.0, 9.0, "FAIL")])
+def test_lpa_apartment_rule(area, road, expected):
+    report = assess(payload(authority_key="kanakapura_planning_authority", land_use_category="Residential", site_area_m2=area, road_width_m=road))
+    assert check(report, "option.apartment", "A")["status"] == expected
+
+
+def test_hoskote_apartment_rule_between_360_and_750_depends_on_cmc_limits():
+    make = lambda area: check(assess(payload(authority_key="hoskote_planning_authority", land_use_category="Residential", site_area_m2=area, road_width_m=12.0)), "option.apartment", "A")["status"]
+    assert (make(300.0), make(500.0), make(800.0)) == ("FAIL", "REFER", "PASS")
+
+
+def test_hoskote_industrial_table_matches_the_signed_plan():
+    profile = load_rule_profile("hoskote_lpa2031_candidate")
+    result = match_far_rule(profile, "Industrial Buildings (plot-area table)", 1500, 12)
+    assert result["maximum_far"] == 1.25 and result["coverage"]["coverage_pct"] == 50
+    assert match_far_rule(profile, "Industrial Buildings (plot-area table)", 50000, 15)["status"] == "minimum_road_width_not_met"
+
+
+@pytest.mark.parametrize("road,far", [(11.9, 2.0), (18, 2.25), (24, 2.5), (30, 3.0), (31, 3.25)])
+def test_rmp_table_20_uses_net_area_over_20000(road, far):
+    result = match_far_rule(load_rule_profile(RMP), "Residential Development Plan (>10,000 m² pathway)", 30000, road)
+    assert result["maximum_far"] == far and result["far_calculation_area_m2"] == pytest.approx(28500)
+    assert result["coverage"]["coverage_pct"] is not None
+
+
+def test_rmp_table_20_gives_no_far_at_its_gap_or_below_its_scope():
+    profile = load_rule_profile(RMP)
+    label = "Residential Development Plan (>10,000 m² pathway)"
+    assert match_far_rule(profile, label, 30000, 12)["maximum_far"] is None
+    assert match_far_rule(profile, label, 20000, 18)["status"] == "outside_configured_table_scope"
+
+
+def test_rmp_table_21_deducts_the_park_area():
+    result = match_far_rule(load_rule_profile(RMP), "Non-residential Development Plan / Flatted Factory (>10,000 m² pathway)", 20000, 16)
+    assert result["maximum_far"] == 2.25 and result["far_calculation_area_m2"] == pytest.approx(18000)
