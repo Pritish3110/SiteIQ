@@ -5,7 +5,7 @@ import type { EdgeRole, LocationResult, Point } from "./types";
 export interface OptionDraft {
   id: string; name: string; height: string; floors: string; footprint: string; stilt: boolean; stiltHeight: string; manualSetback: string; basements: string; manualBasementFront: string; manualBasementSide: string;
 }
-export interface OverlayDraft { status: "unknown" | "absent" | "present"; edge: string; depth: string; drainClass: "" | "primary" | "secondary" | "tertiary" }
+export interface OverlayDraft { status: "unknown" | "absent" | "present"; edge: string; depth: string; drainClass: "" | "primary" | "secondary" | "tertiary"; lineKv?: string }
 export interface AppliedBoundary {
   sourceFile: string; sourceType: string; sourceUnits?: string; scale?: number | null; fingerprint?: string; candidateId?: string; illustrative?: boolean;
   points: Point[]; holes: Point[][]; area: number; perimeter: number; convex: boolean; notes: string[]; wgs84?: Point[]; holesWgs84?: Point[][];
@@ -54,7 +54,7 @@ export const toPayload = (s: Study) => {
   for (const [key] of OVERLAYS) {
     const o = s.overlays[key];
     if (!o || o.status === "unknown") continue;
-    overlays[key] = { status: o.status, edge: o.status === "present" && o.edge !== "" ? Number(o.edge) : null, extra_setback_m: o.status === "present" ? positive(o.depth) : null, drain_class: key === "drain" && o.drainClass ? o.drainClass : null };
+    overlays[key] = { status: o.status, edge: o.status === "present" && o.edge !== "" ? Number(o.edge) : null, extra_setback_m: o.status === "present" ? positive(o.depth) : null, drain_class: key === "drain" && o.drainClass ? o.drainClass : null, line_kv: key === "ht_line" && o.lineKv ? o.lineKv : null };
   }
   const location = s.location ? JSON.parse(JSON.stringify(s.location)) : null;
   return {

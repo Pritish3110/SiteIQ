@@ -103,6 +103,7 @@ class Overlay(Strict):
     edge: Optional[int] = Field(None, ge=0)
     extra_setback_m: Optional[float] = Field(None, gt=0, le=500)
     drain_class: Optional[Literal["primary", "secondary", "tertiary"]] = None
+    line_kv: Optional[Literal["LT", "11", "33", "66", "110", "220", "400"]] = None
 
 
 class RoadEdge(Strict):

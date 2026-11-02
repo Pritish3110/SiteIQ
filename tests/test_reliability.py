@@ -510,3 +510,64 @@ def test_rmp_table_20_gives_no_far_at_its_gap_or_below_its_scope():
 def test_rmp_table_21_deducts_the_park_area():
     result = match_far_rule(load_rule_profile(RMP), "Non-residential Development Plan / Flatted Factory (>10,000 m² pathway)", 20000, 16)
     assert result["maximum_far"] == 2.25 and result["far_calculation_area_m2"] == pytest.approx(18000)
+
+
+@pytest.mark.parametrize("name", LPAS)
+def test_lpa_basement_limit_is_three_levels(name):
+    key = f"{'nelamangala' if name == 'nelamangala' else name}_planning_authority"
+    report = assess(payload(authority_key=key, land_use_category="Residential", scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 500, "basement_levels": 4}]))
+    assert check(report, "option.basement", "A")["status"] == "FAIL"
+
+
+def test_lpa_parking_counts_one_space_per_unit_and_hoskote_adds_visitors():
+    make = lambda authority: check(assess(payload(authority_key=authority, land_use_category="Residential", dwelling_units=20, average_unit_area_m2=200.0)), "option.parking", "A")["value"]
+    assert make("hoskote_planning_authority") == 22
+    assert make("kanakapura_planning_authority") == 20
+
+
+def test_lpa_office_parking_uses_75_m2():
+    report = assess(payload(authority_key="anekal_planning_authority", land_use_category="Commercial", proposed_use="Commercial / office", scenarios=[{"name": "A", "height_m": 12, "floors": 3, "footprint_m2": 500}]))
+    assert check(report, "option.parking", "A")["value"] == 20
+
+
+@pytest.mark.parametrize("kv,depth,expected", [("33", 2.0, "FAIL"), ("33", 2.5, "REFER"), ("220", 3.0, "FAIL")])
+def test_lpa_electric_line_clearance(kv, depth, expected):
+    overlays = {"ht_line": {"status": "present", "edge": 0, "extra_setback_m": depth, "line_kv": kv}}
+    assert check(assess(payload(authority_key="hoskote_planning_authority", land_use_category="Residential", overlays=overlays)), "overlay.ht_line")["status"] == expected
+
+
+def test_electric_line_needs_a_voltage():
+    assert check(assess(payload(authority_key="hoskote_planning_authority", land_use_category="Residential", overlays={"ht_line": {"status": "present"}})), "overlay.ht_line")["status"] == "NEEDS_INPUT"
+
+
+def test_lpa_separation_is_half_the_taller_building():
+    report = assess(payload(authority_key="nelamangala_planning_authority", land_use_category="Residential", scenarios=[{"name": "A", "height_m": 30, "floors": 10, "footprint_m2": 100}]))
+    assert check(report, "project.separation")["value"] == 15
+
+
+def test_lpa_accessibility_rule_applies_to_public_buildings():
+    report = assess(payload(authority_key="kanakapura_planning_authority", land_use_category="Public and Semi-public", proposed_use="Public / semi-public use", scenarios=[{"name": "A", "height_m": 9, "floors": 3, "footprint_m2": 200}]))
+    assert check(report, "project.accessibility")["status"] == "REFER"
+
+
+@pytest.mark.parametrize("name,area,road,far,front", [("hoskote", 2000, 13, 2.0, 8.0), ("kanakapura", 3000, 13, 1.75, 8.0), ("nelamangala", 7000, 31, 2.5, 15.0), ("anekal", 500, 20, 1.5, 6.0)])
+def test_lpa_it_bt_tables(name, area, road, far, front):
+    profile = load_rule_profile(f"{name}_lpa2031_candidate")
+    assert match_far_rule(profile, "IT / BT Related Activities", area, road)["maximum_far"] == far
+    assert calculate_setbacks(profile, area, 40, 40, 12, False, zone="IT / BT Related Activities")["front_m"] == front
+
+
+def test_lpa_it_bt_needs_more_than_the_minimum_road_band():
+    assert match_far_rule(load_rule_profile("anekal_lpa2031_candidate"), "IT / BT Related Activities", 500, 9)["maximum_far"] is None
+
+
+@pytest.mark.parametrize("name,coverage", [("kanakapura", 55), ("anekal", 50)])
+def test_industrial_tables_added_with_each_plans_own_coverage(name, coverage):
+    result = match_far_rule(load_rule_profile(f"{name}_lpa2031_candidate"), "Industrial Buildings (plot-area table)", 1500, 15)
+    assert result["maximum_far"] == 1.25 and result["coverage"]["coverage_pct"] == coverage
+
+
+def test_hoskote_table_6b():
+    profile = load_rule_profile("hoskote_lpa2031_candidate")
+    assert match_far_rule(profile, "Industrial Development Plan (>1 ha)", 20000, 31)["maximum_far"] == 1.5
+    assert match_far_rule(profile, "Industrial Development Plan (>1 ha)", 10000, 31)["status"] == "outside_configured_table_scope"

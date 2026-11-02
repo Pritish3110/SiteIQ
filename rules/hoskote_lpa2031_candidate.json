@@ -647,44 +647,50 @@
         {
           "min": 0,
           "max": 230,
-          "min_exclusive": false,
-          "front": "1.00 m",
-          "rear_side": "1.00 m"
+          "front": "1 m",
+          "rear_side": "1 m"
         },
         {
           "min": 230,
           "max": 1000,
-          "min_exclusive": true,
-          "front": "4.50 m",
-          "rear_side": "3.00 m"
+          "front": "4.5 m",
+          "rear_side": "3 m",
+          "min_exclusive": true
         },
         {
           "min": 1000,
           "max": 2000,
-          "min_exclusive": true,
-          "front": "6.00 m",
-          "rear_side": "5.00 m"
+          "front": "6 m",
+          "rear_side": "5 m",
+          "min_exclusive": true
         },
         {
           "min": 2000,
           "max": 4000,
-          "min_exclusive": true,
-          "front": "8.00 m",
-          "rear_side": "5.00 m"
+          "front": "8 m",
+          "rear_side": "5 m",
+          "min_exclusive": true
         },
         {
           "min": 4000,
           "max": 8000,
-          "min_exclusive": true,
-          "front": "8.00 m",
-          "rear_side": "6.00 m"
+          "front": "8 m",
+          "rear_side": "6 m",
+          "min_exclusive": true
         },
         {
           "min": 8000,
+          "max": 40000,
+          "front": "15 m",
+          "rear_side": "12 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 40000,
           "max": null,
-          "min_exclusive": true,
-          "front": "15.00 m",
-          "rear_side": "12.00 m"
+          "front": "20 m",
+          "rear_side": "12 m",
+          "min_exclusive": true
         }
       ],
       "conditions": [
@@ -695,18 +701,6 @@
         "Rows around exactly 1,000 m² are transcribed using exclusive upper-to-next lower boundaries to avoid overlapping bands; verify precise treatment in the official table."
       ],
       "far_interpretation": "Industrial building FAR by plot-area band with a minimum road-width condition. Do not use this for IT/BT-related activities without selecting the applicable use-specific provision."
-    },
-    {
-      "key": "industrial_it_bt",
-      "label": "Industrial Zone — IT/BT Related Activities",
-      "table": "IT/BT Table 10 / Table 10A (source copy)",
-      "source_id": "base_zr_table4",
-      "method": "special_no_generic_far",
-      "setback_method": "authority_decided",
-      "conditions": [
-        "The source provides a paired plot-area/road-width table for IT/BT activities. This MVP does not yet implement the strict paired-band method for this table, so it will not produce an automatic FAR."
-      ],
-      "far_interpretation": "Use-specific paired area/road table not yet enabled; no generic industrial FAR substituted."
     },
     {
       "key": "nonres_development_plan",
@@ -775,6 +769,220 @@
         "The source copy indicates a 5% civic-amenity reservation deducted for FAR; verify all required reservations and approval conditions."
       ],
       "far_interpretation": "Non-residential development-plan FAR by road width; calculated on area net of civic amenity, subject to confirmation."
+    },
+    {
+      "key": "it_bt",
+      "label": "IT / BT Related Activities",
+      "table": "Tables 12 and 13 of the published plan",
+      "source_id": "base_zr_table4",
+      "method": "area_cap_and_road_width",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 1000,
+          "far": 1.5
+        },
+        {
+          "min": 1000,
+          "max": 4000,
+          "far": 2.0,
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "far": 2.0,
+          "min_exclusive": true
+        },
+        {
+          "min": 8000,
+          "max": 16000,
+          "far": 2.25,
+          "min_exclusive": true
+        },
+        {
+          "min": 16000,
+          "max": null,
+          "far": 2.5,
+          "min_exclusive": true
+        }
+      ],
+      "road_far_bands": [
+        {
+          "min": 9,
+          "max": 12,
+          "far": 1.5,
+          "min_exclusive": true
+        },
+        {
+          "min": 12,
+          "max": 15,
+          "far": 2.0,
+          "min_exclusive": true
+        },
+        {
+          "min": 15,
+          "max": 18,
+          "far": 2.0,
+          "min_exclusive": true
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "far": 2.25,
+          "min_exclusive": true
+        },
+        {
+          "min": 24,
+          "max": null,
+          "far": 2.5,
+          "min_exclusive": true
+        }
+      ],
+      "coverage_method": "plot_area",
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 1000,
+          "coverage_pct": 55
+        },
+        {
+          "min": 1000,
+          "max": 4000,
+          "coverage_pct": 50,
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "coverage_pct": 50,
+          "min_exclusive": true
+        },
+        {
+          "min": 8000,
+          "max": 16000,
+          "coverage_pct": 45,
+          "min_exclusive": true
+        },
+        {
+          "min": 16000,
+          "max": null,
+          "coverage_pct": 45,
+          "min_exclusive": true
+        }
+      ],
+      "setback_method": "industrial_table16",
+      "industrial_setbacks": [
+        {
+          "min": 0,
+          "max": 1000,
+          "front": "6 m",
+          "rear_side": "5 m"
+        },
+        {
+          "min": 1000,
+          "max": 4000,
+          "front": "8 m",
+          "rear_side": "5 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "front": "8 m",
+          "rear_side": "6 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 8000,
+          "max": 16000,
+          "front": "8 m",
+          "rear_side": "6 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 16000,
+          "max": null,
+          "front": "15 m",
+          "rear_side": "12 m",
+          "min_exclusive": true
+        }
+      ],
+      "eligibility": {
+        "road_width_min_m": 9
+      },
+      "conditions": [
+        "The plan allows the built-up area for the actual road width when a plot does not face the required road, so SiteIQ uses the lower of the plot and road values."
+      ],
+      "far_interpretation": "FAR for IT and BT related activities from the published plan."
+    },
+    {
+      "key": "industrial_development_plan",
+      "label": "Industrial Development Plan (>1 ha)",
+      "table": "Table 6B of the signed final plan",
+      "source_id": "base_zr_table4",
+      "method": "road_width",
+      "road_far_bands": [
+        {
+          "min": 12,
+          "max": 18,
+          "far": 1.0
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "far": 1.25
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "far": 1.25
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "far": 1.5
+        }
+      ],
+      "coverage_method": "road_width",
+      "coverage_bands": [
+        {
+          "min": 12,
+          "max": 18,
+          "coverage_pct": 35
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "min_exclusive": true,
+          "coverage_pct": 35
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "min_exclusive": true,
+          "coverage_pct": 40
+        },
+        {
+          "min": 30,
+          "max": null,
+          "min_exclusive": true,
+          "coverage_pct": 45
+        }
+      ],
+      "eligibility": {
+        "plot_area_min_m2": 10000,
+        "plot_area_min_exclusive": true,
+        "road_width_min_m": 12
+      },
+      "setback_method": "table8_9",
+      "conditions": [
+        "Table 6B applies to sites over 1 hectare. Confirm any reservation that reduces the FAR area."
+      ],
+      "far_interpretation": "FAR for an industrial development plan from Table 6B."
     }
   ],
   "premium_far_rule": {
@@ -1021,5 +1229,80 @@
     "municipal_plot_min_exclusive_m2": 360,
     "source_id": "base_zr_table4",
     "note": "Table 2 note: apartments on plots above 360 m² within CMC limits and above 750 m² beyond them, on roads wider than 9 m."
+  },
+  "basement_setback_any_size": {
+    "max_at_non_road_sides_m": 2.0,
+    "source_id": "base_zr_table4",
+    "note": "General rules: where the setback exceeds 2.0 m, the basement may extend on all sides except the road side, keeping at least 2.0 m from the boundary."
+  },
+  "basement_limits": {
+    "max_levels": 3,
+    "no_parking_below_site_area_m2": 200,
+    "source_id": "base_zr_table4",
+    "note": "General rules: up to 3 levels for car parking, and none on sites below 200 m²."
+  },
+  "parking_rule": {
+    "source_id": "base_zr_table4",
+    "note": "Off-street parking table of the published plan.",
+    "floor_area_per_car_m2": {
+      "Commercial / office": 75,
+      "Industrial / warehouse": 150,
+      "Public / semi-public use": 100
+    },
+    "multi_dwelling": {
+      "uses": [
+        "Residential apartments"
+      ],
+      "unit_area_per_car_m2": null,
+      "small_unit_max_m2": 50,
+      "small_units_per_car": 2,
+      "visitor_pct": 10
+    }
+  },
+  "electrical_clearance": {
+    "lines": {
+      "LT": [
+        1.8,
+        4.5
+      ],
+      "11": [
+        1.8,
+        4.5
+      ],
+      "33": [
+        2.5,
+        15.0
+      ],
+      "66": [
+        2.5,
+        18.0
+      ],
+      "110": [
+        3.2,
+        22.0
+      ],
+      "220": [
+        4.2,
+        35.0
+      ],
+      "400": [
+        5.2,
+        52.0
+      ]
+    },
+    "source_id": "base_zr_table4",
+    "note": "No building below a line or within the horizontal distance from its edge."
+  },
+  "building_separation": {
+    "source_id": "base_zr_table4",
+    "note": "Group housing: the distance between any two buildings is at least half the height of the taller."
+  },
+  "accessibility_rule": {
+    "covered_area_min_m2": 300,
+    "uses": [
+      "Public / semi-public use"
+    ],
+    "source_id": "base_zr_table4",
+    "note": "Public and semi-public buildings of 300 m² covered area and above must provide facilities for persons with disabilities."
   }
 }

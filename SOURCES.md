@@ -114,6 +114,10 @@ Only the items below were read from the document itself for this release. Everyt
 
 **Open conflicts:** Hoskote's site hosts two copies. The signed final allows group housing from a 9 m road at FAR 1.5, and the other requires 12 m; SiteIQ keeps 12 m. The Anekal text does not say FAR uses net area, so SiteIQ uses gross area and flags it.
 
-**Not encoded:** IT/BT tables, the Hoskote industrial development plan (Table 6B) and basement rules for the four planning authorities. No official planning-boundary or land-use GIS layer was obtained. The BDA site refused connections.
+**Also encoded from these plans:** IT/BT and industrial tables with their setbacks, Hoskote Table 6B, basement limits and setbacks, parking, electric line clearances, building separation and the accessibility trigger. Parking and clearance figures are as printed and need confirming with the agency.
+
+**Lake and drain distances:** these plans print 30 m or 10 m from lakes and 9 m or 3 m from drains. UDD 468 applies "irrespective of anything contained in the zonal regulations" in BMR planning areas, so SiteIQ follows UDD 468.
+
+**Not encoded:** integrated township, row and semi-detached housing, flatted factories, solar and rainwater sizing, and detailed accessibility design. No official planning-boundary or land-use GIS layer was found. The BDA site refused connections.
 
 **Taken from secondary sources only:** the EIA 20,000 m² trigger and the RERA 500 m² and 8-unit limits. Both checks say so and ask you to confirm.

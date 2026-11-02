@@ -58,12 +58,11 @@ def test_lpa_height_setbacks_follow_lpa_table_3_not_bengaluru_area_override():
     assert result15["source"]["id"] == "base_zr_table3"
 
 
-def test_lpa_basement_rules_are_not_borrowed_from_bengaluru():
+def test_lpa_basement_rules_come_from_their_own_plan():
     profile = load_rule_profile("hoskote_lpa2031_candidate")
     building = calculate_setbacks(profile, 2200, 33, 68, 15, False, zone="Residential")
     basement = calculate_basement_setbacks(profile, "Residential", 2200, building, 1)
-    assert basement["status"] == "rule_not_configured_for_area"
-    assert basement["all_round_m"] is None
+    assert (basement["front_m"], basement["rear_m"], basement["left_m"]) == (5.0, 2.0, 2.0)
 
 
 def test_premium_far_is_optional_scenario_and_does_not_change_base_far():

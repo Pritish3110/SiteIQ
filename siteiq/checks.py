@@ -194,7 +194,7 @@ def site_checks(site: dict, far: dict, boundary: Optional[dict]) -> list[dict]:
     return out
 
 
-def overlay_checks(site: dict, authority: Optional[dict]) -> list[dict]:
+def overlay_checks(site: dict, authority: Optional[dict], profile: Optional[dict] = None) -> list[dict]:
     statewide = load_statewide_rules()
     declared = site.get("overlays") or {}
     out = []
@@ -225,6 +225,17 @@ def overlay_checks(site: dict, authority: Optional[dict]) -> list[dict]:
                 out.append(_check(cid, "Overlays", label, NEEDS_INPUT, message + " Tag the affected edge and depth so it is removed from the envelope.", rule["source"], value=required))
             else:
                 out.append(_check(cid, "Overlays", label, FAIL if short else REFER, message + (f" Only {float(extra):g} m was entered." if short else edge_note), rule["source"], value=required))
+        elif key == "ht_line" and (profile or {}).get("electrical_clearance"):
+            rule = profile["electrical_clearance"]
+            src = source_by_id(profile, rule.get("source_id"))
+            line = rule["lines"].get(item.get("line_kv") or "")
+            if line is None:
+                out.append(_check(cid, "Overlays", label, NEEDS_INPUT, "Choose the line voltage. The clearance depends on it.", src))
+            else:
+                horizontal, corridor = line
+                message = f"{rule['note']} For this line: {horizontal:g} m horizontal distance from its edge, and a {corridor:g} m corridor overall. Confirm with KPTCL or the electricity supplier."
+                short = extra is not None and float(extra) < horizontal
+                out.append(_check(cid, "Overlays", label, FAIL if short else NEEDS_INPUT if extra is None or item.get("edge") is None else REFER, message + (f" Only {float(extra):g} m was entered." if short else edge_note), src, value=horizontal))
         elif key == "lake":
             rule = statewide["lake_buffer"]
             out.append(_check(cid, "Overlays", label, REFER, (rule["message"] if _bmr_scope(authority) else "Confirm the lake buffer that applies in this planning area.") + edge_note, rule["source"] if _bmr_scope(authority) else None))
@@ -255,10 +266,12 @@ def _parking_cars(profile: dict, site: dict, floor_area: float) -> tuple[Optiona
             return None, NEEDS_INPUT, "Enter the number of dwelling units and their average floor area to calculate parking."
         if float(avg) <= float(multi["small_unit_max_m2"]):
             base = math.ceil(int(units) / int(multi["small_units_per_car"]))
+        elif multi.get("unit_area_per_car_m2") is None:
+            base = int(units)
         else:
             base = int(units) * max(1, by_standard(float(avg), float(multi["unit_area_per_car_m2"])))
         visitors = math.ceil(base * float(multi["visitor_pct"]) / 100)
-        return base + visitors, REFER, f"About {base + visitors} car spaces: {base} for {int(units)} units plus {visitors} for visitors."
+        return base + visitors, REFER, f"About {base + visitors} car spaces: {base} for {int(units)} units" + (f" plus {visitors} for visitors." if visitors else ".")
     return None, NOT_CONFIGURED, f"The parking table is not mapped for '{use}'. Work it out from the table by use."
 
 
@@ -448,7 +461,7 @@ def option_checks(site: dict, profile: Optional[dict], far: dict, scenario: dict
     return out
 
 
-def project_checks(site: dict) -> list[dict]:
+def project_checks(site: dict, profile: Optional[dict] = None, scenarios: Optional[list[dict]] = None) -> list[dict]:
     rule = load_statewide_rules()["rera"]
     area = float(site.get("site_area_m2") or 0)
     units = site.get("dwelling_units")
@@ -459,9 +472,19 @@ def project_checks(site: dict) -> list[dict]:
         out.append(_check("project.rera", "Approvals", "RERA registration", REFER, "This project may be below the limits. " + rule["message"], rule["source"]))
     else:
         out.append(_check("project.rera", "Approvals", "RERA registration", NEEDS_INPUT, "Enter the dwelling unit count, if any, to test the RERA limits.", rule["source"]))
-    out.append(_check("project.accessibility", "Approvals", "Accessibility", NOT_CONFIGURED, "Accessibility standards are not configured. Check the applicable building bye-laws and NBC 2016."))
+    access = (profile or {}).get("accessibility_rule")
+    gross = max([float(s.get("gross_concept_area_m2") or 0) for s in (scenarios or [])], default=0)
+    if access and site.get("proposed_use") in access["uses"] and gross >= float(access["covered_area_min_m2"]):
+        out.append(_check("project.accessibility", "Approvals", "Accessibility", REFER, f"{access['note']} SiteIQ does not check the design details.", source_by_id(profile, access.get("source_id"))))
+    else:
+        out.append(_check("project.accessibility", "Approvals", "Accessibility", NOT_CONFIGURED, "Detailed accessibility standards are not configured. Check the applicable building bye-laws and NBC 2016."))
     out.append(_check("project.services", "Approvals", "Services and utilities", NOT_CONFIGURED, "Water, sewerage, STP, rainwater harvesting and transformer rules are not configured. Confirm them with the local agencies."))
-    out.append(_check("project.separation", "Approvals", "Multiple blocks", NOT_CONFIGURED, "Building separation is not configured. Each option is assessed as a single block."))
+    separation = (profile or {}).get("building_separation")
+    tallest = max([float(s.get("height_m") or 0) for s in (scenarios or [])], default=0)
+    if separation and tallest:
+        out.append(_check("project.separation", "Approvals", "Multiple blocks", REFER, f"{separation['note']} At {tallest:g} m that is {tallest / 2:g} m. Each option is assessed as a single block, so check this if you plan several.", source_by_id(profile, separation.get("source_id")), value=tallest / 2))
+    else:
+        out.append(_check("project.separation", "Approvals", "Multiple blocks", NOT_CONFIGURED, "Building separation is not configured for this authority. Each option is assessed as a single block."))
     return out
 
 

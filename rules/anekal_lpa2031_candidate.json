@@ -516,6 +516,288 @@
         "Site-specific restrictions or authority decisions may apply. No generic FAR table is configured."
       ],
       "far_interpretation": "No generic FAR candidate."
+    },
+    {
+      "key": "industrial_buildings",
+      "label": "Industrial Buildings (plot-area table)",
+      "table": "Table 10 of the published plan",
+      "source_id": "anekal_table4",
+      "method": "plot_area",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 230,
+          "far": 1.0,
+          "min_road_width_m": 9
+        },
+        {
+          "min": 230,
+          "max": 1000,
+          "far": 1.25,
+          "min_road_width_m": 9,
+          "min_exclusive": true
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "far": 1.25,
+          "min_road_width_m": 12,
+          "min_exclusive": true
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "far": 1.25,
+          "min_road_width_m": 12,
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "far": 1.0,
+          "min_road_width_m": 15,
+          "min_exclusive": true
+        },
+        {
+          "min": 8000,
+          "max": null,
+          "far": 1.0,
+          "min_road_width_m": 15,
+          "min_exclusive": true
+        }
+      ],
+      "coverage_method": "plot_area",
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 230,
+          "coverage_pct": 80
+        },
+        {
+          "min": 230,
+          "max": 1000,
+          "coverage_pct": 60,
+          "min_exclusive": true
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "coverage_pct": 50,
+          "min_exclusive": true
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "coverage_pct": 40,
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "coverage_pct": 35,
+          "min_exclusive": true
+        },
+        {
+          "min": 8000,
+          "max": null,
+          "coverage_pct": 30,
+          "min_exclusive": true
+        }
+      ],
+      "conditions": [
+        "Where the road is narrower than the row requires, the plan allows the built-up area for that road width. SiteIQ gives no FAR in that case; confirm with the authority."
+      ],
+      "far_interpretation": "Coverage, FAR and setbacks from the industrial buildings table.",
+      "setback_method": "industrial_table16",
+      "industrial_setbacks": [
+        {
+          "min": 0,
+          "max": 230,
+          "front": "1 m",
+          "rear_side": "1 m"
+        },
+        {
+          "min": 230,
+          "max": 1000,
+          "front": "4.5 m",
+          "rear_side": "3 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "front": "6 m",
+          "rear_side": "5 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "front": "8 m",
+          "rear_side": "5 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 8000,
+          "front": "8 m",
+          "rear_side": "6 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 8000,
+          "max": null,
+          "front": "15 m",
+          "rear_side": "12 m",
+          "min_exclusive": true
+        }
+      ]
+    },
+    {
+      "key": "it_bt",
+      "label": "IT / BT Related Activities",
+      "table": "Tables 10A and 10B of the published plan",
+      "source_id": "anekal_table4",
+      "method": "area_cap_and_road_width",
+      "plot_area_far_caps": [
+        {
+          "min": 0,
+          "max": 1000,
+          "far": 1.5
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "far": 1.75,
+          "min_exclusive": true
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "far": 2.0,
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 6000,
+          "far": 2.25,
+          "min_exclusive": true
+        },
+        {
+          "min": 6000,
+          "max": null,
+          "far": 2.5,
+          "min_exclusive": true
+        }
+      ],
+      "road_far_bands": [
+        {
+          "min": 9,
+          "max": 12,
+          "far": 1.5,
+          "min_exclusive": true
+        },
+        {
+          "min": 12,
+          "max": 18,
+          "far": 1.75,
+          "min_exclusive": true
+        },
+        {
+          "min": 18,
+          "max": 24,
+          "far": 2.0,
+          "min_exclusive": true
+        },
+        {
+          "min": 24,
+          "max": 30,
+          "far": 2.25,
+          "min_exclusive": true
+        },
+        {
+          "min": 30,
+          "max": null,
+          "far": 2.5,
+          "min_exclusive": true
+        }
+      ],
+      "coverage_method": "plot_area",
+      "coverage_bands": [
+        {
+          "min": 0,
+          "max": 1000,
+          "coverage_pct": 55
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "coverage_pct": 50,
+          "min_exclusive": true
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "coverage_pct": 50,
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 6000,
+          "coverage_pct": 45,
+          "min_exclusive": true
+        },
+        {
+          "min": 6000,
+          "max": null,
+          "coverage_pct": 45,
+          "min_exclusive": true
+        }
+      ],
+      "setback_method": "industrial_table16",
+      "industrial_setbacks": [
+        {
+          "min": 0,
+          "max": 1000,
+          "front": "6 m",
+          "rear_side": "5 m"
+        },
+        {
+          "min": 1000,
+          "max": 2000,
+          "front": "8 m",
+          "rear_side": "5 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 2000,
+          "max": 4000,
+          "front": "8 m",
+          "rear_side": "6 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 4000,
+          "max": 6000,
+          "front": "8 m",
+          "rear_side": "6 m",
+          "min_exclusive": true
+        },
+        {
+          "min": 6000,
+          "max": null,
+          "front": "15 m",
+          "rear_side": "12 m",
+          "min_exclusive": true
+        }
+      ],
+      "eligibility": {
+        "road_width_min_m": 9
+      },
+      "conditions": [
+        "The plan allows the built-up area for the actual road width when a plot does not face the required road, so SiteIQ uses the lower of the plot and road values."
+      ],
+      "far_interpretation": "FAR for IT and BT related activities from the published plan."
     }
   ],
   "premium_far_rule": {
@@ -752,5 +1034,80 @@
     "site_area_min_m2": 4000,
     "setback_m": 5.0,
     "note": "Table 2 note: plots of 4,000 m² and above need at least 5.0 m on all sides."
+  },
+  "basement_setback_any_size": {
+    "max_at_non_road_sides_m": 2.0,
+    "source_id": "anekal_table4",
+    "note": "General rules: where the setback exceeds 2.0 m, the basement may extend on all sides except the road side, keeping at least 2.0 m from the boundary."
+  },
+  "basement_limits": {
+    "max_levels": 3,
+    "no_parking_below_site_area_m2": 200,
+    "source_id": "anekal_table4",
+    "note": "General rules: up to 3 levels for car parking, and none on sites below 200 m²."
+  },
+  "parking_rule": {
+    "source_id": "anekal_table4",
+    "note": "Off-street parking table of the published plan.",
+    "floor_area_per_car_m2": {
+      "Commercial / office": 75,
+      "Industrial / warehouse": 100,
+      "Public / semi-public use": 100
+    },
+    "multi_dwelling": {
+      "uses": [
+        "Residential apartments"
+      ],
+      "unit_area_per_car_m2": null,
+      "small_unit_max_m2": 50,
+      "small_units_per_car": 2,
+      "visitor_pct": 0
+    }
+  },
+  "electrical_clearance": {
+    "lines": {
+      "LT": [
+        1.8,
+        4.5
+      ],
+      "11": [
+        1.8,
+        4.5
+      ],
+      "33": [
+        2.5,
+        15.0
+      ],
+      "66": [
+        2.5,
+        18.0
+      ],
+      "110": [
+        3.2,
+        22.0
+      ],
+      "220": [
+        4.2,
+        35.0
+      ],
+      "400": [
+        5.2,
+        52.0
+      ]
+    },
+    "source_id": "anekal_table4",
+    "note": "No building below a line or within the horizontal distance from its edge."
+  },
+  "building_separation": {
+    "source_id": "anekal_table4",
+    "note": "Group housing: the distance between any two buildings is at least half the height of the taller."
+  },
+  "accessibility_rule": {
+    "covered_area_min_m2": 300,
+    "uses": [
+      "Public / semi-public use"
+    ],
+    "source_id": "anekal_table4",
+    "note": "Public and semi-public buildings of 300 m² covered area and above must provide facilities for persons with disabilities."
   }
 }

@@ -140,10 +140,10 @@ def assess(payload: dict, registry: Optional[dict] = None) -> dict:
     checks = jurisdiction_checks(site, authority, location, parcel_diagnostics)
     checks += rule_checks(site, profile, far, float(site["site_area_m2"]), float(site["road_width_m"]))
     checks += site_checks(site, far, report.get("boundary_analysis"))
-    checks += overlay_checks(site, authority)
+    checks += overlay_checks(site, authority, profile)
     for scenario in report.get("scenarios", []):
         checks += option_checks(site, profile, far, scenario, report.get("boundary_analysis"))
-    checks += project_checks(site)
+    checks += project_checks(site, profile, report.get("scenarios", []))
     report["compliance_checks"] = checks
     report["verdict"] = summarise(checks)
     report["input_fingerprint"] = input_fingerprint(payload)

@@ -387,15 +387,21 @@
       "method": "plot_area"
     },
     {
-      "key": "industrial_it_bt",
-      "label": "Industrial Zone — IT/BT Related Activities",
-      "table": "IT/BT Table 10 / Table 10A (source copy)",
-      "method": "special_no_generic_far"
-    },
-    {
       "key": "nonres_development_plan",
       "label": "Non-residential Development Plan (>1 ha, except industrial)",
       "table": "Table 6A / Non-Residential Development Plan >1 hectare",
+      "method": "road_width"
+    },
+    {
+      "key": "it_bt",
+      "label": "IT / BT Related Activities",
+      "table": "Tables 12 and 13 of the published plan",
+      "method": "area_cap_and_road_width"
+    },
+    {
+      "key": "industrial_development_plan",
+      "label": "Industrial Development Plan (>1 ha)",
+      "table": "Table 6B of the signed final plan",
       "method": "road_width"
     }
   ],

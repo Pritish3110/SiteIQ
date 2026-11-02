@@ -445,7 +445,7 @@ def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m:
     if cat and cat.get("setback_method") == "industrial_table16":
         matches = [b for b in cat.get("industrial_setbacks",[]) if _matches_band(site_area_m2,b)]
         if len(matches) != 1:
-            return {"status":"rule_not_configured_for_area","message":"No unique Industrial (General) Table 16 setback band matched the site area.","front_m":None,"rear_m":None,"left_m":None,"right_m":None,"all_round_m":None,"source":source_by_id(profile,cat.get('source_id'))}
+            return {"status":"rule_not_configured_for_area","message":"No unique special setback band matched the site area.","front_m":None,"rear_m":None,"left_m":None,"right_m":None,"all_round_m":None,"source":source_by_id(profile,cat.get('source_id'))}
         row = matches[0]
         if str(row.get('front','')).startswith('12%'):
             if not frontage_m or not depth_m:
@@ -454,7 +454,7 @@ def calculate_setbacks(profile: Optional[dict], site_area_m2: float, frontage_m:
         else:
             fv = float(row['front'].split()[0]); rv = float(row['rear_side'].split()[0])
             values = {'front_m':fv,'rear_m':rv,'left_m':rv,'right_m':rv}
-        height_note = "Table 16 special setback selected by plot area. For height above 12 m, confirm its interaction with general Table 9 and any special conditions before relying on it." if height_for_setback_m > 12 else "Table 16 special setback selected by plot area; confirm remaining conditions in the operative rule."
+        height_note = "Special setback selected by plot area. For height above 12 m, confirm how it interacts with the general height table before relying on it." if height_for_setback_m > 12 else "Special setback selected by plot area; confirm remaining conditions in the operative rule."
         return {"status":"special_table16_requires_verification","message":height_note,"basis":row,"all_round_m":None,**values,"source":source_by_id(profile,cat.get('source_id'))}
 
     # Authority profiles may use different cut-off heights for their own setback tables.
@@ -505,6 +505,13 @@ def calculate_basement_setbacks(profile: Optional[dict], zone: str, site_area_m2
     if not profile:
         return {"status":"not_configured","message":"No authority-specific basement setback rule is configured.","front_m":None,"rear_m":None,"left_m":None,"right_m":None,"all_round_m":None,"levels":int(basement_levels),"source":None}
     cat = category_by_label(profile, zone)
+    any_size = profile.get("basement_setback_any_size")
+    if any_size:
+        src = source_by_id(profile, any_size.get("source_id"))
+        if any(building_setbacks.get(k) is None for k in ("front_m", "rear_m", "left_m", "right_m")):
+            return {"status":"building_setback_required","message":"Basement setback depends on the option's building setback. Resolve that first.","front_m":None,"rear_m":None,"left_m":None,"right_m":None,"all_round_m":None,"levels":int(basement_levels),"source":src}
+        limit = float(any_size["max_at_non_road_sides_m"])
+        return {"status":"candidate_match_requires_authority_check","message":any_size["note"],"front_m":float(building_setbacks["front_m"]),"rear_m":min(float(building_setbacks["rear_m"]),limit),"left_m":min(float(building_setbacks["left_m"]),limit),"right_m":min(float(building_setbacks["right_m"]),limit),"all_round_m":None,"levels":int(basement_levels),"basis":any_size["note"],"source":src}
     if site_area_m2 <= 4000:
         if cat and cat.get('setback_method') != 'table8_9':
             return {"status":"special_zone_needs_confirmation","message":"The configured basement provision refers to building setbacks under Table 8/9. This category uses a special setback path, so SiteIQ has not auto-applied the general basement rule.","front_m":None,"rear_m":None,"left_m":None,"right_m":None,"all_round_m":None,"levels":int(basement_levels),"source":source_by_id(profile,'udd235_setbacks')}
