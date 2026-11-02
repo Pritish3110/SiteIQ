@@ -1,9 +1,11 @@
 {
   "application": {
     "name": "SiteIQ",
-    "version": "0.4.7",
-    "assessment_date": "2026-11-01",
-    "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance."
+    "version": "0.6.0",
+    "assessment_date": "2026-11-02",
+    "profile_status": "PROVISIONAL FAR CANDIDATE — tables transcribed from secondary copies of Master Plan 2031 zoning regulations. Confirm the current operative plan, amendments, zoning, jurisdiction and notified road width with the authority before reliance.",
+    "source_status": "secondary_source_candidate",
+    "profile_version": "0.1-candidate"
   },
   "project": "Hoskote LPA FAR Profile Check — illustrative, not a design",
   "client": "Internal rule-profile test",
@@ -11,7 +13,7 @@
     "address": "Hoskote vicinity, Karnataka (sample KML centroid; exact jurisdiction not verified)",
     "map_url": "",
     "coordinates": "13.0733543, 77.7823976",
-    "authority": "Hoskote Planning Authority (provisional candidate; rules not configured)",
+    "authority": "Hoskote Planning Authority",
     "authority_status": "provisional_rules_profile_enabled_secondary_source",
     "authority_scope_note": "Hoskote LPA 2031 candidate rules are transcribed from secondary copies of the final-plan zoning document. FAR can be shown as a provisional candidate, not an operative entitlement, until the exact Hoskote LPA boundary, current approved plan and amendments are verified. The 24 March 2026 UDD 559 BMR 2025(E) uniform-zoning proposal is draft-only and is not applied by this profile.",
     "rule_profile": "Hoskote LPA Master Plan 2031 — provisional source-based profile",
@@ -83,7 +85,7 @@
     "rule_source_quality": "secondary_copy_pending_official_validation",
     "selected_path": "hoskote_table5",
     "status": "candidate_match_requires_verification",
-    "message": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after 5% statutory reservation deduction; verify that the stated deduction and reservation basis match the operative plan.",
+    "message": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after a 5% deduction (from the configured rule); verify it against the operative plan.",
     "matched_rule": {
       "id": "residential",
       "far": 2.75,
@@ -94,6 +96,7 @@
       "details": {
         "road_width_far": 2.75,
         "limiting_factor": "road width",
+        "deduction_source": "configured_rule",
         "gross_site_area_m2": 20684.15,
         "far_calculation_area_m2": 19649.94,
         "excluded_area_m2": 1034.21,
@@ -186,8 +189,21 @@
   },
   "single_plot": null,
   "fire": {
-    "status": "not_configured",
-    "message": "Authority-specific fire review remains pending."
+    "status": "nbc_band_requires_confirmation",
+    "threshold_m": 21.0,
+    "nbc_threshold_m": 15.0,
+    "maximum_scenario_height_m": 15.0,
+    "is_high_rise": false,
+    "fire_noc_required": false,
+    "message": "From 15 m up to 21 m, NBC 2016 Part 4 treats the building as high-rise and the 2026 Bengaluru amendment requires NBC fire compliance. A 2011 notification set the NOC at 15 m, so confirm with the local fire station whether an NOC applies.",
+    "source": {
+      "id": "kff_act_2023",
+      "title": "Karnataka Fire Force (Amendment) Act 2023, section 13; NBC 2016 Part 4 clause 2.38",
+      "notification": "Karnataka Act No. 24 of 2023",
+      "clause": "Section 13(3) and explanation; NBC clause 2.38",
+      "status": "21 m checked against the 2023 ordinance text; 15 m checked against NBC 2016 Part 4.",
+      "url": "https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf"
+    }
   },
   "scenarios": [],
   "checks": [
@@ -204,7 +220,7 @@
     {
       "item": "Maximum FAR lookup",
       "status": "candidate_match_requires_verification",
-      "note": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after 5% statutory reservation deduction; verify that the stated deduction and reservation basis match the operative plan."
+      "note": "The selected table gives FAR 2.75 for the entered road-width band, within the table's configured plot-area scope. Confirm the zone and current operative table. FAR capacity is calculated on net area 19,649.94 m² after a 5% deduction (from the configured rule); verify it against the operative plan."
     },
     {
       "item": "Survey geometry / boundary",
@@ -228,8 +244,8 @@
     },
     {
       "item": "Fire NOC trigger",
-      "status": "not_configured",
-      "note": "Authority-specific fire review remains pending."
+      "status": "nbc_band_requires_confirmation",
+      "note": "From 15 m up to 21 m, NBC 2016 Part 4 treats the building as high-rise and the 2026 Bengaluru amendment requires NBC fire compliance. A 2011 notification set the NOC at 15 m, so confirm with the local fire station whether an NOC applies."
     }
   ],
   "sources": [

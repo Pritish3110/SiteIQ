@@ -69,7 +69,7 @@
     },
     {
       "key": "kanakapura_planning_authority",
-      "name": "Planning Authority Kanakapura (provisional candidate)",
+      "name": "Planning Authority Kanakapura",
       "region": "Kanakapura, Karnataka",
       "rule_profile": "kanakapura_lpa2031_candidate",
       "status": "provisional_rules_profile_enabled_secondary_source",
@@ -272,7 +272,7 @@
     },
     {
       "key": "hoskote_planning_authority",
-      "name": "Hoskote Planning Authority (provisional candidate; rules not configured)",
+      "name": "Hoskote Planning Authority",
       "region": "Hoskote, Karnataka",
       "rule_profile": "hoskote_lpa2031_candidate",
       "status": "provisional_rules_profile_enabled_secondary_source",

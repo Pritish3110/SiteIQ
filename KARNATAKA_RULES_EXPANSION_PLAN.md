@@ -19,7 +19,7 @@ Karnataka does not have one universal FAR/setback table for every location. Unde
 3. **Legal sequence:** record whether each document is final, draft, withdrawn, superseded, effective, stayed or pending commencement. Do not assume publication of a draft means it is in force.
 4. **Structured encoding:** for each land-use category, encode all FAR bands with exact inequalities, plot-area and road-width conditions, occupancy/development-plan route, exclusions, caveats, premium FAR/TDR, and source clause/page.
 5. **Independent review:** review the transcription and interpretation against original source pages. At least two boundary/band edge cases and one worked example should be tested per table.
-6. **Activation gate:** only profiles marked `verified_operative` with source metadata and passing regression tests can return a rule-based FAR candidate. Candidate or draft profiles remain visible in the coverage matrix but inactive in the calculation engine.
+6. **Activation gate:** `source_status` in each profile controls this. Draft, superseded, withdrawn and unrecorded statuses cannot calculate. Secondary-source and pending-review profiles can give a provisional FAR, but the study can never reach "Ready for review" until the profile is `verified_operative`.
 7. **Update monitoring:** monitor Gazette updates and authority pages; when a later amendment is found, flag the relevant profile for review rather than silently overwriting history.
 
 ## Suggested coverage order

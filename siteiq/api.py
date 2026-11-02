@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import hashlib
-import io
 import json
 import logging
 from pathlib import Path
 from typing import Any, Literal, Optional
+from urllib.parse import urlparse
 
-from fastapi import FastAPI, File, Form, HTTPException, Response, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, Response, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -18,7 +18,7 @@ from . import __version__
 from .boundary import candidate_edge_lengths, export_boundary_dxf, parse_uploaded_boundary, polygon_from_candidate
 from .engine import find_authority, land_use_categories, load_authority_registry, load_rule_profile, rule_status_problem
 from .exporters import build_a3_comparison_board_pdf, build_a3_comparison_board_pptx, build_pdf_report, build_pptx_report
-from .location import auto_identify_site, save_geojson_layer
+from .location import AUTHORITY_LAYER, ZONE_LAYER, auto_identify_site, save_geojson_layer
 from .service import assess, far_preview, parcel_from_boundary
 
 logger = logging.getLogger("siteiq.api")
@@ -35,6 +35,22 @@ async def validation_error(_request, exc: RequestValidationError) -> JSONRespons
     # Never echo submitted values: they may be non-finite numbers that cannot be serialised.
     problems = [f"{'.'.join(str(part) for part in e['loc'] if part != 'body') or 'request'}: {e['msg']}" for e in exc.errors()]
     return JSONResponse(status_code=422, content={"detail": "; ".join(problems[:5])})
+
+
+LOCAL_HOSTS = {"127.0.0.1", "localhost", "[::1]"}
+
+
+@app.middleware("http")
+async def local_only(request: Request, call_next):
+    """Refuse requests from other websites and DNS rebinding: this API only serves the local interface."""
+    host = request.headers.get("host", "").rsplit(":", 1)[0]
+    origin = request.headers.get("origin")
+    allowed_host = host in LOCAL_HOSTS or host == "testserver"
+    allowed_origin = origin is None or urlparse(origin).hostname in {"127.0.0.1", "localhost", "::1"}
+    if not (allowed_host and allowed_origin):
+        logger.warning("Refused request from host %r origin %r", host, origin)
+        return JSONResponse(status_code=403, content={"detail": "SiteIQ only accepts requests from this computer."})
+    return await call_next(request)
 
 
 class Strict(BaseModel):
@@ -287,6 +303,16 @@ def export(kind: str, body: AssessRequest) -> Response:
         data = export_boundary_dxf(parcel, layers)
     media, name = EXPORTS[kind]
     return Response(content=data, media_type=media, headers={"Content-Disposition": f'attachment; filename="SiteIQ_{name}"', "X-SiteIQ-Fingerprint": report["input_fingerprint"]})
+
+
+@app.get("/api/admin/layers")
+def layer_status() -> dict:
+    return {"authority": AUTHORITY_LAYER.exists(), "zone": ZONE_LAYER.exists()}
+
+
+@app.get("/api/coverage.csv")
+def coverage_csv() -> Response:
+    return Response(content=(ROOT / "rules" / "authority_coverage_matrix.csv").read_bytes(), media_type="text/csv", headers={"Content-Disposition": 'attachment; filename="SiteIQ_Authority_Coverage.csv"'})
 
 
 @app.post("/api/admin/layers/{layer}")

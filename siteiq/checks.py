@@ -290,6 +290,10 @@ def option_checks(site: dict, profile: Optional[dict], far: dict, scenario: dict
     headroom = scenario.get("scenario_headroom_m2")
     if headroom is None:
         add("option.far", "FAR capacity", NEEDS_INPUT if gross is None else NOT_CONFIGURED, "Enter or derive a footprint to compare it with FAR capacity." if gross is None else "No FAR benchmark was found to compare against.")
+    elif headroom < -0.5 and scenario.get("footprint_source") not in {None, "user-entered design footprint"}:
+        # The floor plate was derived, not designed, so this states a limit rather than failing a design.
+        fit = float(scenario.get("far_capacity_m2") or 0) / int(floors) if floors else 0
+        add("option.far", "FAR capacity", REFER, f"Filling the whole {scenario['footprint_source']} on every floor would exceed FAR capacity by {abs(headroom):,.0f} m². At {int(floors)} floors, about {fit:,.0f} m² per floor fits. Enter a footprint to test a design.", value=headroom)
     elif headroom < -0.5:
         add("option.far", "FAR capacity", FAIL, f"This option exceeds the FAR capacity by {abs(headroom):,.0f} m². Premium FAR and TDR are not counted.", value=headroom)
     else:

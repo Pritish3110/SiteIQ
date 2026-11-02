@@ -1,3 +1,10 @@
+> **Corrections, 2 November 2026.** Parts of this plan were found to be wrong and must not be implemented as written:
+> - **§3.2 half-plane offset:** it fails on concave plots. `calculate_setback_envelope` uses per-edge strips instead.
+> - **§2.4 lake and drain buffers:** the 75 m NGT order was set aside by the Supreme Court in 2019. Under UDD 468 MNJ 2025(E), drains in Bengaluru and BMR planning areas need 15/10/5 m from the drain edge, and lakes follow the KTCDA Act.
+> - **§2.2 20% FAR deduction:** RMP 2015 Chapter 7 reserves 10% park and 5% civic amenity, and deducts only the civic amenity site from the FAR area. Do not apply a blanket 20%.
+> - **§2.3 fire access (6 m, 9 m, 12 m):** no configured source supports these, so SiteIQ no longer states them. The NOC trigger stands at 21 m; NBC 2016 defines high-rise from 15 m.
+> - **§4.1 benchmarks:** the listed ground-truth cases were never built. `tests/test_site_benchmarks.py` covers different cases.
+
 # SiteIQ — Comprehensive Master Implementation Plan (v2.0)
 ## Architectural Reliability, Regulatory Compliance & Minimalist UI Ramp-up
 

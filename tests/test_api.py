@@ -32,6 +32,12 @@ def test_meta_lists_authorities_without_a_default():
     assert sum(a["has_rules"] for a in data["authorities"]) == 5
 
 
+def test_other_websites_cannot_call_the_api():
+    assert client.post("/api/admin/layers/authority", files={"file": ("x.geojson", b"{}")}, headers={"origin": "https://evil.example"}).status_code == 403
+    assert client.get("/api/meta", headers={"host": "evil.example"}).status_code == 403
+    assert client.get("/api/meta", headers={"origin": "http://localhost:5173"}).status_code == 200
+
+
 def test_authority_detail():
     assert client.get("/api/authorities/hoskote_planning_authority").json()["source_status"] == "secondary_source_candidate"
     assert client.get("/api/authorities/nope").status_code == 404

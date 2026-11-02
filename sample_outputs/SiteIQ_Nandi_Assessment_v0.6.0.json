@@ -1,9 +1,11 @@
 {
   "application": {
     "name": "SiteIQ",
-    "version": "0.4.7",
-    "assessment_date": "2026-11-01",
-    "profile_status": "partial; selected tables transcribed; not a consolidated code"
+    "version": "0.6.0",
+    "assessment_date": "2026-11-02",
+    "profile_status": "partial; selected tables transcribed; not a consolidated code",
+    "source_status": "official_source_found_pending_review",
+    "profile_version": "2026-11-02"
   },
   "project": "Nandi Housing - preliminary feasibility test",
   "client": "Not supplied",
@@ -84,7 +86,8 @@
       "details": {
         "plot_area_far_cap": 3.0,
         "road_width_far": 2.5,
-        "limiting_factor": "road width"
+        "limiting_factor": "road width",
+        "deduction_source": "none"
       },
       "matched_bands": [
         {
@@ -173,25 +176,20 @@
     }
   },
   "fire": {
-    "status": "below_configured_high_rise_threshold",
-    "threshold_m": 21,
+    "status": "nbc_band_requires_confirmation",
+    "threshold_m": 21.0,
+    "nbc_threshold_m": 15.0,
     "maximum_scenario_height_m": 18.0,
     "is_high_rise": false,
     "fire_noc_required": false,
-    "minimum_fire_driveway_width_m": null,
-    "fire_turning_radius_inner_m": null,
-    "fire_turning_radius_outer_m": null,
-    "message": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed. [Below 21m high-rise threshold; check low-rise fire safety and access requirements].",
+    "message": "From 15 m up to 21 m, NBC 2016 Part 4 treats the building as high-rise and the 2026 Bengaluru amendment requires NBC fire compliance. A 2011 notification set the NOC at 15 m, so confirm with the local fire station whether an NOC applies.",
     "source": {
       "id": "kff_act_2023",
-      "title": "Karnataka Fire Force (Amendment) Act, 2023",
+      "title": "Karnataka Fire Force (Amendment) Act 2023, section 13; NBC 2016 Part 4 clause 2.38",
       "notification": "Karnataka Act No. 24 of 2023",
-      "date": "2023-07-27",
-      "document": "Amendment 03.pdf (provided by user)",
-      "document_page": "PDF pages 1-3",
-      "clause": "Section 13: high-rise definition / Fire NOC trigger at 21 metres or above",
-      "status": "provided primary legislation; current administrative procedure and other fire provisions need review",
-      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_KA_71_587_000010_196442_1551090039403&filename=42_of_1964_%28e%29.pdf&type=actfile"
+      "clause": "Section 13(3) and explanation; NBC clause 2.38",
+      "status": "21 m checked against the 2023 ordinance text; 15 m checked against NBC 2016 Part 4.",
+      "url": "https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf"
     }
   },
   "scenarios": [
@@ -204,6 +202,7 @@
       "benchmark_source": "configured rule lookup",
       "assumed_far": null,
       "stilt": false,
+      "stilt_height_m": null,
       "basement_levels": 0,
       "setback_mode": null,
       "manual_all_round_setback_m": null,
@@ -265,6 +264,7 @@
       "benchmark_source": "configured rule lookup",
       "assumed_far": null,
       "stilt": false,
+      "stilt_height_m": null,
       "basement_levels": 0,
       "setback_mode": null,
       "manual_all_round_setback_m": null,
@@ -326,6 +326,7 @@
       "benchmark_source": "configured rule lookup",
       "assumed_far": null,
       "stilt": false,
+      "stilt_height_m": null,
       "basement_levels": 0,
       "setback_mode": null,
       "manual_all_round_setback_m": null,
@@ -417,8 +418,8 @@
     },
     {
       "item": "Fire NOC trigger",
-      "status": "below_configured_high_rise_threshold",
-      "note": "High-rise building definition in Karnataka Fire Force (Amendment) Act, 2023; current procedural requirements must be separately confirmed. [Below 21m high-rise threshold; check low-rise fire safety and access requirements]."
+      "status": "nbc_band_requires_confirmation",
+      "note": "From 15 m up to 21 m, NBC 2016 Part 4 treats the building as high-rise and the 2026 Bengaluru amendment requires NBC fire compliance. A 2011 notification set the NOC at 15 m, so confirm with the local fire station whether an NOC applies."
     }
   ],
   "sources": [
@@ -472,6 +473,25 @@
       "clause": "Chapter 4, Regulations 4.1-4.10, Tables 10-19; Chapter 3, Regulation 3.4(iii)-(iv)",
       "status": "provided base source; apply supplied subsequent amendments and verify current operative text",
       "url": "https://eng.bdabangalore.org/masterplan.html"
+    },
+    {
+      "id": "rmp2015_online_copy",
+      "title": "Revised Master Plan 2015 Vol. III, Zoning of Land Use and Regulations (G.O. UDD 540 BEM AA SE 2004, 22-06-2007)",
+      "document": "Public copy hosted by OpenCity",
+      "clause": "Definitions 18 and 40; Regulations 3.4 and 3.9; Tables 10, 12, 14 and 23; Chapter 7",
+      "status": "Tables 10, 12 and 14 and Table 23 compared with this copy on 2026-11-02. Later amendments may change them.",
+      "url": "https://data.opencity.in/dataset/bengaluru-masterplan-zoning-regulations-2015"
+    },
+    {
+      "id": "udd235_online_copy",
+      "title": "UDD 235 MNJ 2025(E), 05-01-2026",
+      "notification": "UDD 235 MNJ 2025(E)",
+      "date": "2026-01-05",
+      "document": "Public scan hosted by OpenCity",
+      "document_page": "Pages 2-6",
+      "clause": "Tables 8 and 16; Table 9 notes; Regulations 3.9 and 3.10; Table 10 notes (b) and (c)",
+      "status": "Pages 2-6 compared with the configured rules on 2026-11-02.",
+      "url": "https://data.opencity.in/dataset/greater-bengaluru-amendment-regulations-2025"
     }
   ],
   "authority_sources": [

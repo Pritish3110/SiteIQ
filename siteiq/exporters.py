@@ -633,6 +633,12 @@ def _add_rect(slide, x, y, w, h, fill, line=None, radius=False):
     shape = slide.shapes.add_shape(shape_type, Inches(x), Inches(y), Inches(w), Inches(h))
     shape.fill.solid(); shape.fill.fore_color.rgb = _hex(fill)
     shape.line.color.rgb = _hex(line or fill)
+    shape.shadow.inherit = False
+    # Some viewers ignore the empty effect list and read the theme effect from the shape style.
+    for effect_ref in shape._element.xpath(".//a:effectRef"):
+        effect_ref.set("idx", "0")
+    if radius:
+        shape.adjustments[0] = 0.04
     return shape
 
 
@@ -645,8 +651,8 @@ def _set_cell(cell, text, font_size=9, color=(46,46,46), bold=False, fill=None):
         p.font.size = Pt(font_size)
         p.font.bold = bold
         p.font.color.rgb = _hex(color)
-    if fill:
-        cell.fill.solid(); cell.fill.fore_color.rgb = _hex(fill)
+    # Always set a fill: otherwise PowerPoint applies its blue default table banding.
+    cell.fill.solid(); cell.fill.fore_color.rgb = _hex(fill or (255, 255, 255))
 
 
 def build_pptx_report(report: dict) -> bytes:
@@ -1050,7 +1056,7 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
 
     # Option cards.
     card_top = strip_y - 5*mm
-    card_h = 111*mm
+    card_h = 151*mm
     card_y = card_top - card_h
     n = max(1, len(options))
     card_w = (strip_w - gap * (n - 1)) / n
@@ -1070,8 +1076,8 @@ def build_a3_comparison_board_pdf(report: dict) -> bytes:
         c.drawString(x + 3*mm, card_y + card_h - 16*mm, f"HEIGHT  {h:g} m" if h is not None else "HEIGHT  Not set")
         c.drawRightString(x + card_w - 3*mm, card_y + card_h - 16*mm, f"{floors} floors" if floors is not None else "Floors not set")
         # Option-specific parcel/envelope preview.
-        preview_h = 26*mm
-        preview_y = card_y + card_h - 45*mm
+        preview_h = 66*mm
+        preview_y = card_y + card_h - 85*mm
         env_geom = (opt.get("boundary_envelope") or {}).get("geometry")
         _draw_geo_preview_pdf(c, x + 3*mm, preview_y, card_w - 6*mm, preview_h, boundary_geom, env_geom)
         # Divider then clear, client-readable metrics.
@@ -1248,7 +1254,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
         _add_text(slide,x+0.10,met_y+0.08,colw-0.2,0.16,label,7.2,grey,True)
         _add_text(slide,x+0.10,met_y+0.29,colw-0.2,0.24,value[:29],10.2,dark,True)
 
-    card_x0=0.4; card_y=2.16; card_h=5.38; gap=0.14
+    card_x0=0.4; card_y=2.16; card_h=6.53; gap=0.14
     n=max(1,len(options)); card_w=(15.74-gap*(n-1))/n
     accents=[teal,(115,115,115),(142,142,142),(123,123,123)]
     for i,opt in enumerate(options):
@@ -1260,7 +1266,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
         ht=opt.get("height_m"); floors=opt.get("floors")
         _add_text(slide,x+0.14,card_y+0.59,card_w-0.28,0.22,f"HEIGHT  {ht:g} m" if ht is not None else "HEIGHT  Not set",8.5,grey,True)
         _add_text(slide,x+0.14,card_y+0.83,card_w-0.28,0.22,f"{floors} above-ground floors" if floors is not None else "Floors not set",8.5,dark)
-        diagram_x=x+0.13; diagram_y=card_y+1.18; diagram_w=card_w-0.26; diagram_h=1.45
+        diagram_x=x+0.13; diagram_y=card_y+1.18; diagram_w=card_w-0.26; diagram_h=2.6
         if boundary_geom:
             boundary_polys = _geojson_polygon_lists(boundary_geom)
             boundary_pts = [pt for poly in boundary_polys for pt in poly]
@@ -1271,7 +1277,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
         else:
             _add_rect(slide,diagram_x+0.20,diagram_y+0.18,diagram_w-0.40,diagram_h-0.36,pale,line=line,radius=True)
             _add_text(slide,diagram_x+0.28,diagram_y+0.58,diagram_w-0.56,0.36,"Boundary drawing not imported",8,grey,False,align=PP_ALIGN.CENTER)
-        _add_rect(slide,x+0.12,card_y+2.72,card_w-0.24,0.04,line)
+        _add_rect(slide,x+0.12,card_y+3.87,card_w-0.24,0.04,line)
         details=[
             ("BUILDING SETBACK",_option_setback_plain(opt)),
             ("BASEMENT",(f"{int(opt.get('basement_levels',0))} level(s) · {_basement_setback_plain(opt)}" if int(opt.get("basement_levels",0) or 0)>0 else "Not included")),
@@ -1279,11 +1285,11 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
             ("APPROX. FLOOR AREA",f"{opt['gross_concept_area_m2']:,.0f} m²" if opt.get("gross_concept_area_m2") is not None else "Not calculated"),
             ("ACHIEVED FAR" + (" · NET BASIS" if opt.get("far_ratio_basis", "gross site area") != "gross site area" else ""),f"{opt['achieved_far_ratio']:.2f}" if opt.get("achieved_far_ratio") is not None else "Not calculated"),
         ]
-        yy=card_y+2.91
+        yy=card_y+4.06
         for label,value in details:
             _add_text(slide,x+0.14,yy,card_w-0.28,0.16,label,7.1,grey,True)
-            _add_text(slide,x+0.14,yy+0.17,card_w-0.28,0.30,value,8.4,dark,True)
-            yy+=0.48
+            _add_text(slide,x+0.14,yy+0.15,card_w-0.28,0.22,value,8.2,dark,True)
+            yy+=0.39
         delta_text, delta=_option_delta(opt,target_m2)
         fill=mint if delta is None or delta<=0 else (238,238,238)
         textcolor=teal if delta is None or delta<=0 else red
@@ -1291,7 +1297,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
         _add_text(slide,x+0.18,card_y+card_h-0.42,card_w-0.36,0.2,delta_text,8,textcolor,True,align=PP_ALIGN.CENTER)
 
     # Floor area bar comparison.
-    band_y=7.78; band_h=3.15
+    band_y=8.84; band_h=2.25
     chart_w=9.0; panel_x=9.65; panel_w=6.49
     _add_rect(slide,0.4,band_y,chart_w,band_h,white,line=line,radius=True)
     _add_text(slide,0.65,band_y+0.18,8.5,0.25,"FLOOR-AREA COMPARISON",11,dark,True)
@@ -1303,7 +1309,7 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
             val=float(opt["gross_concept_area_m2"]); over=target_m2 is not None and val>target_m2+0.5
             chart_rows.append((opt.get("name",f"Option {i+1}"),val,orange if over else accents[i%len(accents)]))
     maxval=max([r[1] for r in chart_rows]+[1])
-    chart_top=band_y+0.88; row_step=0.48; bar_start=2.3; bar_max=5.1
+    chart_top=band_y+0.8; row_step=0.27; bar_start=2.3; bar_max=5.1
     for i,(label,val,col) in enumerate(chart_rows[:5]):
         yy=chart_top+i*row_step
         _add_text(slide,0.65,yy,1.5,0.23,label,7.8,dark)
@@ -1330,10 +1336,10 @@ def build_a3_comparison_board_pptx(report: dict) -> bytes:
     else:
         findings.append("Maximum FAR benchmark not established. Confirm the rule before selecting a preferred option.")
     findings += ["Basements and upper-floor variations require separate design checks.","Confirm jurisdiction, zone, survey boundary, fire, parking and current operative rules before design freeze."]
-    yy=band_y+0.60
+    yy=band_y+0.52
     for f in findings[:4]:
-        _add_text(slide,panel_x+0.25,yy,panel_w-0.5,0.50,"• "+f,8.2,white)
-        yy+=0.59
+        _add_text(slide,panel_x+0.25,yy,panel_w-0.5,0.38,"• "+f,7.8,white)
+        yy+=0.40
     board_footer = "*FAR transcribed from a secondary plan copy; confirm current official rules." if report.get("far", {}).get("rule_source_quality") == "secondary_copy_pending_official_validation" else "Preliminary study — verify official zone and operative rules before sanction."
     _add_text(slide,0.4,11.2,15.1,0.18,f"SITEIQ v{__version__} · {report.get('application',{}).get('assessment_date','')} · {board_footer}",7,grey)
 

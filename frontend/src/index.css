@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --color-paper: var(--paper);
+  --color-sheet: var(--sheet);
+  --color-ink: var(--ink);
+  --color-soft: var(--soft);
+  --color-faint: var(--faint);
+  --color-rule: var(--rule);
+  --color-wash: var(--wash);
+  --color-invert: var(--invert);
+}
+
+:root {
+  --paper: #efefec; --sheet: #fbfbf9; --ink: #0c0c0c; --soft: #55554f; --faint: #8c8c85;
+  --rule: #d9d9d3; --wash: #f1f1ed; --invert: #fbfbf9; --grid: rgb(12 12 12 / 0.045);
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #050505; --sheet: #0e0e0e; --ink: #f4f4f0; --soft: #aaaaa3; --faint: #71716b;
+  --rule: #2a2a28; --wash: #181817; --invert: #0c0c0c; --grid: rgb(244 244 240 / 0.04);
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); font-size: 14px; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--ink); color: var(--invert); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+
+.mono-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--soft); }
+.display { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.015em; }
+.tnum { font-variant-numeric: tabular-nums; }
+.drafting-grid {
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.tick { position: absolute; width: 11px; height: 11px; pointer-events: none; }
+.tick::before, .tick::after { content: ""; position: absolute; background: var(--ink); }
+.tick::before { left: 5px; top: 0; width: 1px; height: 11px; }
+.tick::after { top: 5px; left: 0; height: 1px; width: 11px; }
+
+input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.scroll-quiet { scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
+
+@media print {
+  .no-print { display: none !important; }
+}

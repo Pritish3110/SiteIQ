@@ -125,6 +125,14 @@ def test_auto_footprint_respects_coverage_limit():
     assert option["footprint_source"] == "coverage limit"
 
 
+def test_derived_footprint_over_capacity_states_the_limit_instead_of_failing():
+    square = Polygon([(0, 0), (100, 0), (100, 100), (0, 100)])
+    boundary = {"points_m": [list(p) for p in list(square.exterior.coords)[:-1]], "holes_m": [], "area_m2": square.area, "perimeter_m": square.length, "vertex_count": 4, "is_convex": True, "use_computed_area": True, "front_edges": [0], "rear_edges": [2]}
+    report = assess(payload(site_area_m2=square.area, road_width_m=31.0, land_use_category="Commercial (Business)", proposed_use="Commercial / office", boundary=boundary, scenarios=[{"name": "A", "height_m": 30, "floors": 10}]))
+    result = check(report, "option.far", "A")
+    assert result["status"] == "REFER" and "per floor fits" in result["message"]
+
+
 # C8: holes
 def test_kml_holes_reduce_area():
     kml = b"""<kml xmlns="http://www.opengis.net/kml/2.2"><Placemark><Polygon><outerBoundaryIs><LinearRing><coordinates>77.78,13.07 77.782,13.07 77.782,13.072 77.78,13.072 77.78,13.07</coordinates></LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>77.7805,13.0705 77.7815,13.0705 77.7815,13.0715 77.7805,13.0715 77.7805,13.0705</coordinates></LinearRing></innerBoundaryIs></Polygon></Placemark></kml>"""

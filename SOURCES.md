@@ -97,3 +97,19 @@ The following rule profiles were added for early feasibility candidate lookup. T
 - It standardises land-use-zone classifications and includes selected rules/tables for Industrial (General) and Commercial buildings in industrial areas, flatted factories, industry-linked affordable housing, buffers and associated matters. The table text does **not** establish a single universal residential FAR table for all non-BMR Karnataka authorities.
 - SiteIQ records this as a cross-authority source lead. No generic statewide residential FAR has been inferred from it. A parcel still needs the correct authority/approved Master Plan and land-use category; only exact tables that match the notification and applicable use/pathway should be encoded.
 - Source basis: notification No. UDD 17 TTP 2025(E), dated 22.05.2026; the available web copy displays the Gazette transcript but its PDF endpoint did not resolve in the targeted retrieval, so obtain the Gazette PDF directly for rule-by-rule encoding.
+
+
+## Sources read directly on 2 November 2026
+Only the items below were read from the document itself for this release. Everything else in this file remains as previously recorded.
+
+| Document | Used for | Checked |
+|---|---|---|
+| [RMP 2015 Vol. III, Zoning of Land Use and Regulations](https://data.opencity.in/dataset/bengaluru-masterplan-zoning-regulations-2015) | Tables 10 and 12 to 19, Table 23 parking, stilt and drain definitions, Regulation 3.9, Chapter 7 | FAR tables match the profile. Public copy hosted by OpenCity |
+| [UDD 235 MNJ 2025(E), 5 January 2026](https://data.opencity.in/dataset/greater-bengaluru-amendment-regulations-2025) | Tables 8 and 16, Table 9 notes, basement and ramp rules, Table 10 notes (b) and (c) | Scanned pages 2 to 6 read by eye. Pages 1 and 7 not reviewed |
+| [UDD 468 MNJ 2025(E), 15 October 2025](https://data.opencity.in/dataset/bengaluru-notification-of-drains-buffer-area-specifications-2025) | Drain buffers 15/10/5 m from the edge; lake buffer deferred to the KTCDA Act | Gazette copy read in full. Later orders or litigation not checked |
+| [Karnataka Fire Force ordinance 2023](https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf) | 21 m high-rise and NOC trigger | From search summary of the text |
+| [NBC 2016 Part 4](https://nmcnagpur.gov.in/assets/300/2025/03/mediafiles/NBC2016-Part-IV.pdf) | Clause 2.38, high-rise from 15 m | Read directly; licensed BIS text, so not stored in this repo |
+
+**Not obtained:** official Hoskote, Kanakapura, Nelamangala and Anekal regulations, and any official planning-boundary or land-use GIS layer. The BDA site refused connections. These four profiles remain secondary-source candidates.
+
+**Taken from secondary sources only:** the EIA 20,000 m² trigger and the RERA 500 m² and 8-unit limits. Both checks say so and ask you to confirm.
