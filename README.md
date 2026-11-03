@@ -1,4 +1,4 @@
-# SiteIQ v0.7.1: early-stage site feasibility for Karnataka
+# SiteIQ v0.7.2: early-stage site feasibility for Karnataka
 
 SiteIQ takes a site location and survey boundary, finds the planning rule, draws the buildable envelope for each design option, and reports what it could not confirm. It is a preliminary aid, not sanction advice. To run it, see `START_HERE.md`.
 

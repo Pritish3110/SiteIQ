@@ -102,3 +102,31 @@ def test_inputs_endpoint():
     data = client.post("/api/inputs", json={"authority_key": "bengaluru_rmp2015", "land_use_category": "Residential (Main)", "proposed_use": "Industrial / warehouse", "road_width_m": 18}).json()
     assert data["dwelling_units"]["relevant"] is False and data["dwelling_units"]["reason"]
     assert client.post("/api/inputs", json={"authority_key": "nope"}).status_code == 404
+
+
+def test_page_is_never_cached_but_assets_are():
+    from siteiq.api import DIST
+    if not (DIST / "index.html").exists():
+        pytest.skip("Interface not built")
+    page = client.get("/")
+    assert page.headers["cache-control"] == "no-cache"
+    asset = next((DIST / "assets").glob("*.js")).name
+    assert "immutable" in client.get(f"/assets/{asset}").headers["cache-control"]
+
+
+def test_build_status(tmp_path):
+    import os
+    from siteiq.frontend_build import status
+    assert status(tmp_path) == "install"
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / ".package-lock.json").write_text("{}")
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "App.tsx").write_text("x")
+    assert status(tmp_path) == "build"
+    (tmp_path / "dist").mkdir()
+    (tmp_path / "dist" / "index.html").write_text("x")
+    os.utime(tmp_path / "src" / "App.tsx", (1, 1))
+    assert status(tmp_path) == "fresh"
+    (tmp_path / "src" / "App.tsx").write_text("changed")
+    os.utime(tmp_path / "dist" / "index.html", (2, 2))
+    assert status(tmp_path) == "build"

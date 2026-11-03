@@ -4,9 +4,12 @@ cd "$(dirname "$0")"
 [ -d .venv ] || python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --quiet -r requirements.txt
-if [ ! -f frontend/dist/index.html ]; then
+# Rebuild the interface whenever its code changed, for example after a git pull.
+STATE="$(python -m siteiq.frontend_build)"
+if [ "$STATE" != "fresh" ]; then
   command -v npm >/dev/null || { echo "Node.js 20 or newer is needed to build the interface: https://nodejs.org" >&2; exit 1; }
-  (cd frontend && npm ci --no-audit --no-fund && npx vite build)
+  [ "$STATE" = "install" ] && (cd frontend && npm ci --no-audit --no-fund)
+  (cd frontend && npx vite build)
 fi
 PORT="${SITEIQ_PORT:-8765}"
 echo "SiteIQ is running at http://127.0.0.1:${PORT}"

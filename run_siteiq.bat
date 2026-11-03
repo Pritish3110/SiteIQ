@@ -12,7 +12,9 @@ if not exist .venv (
 )
 call .venv\Scripts\activate.bat
 python -m pip install --quiet -r requirements.txt
-if not exist frontend\dist\index.html (
+rem Rebuild the interface whenever its code changed, for example after a git pull.
+for /f %%s in ('python -m siteiq.frontend_build') do set STATE=%%s
+if not "%STATE%"=="fresh" (
   where npm >nul 2>nul
   if errorlevel 1 (
     echo Node.js 20 or newer is needed to build the interface: https://nodejs.org
@@ -20,7 +22,7 @@ if not exist frontend\dist\index.html (
     exit /b 1
   )
   pushd frontend
-  call npm ci --no-audit --no-fund
+  if "%STATE%"=="install" call npm ci --no-audit --no-fund
   call npx vite build
   popd
 )

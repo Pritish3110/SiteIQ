@@ -1,8 +1,8 @@
 {
   "application": {
     "name": "SiteIQ",
-    "version": "0.7.0",
-    "assessment_date": "2026-11-02",
+    "version": "0.7.2",
+    "assessment_date": "2026-11-03",
     "profile_status": "partial; selected tables transcribed; not a consolidated code",
     "source_status": "official_source_found_pending_review",
     "profile_version": "2026-11-02"
@@ -297,7 +297,8 @@
       },
       "basement_setback_status": "no_basement",
       "basement_setback_summary": "No basement",
-      "setback_basis": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope."
+      "setback_basis": "Table 8: above 250 m² up to 4,000 m²; percentage setbacks use site depth and width at varying points. Nominal dimensions alone do not define an irregular-site envelope.",
+      "height_for_setback": null
     },
     {
       "name": "Option 02",
@@ -366,7 +367,8 @@
       },
       "basement_setback_status": "no_basement",
       "basement_setback_summary": "No basement",
-      "setback_basis": "Height-band reading from the supplied Table 9; confirm the applicable row and definition with the authority."
+      "setback_basis": "Height-band reading from the supplied Table 9; confirm the applicable row and definition with the authority.",
+      "height_for_setback": null
     },
     {
       "name": "Option 03",
@@ -435,7 +437,8 @@
       },
       "basement_setback_status": "no_basement",
       "basement_setback_summary": "No basement",
-      "setback_basis": "Table 9 all-round setback"
+      "setback_basis": "Table 9 all-round setback",
+      "height_for_setback": null
     }
   ],
   "checks": [
@@ -786,7 +789,8 @@
       "message": "No official boundary evidence supports this authority. Check the notified planning area, then mark it as confirmed.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "location.resolved",
@@ -796,7 +800,8 @@
       "message": "The location was not identified. Run the location lookup or import a georeferenced boundary.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "rule.profile",
@@ -806,7 +811,8 @@
       "message": "This profile is compared with the published source documents, but not independently reviewed. Do not freeze a design on it. Bengaluru / Greater Bengaluru RMP 2015 - selected rules, 2026 update",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "rule.zone",
@@ -816,7 +822,8 @@
       "message": "Check the category against the official land-use map, then mark it as confirmed.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "rule.far",
@@ -834,7 +841,8 @@
         "url": "https://eng.bdabangalore.org/masterplan.html"
       },
       "option": null,
-      "value": 2.5
+      "value": 2.5,
+      "options": []
     },
     {
       "id": "rule.sensitivity.area",
@@ -850,7 +858,8 @@
         "road_width_m": 18.5,
         "maximum_far": null,
         "status": "zone_not_supported"
-      }
+      },
+      "options": []
     },
     {
       "id": "rule.sensitivity.area",
@@ -866,7 +875,8 @@
         "road_width_m": 18.5,
         "maximum_far": null,
         "status": "zone_not_supported"
-      }
+      },
+      "options": []
     },
     {
       "id": "rule.sensitivity.road",
@@ -882,7 +892,8 @@
         "road_width_m": 18.25,
         "maximum_far": null,
         "status": "zone_not_supported"
-      }
+      },
+      "options": []
     },
     {
       "id": "rule.sensitivity.road",
@@ -898,7 +909,8 @@
         "road_width_m": 18.75,
         "maximum_far": null,
         "status": "zone_not_supported"
-      }
+      },
+      "options": []
     },
     {
       "id": "site.boundary",
@@ -908,7 +920,8 @@
       "message": "No boundary is applied, so the area is as typed and no envelope can be drawn.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "site.road",
@@ -918,7 +931,8 @@
       "message": "Record where the road width came from: notified, surveyed or measured.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "site.conversion",
@@ -928,7 +942,8 @@
       "message": "Record whether the land has been converted for non-agricultural use.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "site.prior_sanction",
@@ -938,7 +953,8 @@
       "message": "Record whether an earlier sanction or layout exists on this land.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.lake",
@@ -948,7 +964,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.drain",
@@ -958,7 +975,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.ht_line",
@@ -968,7 +986,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.airport",
@@ -978,7 +997,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.heritage",
@@ -988,7 +1008,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.railway",
@@ -998,7 +1019,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.defence",
@@ -1008,7 +1030,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.highway",
@@ -1018,7 +1041,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.flood_prone",
@@ -1028,7 +1052,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "overlay.road_widening",
@@ -1038,7 +1063,8 @@
       "message": "Check the official maps and record whether this affects the site. SiteIQ has no official layer for it.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "option.inputs",
@@ -1047,8 +1073,13 @@
       "status": "PASS",
       "message": "3.00 m per floor is plausible.",
       "source": null,
-      "option": "Option 01",
-      "value": 3.0
+      "option": "Option 01, Option 02, Option 03",
+      "value": 3.0,
+      "options": [
+        "Option 01",
+        "Option 02",
+        "Option 03"
+      ]
     },
     {
       "id": "option.far",
@@ -1058,7 +1089,10 @@
       "message": "This option exceeds the FAR capacity by 432 m². Premium FAR and TDR are not counted.",
       "source": null,
       "option": "Option 01",
-      "value": -432.0
+      "value": -432.0,
+      "options": [
+        "Option 01"
+      ]
     },
     {
       "id": "option.coverage",
@@ -1077,8 +1111,13 @@
         "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
         "url": "https://gba.karnataka.gov.in/"
       },
-      "option": "Option 01",
-      "value": null
+      "option": "Option 01, Option 02, Option 03",
+      "value": null,
+      "options": [
+        "Option 01",
+        "Option 02",
+        "Option 03"
+      ]
     },
     {
       "id": "option.setback",
@@ -1098,7 +1137,10 @@
         "url": "https://gba.karnataka.gov.in/"
       },
       "option": "Option 01",
-      "value": null
+      "value": null,
+      "options": [
+        "Option 01"
+      ]
     },
     {
       "id": "option.parking",
@@ -1114,8 +1156,13 @@
         "status": "Tables 10, 12 and 14 and Table 23 compared with this copy on 2026-11-02. Later amendments may change them.",
         "url": "https://data.opencity.in/dataset/bengaluru-masterplan-zoning-regulations-2015"
       },
-      "option": "Option 01",
-      "value": null
+      "option": "Option 01, Option 02, Option 03",
+      "value": null,
+      "options": [
+        "Option 01",
+        "Option 02",
+        "Option 03"
+      ]
     },
     {
       "id": "option.fire",
@@ -1132,7 +1179,10 @@
         "url": "https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf"
       },
       "option": "Option 01",
-      "value": null
+      "value": null,
+      "options": [
+        "Option 01"
+      ]
     },
     {
       "id": "option.eia",
@@ -1148,17 +1198,10 @@
         "url": "https://www.greentribunal.gov.in/sites/default/files/news_updates/8421_0.pdf"
       },
       "option": "Option 01",
-      "value": 5932
-    },
-    {
-      "id": "option.inputs",
-      "group": "Options",
-      "title": "Height and floors",
-      "status": "PASS",
-      "message": "3.00 m per floor is plausible.",
-      "source": null,
-      "option": "Option 02",
-      "value": 3.0
+      "value": 5932,
+      "options": [
+        "Option 01"
+      ]
     },
     {
       "id": "option.far",
@@ -1168,27 +1211,10 @@
       "message": "This option exceeds the FAR capacity by 855 m². Premium FAR and TDR are not counted.",
       "source": null,
       "option": "Option 02",
-      "value": -855.0
-    },
-    {
-      "id": "option.coverage",
-      "group": "Options",
-      "title": "Ground coverage",
-      "status": "PASS",
-      "message": "The configured amendment does not apply a coverage limit at this plot size.",
-      "source": {
-        "id": "udd235_setbacks",
-        "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
-        "notification": "UDD 235 MNJ 2025(E)",
-        "date": "2026-01-05",
-        "document": "Amendment 01.pdf (provided by user)",
-        "document_page": "PDF pages 2-6; printed pages 2-6",
-        "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
-        "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
-        "url": "https://gba.karnataka.gov.in/"
-      },
-      "option": "Option 02",
-      "value": null
+      "value": -855.0,
+      "options": [
+        "Option 02"
+      ]
     },
     {
       "id": "option.setback",
@@ -1208,24 +1234,10 @@
         "url": "https://gba.karnataka.gov.in/"
       },
       "option": "Option 02",
-      "value": null
-    },
-    {
-      "id": "option.parking",
-      "group": "Options",
-      "title": "Parking",
-      "status": "NEEDS_INPUT",
-      "message": "Enter the number of dwelling units and their average floor area to calculate parking.",
-      "source": {
-        "id": "rmp2015_online_copy",
-        "title": "Revised Master Plan 2015 Vol. III, Zoning of Land Use and Regulations (G.O. UDD 540 BEM AA SE 2004, 22-06-2007)",
-        "document": "Public copy hosted by OpenCity",
-        "clause": "Definitions 18 and 40; Regulations 3.4 and 3.9; Tables 10, 12, 14 and 23; Chapter 7",
-        "status": "Tables 10, 12 and 14 and Table 23 compared with this copy on 2026-11-02. Later amendments may change them.",
-        "url": "https://data.opencity.in/dataset/bengaluru-masterplan-zoning-regulations-2015"
-      },
-      "option": "Option 02",
-      "value": null
+      "value": null,
+      "options": [
+        "Option 02"
+      ]
     },
     {
       "id": "option.fire",
@@ -1241,8 +1253,12 @@
         "status": "21 m checked against the 2023 ordinance text; 15 m checked against NBC 2016 Part 4.",
         "url": "https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf"
       },
-      "option": "Option 02",
-      "value": null
+      "option": "Option 02, Option 03",
+      "value": null,
+      "options": [
+        "Option 02",
+        "Option 03"
+      ]
     },
     {
       "id": "option.eia",
@@ -1258,17 +1274,10 @@
         "url": "https://www.greentribunal.gov.in/sites/default/files/news_updates/8421_0.pdf"
       },
       "option": "Option 02",
-      "value": 6355
-    },
-    {
-      "id": "option.inputs",
-      "group": "Options",
-      "title": "Height and floors",
-      "status": "PASS",
-      "message": "3.00 m per floor is plausible.",
-      "source": null,
-      "option": "Option 03",
-      "value": 3.0
+      "value": 6355,
+      "options": [
+        "Option 02"
+      ]
     },
     {
       "id": "option.far",
@@ -1278,27 +1287,10 @@
       "message": "This option exceeds the FAR capacity by 1,136 m². Premium FAR and TDR are not counted.",
       "source": null,
       "option": "Option 03",
-      "value": -1136.0
-    },
-    {
-      "id": "option.coverage",
-      "group": "Options",
-      "title": "Ground coverage",
-      "status": "PASS",
-      "message": "The configured amendment does not apply a coverage limit at this plot size.",
-      "source": {
-        "id": "udd235_setbacks",
-        "title": "Zonal Regulations of the Revised Master Plan 2015 of Bengaluru and Greater Bengaluru (Amendment) Regulations 2025",
-        "notification": "UDD 235 MNJ 2025(E)",
-        "date": "2026-01-05",
-        "document": "Amendment 01.pdf (provided by user)",
-        "document_page": "PDF pages 2-6; printed pages 2-6",
-        "clause": "Chapter 3, Regulation 3.1 Tables 8-9; Regulation 3.9 basement; Regulation 3.10 ramps; Chapter 4 amendments including Table 16 and Mutation Corridors",
-        "status": "final notification in user-supplied document; subsequent updates/applicability still need verification",
-        "url": "https://gba.karnataka.gov.in/"
-      },
-      "option": "Option 03",
-      "value": null
+      "value": -1136.0,
+      "options": [
+        "Option 03"
+      ]
     },
     {
       "id": "option.setback",
@@ -1318,41 +1310,10 @@
         "url": "https://gba.karnataka.gov.in/"
       },
       "option": "Option 03",
-      "value": null
-    },
-    {
-      "id": "option.parking",
-      "group": "Options",
-      "title": "Parking",
-      "status": "NEEDS_INPUT",
-      "message": "Enter the number of dwelling units and their average floor area to calculate parking.",
-      "source": {
-        "id": "rmp2015_online_copy",
-        "title": "Revised Master Plan 2015 Vol. III, Zoning of Land Use and Regulations (G.O. UDD 540 BEM AA SE 2004, 22-06-2007)",
-        "document": "Public copy hosted by OpenCity",
-        "clause": "Definitions 18 and 40; Regulations 3.4 and 3.9; Tables 10, 12, 14 and 23; Chapter 7",
-        "status": "Tables 10, 12 and 14 and Table 23 compared with this copy on 2026-11-02. Later amendments may change them.",
-        "url": "https://data.opencity.in/dataset/bengaluru-masterplan-zoning-regulations-2015"
-      },
-      "option": "Option 03",
-      "value": null
-    },
-    {
-      "id": "option.fire",
-      "group": "Options",
-      "title": "Fire NOC",
-      "status": "REFER",
-      "message": "From 15 m up to 21 m, NBC 2016 Part 4 treats the building as high-rise and the 2026 Bengaluru amendment requires NBC fire compliance. A 2011 notification set the NOC at 15 m, so confirm with the local fire station whether an NOC applies.",
-      "source": {
-        "id": "kff_act_2023",
-        "title": "Karnataka Fire Force (Amendment) Act 2023, section 13; NBC 2016 Part 4 clause 2.38",
-        "notification": "Karnataka Act No. 24 of 2023",
-        "clause": "Section 13(3) and explanation; NBC clause 2.38",
-        "status": "21 m checked against the 2023 ordinance text; 15 m checked against NBC 2016 Part 4.",
-        "url": "https://prsindia.org/files/bills_acts/bills_states/karnataka/2023/Ord01of2023Karnataka.pdf"
-      },
-      "option": "Option 03",
-      "value": null
+      "value": null,
+      "options": [
+        "Option 03"
+      ]
     },
     {
       "id": "option.eia",
@@ -1368,7 +1329,10 @@
         "url": "https://www.greentribunal.gov.in/sites/default/files/news_updates/8421_0.pdf"
       },
       "option": "Option 03",
-      "value": 6636
+      "value": 6636,
+      "options": [
+        "Option 03"
+      ]
     },
     {
       "id": "option.far_exclusions",
@@ -1377,28 +1341,13 @@
       "status": "REFER",
       "message": "No exclusions were entered, so all floor area counts towards FAR. Enter parking and core areas where the rule allows them.",
       "source": null,
-      "option": "Option 01",
-      "value": null
-    },
-    {
-      "id": "option.far_exclusions",
-      "group": "Options",
-      "title": "FAR exclusions",
-      "status": "REFER",
-      "message": "No exclusions were entered, so all floor area counts towards FAR. Enter parking and core areas where the rule allows them.",
-      "source": null,
-      "option": "Option 02",
-      "value": null
-    },
-    {
-      "id": "option.far_exclusions",
-      "group": "Options",
-      "title": "FAR exclusions",
-      "status": "REFER",
-      "message": "No exclusions were entered, so all floor area counts towards FAR. Enter parking and core areas where the rule allows them.",
-      "source": null,
-      "option": "Option 03",
-      "value": null
+      "option": "Option 01, Option 02, Option 03",
+      "value": null,
+      "options": [
+        "Option 01",
+        "Option 02",
+        "Option 03"
+      ]
     },
     {
       "id": "project.rera",
@@ -1414,7 +1363,8 @@
         "url": "https://argus-p.com/papers-publications/thought-paper/rera-regime-the-exemption-conundrum/"
       },
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "project.accessibility",
@@ -1424,7 +1374,8 @@
       "message": "Detailed accessibility standards are not configured. Check the applicable building bye-laws and NBC 2016.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "project.services",
@@ -1434,7 +1385,8 @@
       "message": "Water, sewerage, STP, rainwater harvesting and transformer rules are not configured for this case. Confirm them with the local agencies.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     },
     {
       "id": "project.separation",
@@ -1444,20 +1396,21 @@
       "message": "Building separation is not configured for this authority. Each option is assessed as a single block.",
       "source": null,
       "option": null,
-      "value": null
+      "value": null,
+      "options": []
     }
   ],
   "verdict": {
     "code": "BLOCKED",
     "message": "At least one check fails. This scheme cannot proceed as entered.",
     "counts": {
-      "PASS": 10,
+      "PASS": 6,
       "FAIL": 3,
-      "NEEDS_INPUT": 20,
+      "NEEDS_INPUT": 18,
       "NOT_CONFIGURED": 3,
-      "REFER": 15
+      "REFER": 12
     },
-    "total": 51
+    "total": 42
   },
   "input_fingerprint": "67e6bda4dcab511a"
 }

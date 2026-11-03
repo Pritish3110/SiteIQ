@@ -51,7 +51,13 @@ async def local_only(request: Request, call_next):
     if not (allowed_host and allowed_origin):
         logger.warning("Refused request from host %r origin %r", host, origin)
         return JSONResponse(status_code=403, content={"detail": "SiteIQ only accepts requests from this computer."})
-    return await call_next(request)
+    response = await call_next(request)
+    # The page must always be fetched fresh after an update; built assets have unique names and never change.
+    if request.url.path.startswith("/assets/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    elif not request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
 
 
 class Strict(BaseModel):

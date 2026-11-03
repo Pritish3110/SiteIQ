@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.2 — 2026-11-03
+**Updates now show reliably.** Browsers are told to fetch the page fresh, and the launchers rebuild the interface whenever its code is newer than the build, not only when no build exists. Sample outputs are regenerated for this version.
+
+**Fixes.** On Planning controls, the three measures for a lake or tank and for railway land now sit on one line instead of wrapping.
+
 ## v0.7.1 — 2026-11-03
 **Changed results.** Inputs that don't apply to the chosen use are now ignored, so a unit count left over from an earlier choice no longer affects the RERA check. Apartment eligibility is assessed once for the site, and a finding shared by several options appears once, naming them all. Status counts fall accordingly.
 

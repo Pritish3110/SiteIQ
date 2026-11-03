@@ -28,12 +28,12 @@ report["location_identification"] = {
     "public_sources": official_sources_for_context("bengaluru_rmp2015", "Southern Bengaluru"),
     "sample_note": "Illustrative location metadata, not a live jurisdiction lookup.",
 }
-(out / "SiteIQ_Nandi_Detailed_Report_v0.7.0.pdf").write_bytes(build_pdf_report(report, audience="client"))
-(out / "SiteIQ_Nandi_Technical_Report_v0.7.0.pdf").write_bytes(build_pdf_report(report, audience="technical"))
-(out / "SiteIQ_Nandi_Detailed_Report_v0.7.0.pptx").write_bytes(build_pptx_report(report))
-(out / "SiteIQ_Nandi_Comparison_Board_A3_v0.7.0.pdf").write_bytes(build_a3_comparison_board_pdf(report))
-(out / "SiteIQ_Nandi_Comparison_Board_A3_v0.7.0.pptx").write_bytes(build_a3_comparison_board_pptx(report))
-(out / "SiteIQ_Nandi_Assessment_v0.7.0.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+(out / f"SiteIQ_Nandi_Detailed_Report_v{__version__}.pdf").write_bytes(build_pdf_report(report, audience="client"))
+(out / f"SiteIQ_Nandi_Technical_Report_v{__version__}.pdf").write_bytes(build_pdf_report(report, audience="technical"))
+(out / f"SiteIQ_Nandi_Detailed_Report_v{__version__}.pptx").write_bytes(build_pptx_report(report))
+(out / f"SiteIQ_Nandi_Comparison_Board_A3_v{__version__}.pdf").write_bytes(build_a3_comparison_board_pdf(report))
+(out / f"SiteIQ_Nandi_Comparison_Board_A3_v{__version__}.pptx").write_bytes(build_a3_comparison_board_pptx(report))
+(out / f"SiteIQ_Nandi_Assessment_v{__version__}.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 
 # Hoskote rule-profile smoke test: uses KML-derived area from the supplied Test 02 sample
 # and a 36 m road width solely to test the rule engine's conditional group-housing path.
@@ -71,7 +71,7 @@ hoskote_report["location_identification"] = {
     "public_sources": [],
     "sample_note": "Rule-profile smoke test only. Road width of 36 m is an explicit illustrative input, not verified for the user's actual Hoskote parcel.",
 }
-(out / "SiteIQ_Hoskote_Profile_Check_v0.7.0.json").write_text(json.dumps(hoskote_report, indent=2, ensure_ascii=False), encoding="utf-8")
+(out / f"SiteIQ_Hoskote_Profile_Check_v{__version__}.json").write_text(json.dumps(hoskote_report, indent=2, ensure_ascii=False), encoding="utf-8")
 summary = {
     "release": __version__,
     "sample_type": "rule-profile smoke test only — not a client report or design proposal",
@@ -85,9 +85,9 @@ summary = {
     "candidate_far_capacity_m2": hoskote_report["maximum_far_area_m2"],
     "key_warning": "Secondary-source candidate only; official land-use zone, notified jurisdiction, current operative rules and road width must be verified.",
 }
-(out / "SiteIQ_Hoskote_Profile_Check_v0.7.0_Summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
-(out / "SiteIQ_Hoskote_Profile_Check_v0.7.0.txt").write_text(
-    "SITEIQ v0.7.0 — Hoskote profile smoke test\n\n"
+(out / f"SiteIQ_Hoskote_Profile_Check_v{__version__}_Summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+(out / f"SiteIQ_Hoskote_Profile_Check_v{__version__}.txt").write_text(
+    "SITEIQ v{__version__} — Hoskote profile smoke test\n\n"
     "This is an internal rule-engine test, not a design feasibility report.\n"
     f"Configured FAR status: {summary['far_status']}\n"
     f"Provisional FAR candidate: {summary['candidate_far']}\n"
@@ -97,4 +97,4 @@ summary = {
     + summary["key_warning"] + "\n",
     encoding="utf-8",
 )
-print("Generated v0.7.0 Nandi PDF/PPTX/A3/JSON outputs and Hoskote profile smoke-test JSON/TXT.")
+print(f"Generated v{__version__} Nandi PDF/PPTX/A3/JSON outputs and Hoskote profile smoke-test JSON/TXT.")
