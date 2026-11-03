@@ -23,7 +23,7 @@ export function FarStep({ report, missing }: { report: Report | null; missing: s
             <p className="mono-label">Maximum base FAR, candidate</p>
             <p className="display mt-1 text-[clamp(6rem,13vw,11rem)] leading-[0.95]"><CountUp value={far.maximum_far!} digits={2} testId="far-value" /></p>
             <div className="mt-8 grid gap-8 border-t border-rule pt-5 sm:grid-cols-3">
-              <div><p className="mono-label">FAR area</p><p className="display mt-1 text-3xl tnum" data-testid="far-area">{area(far.far_calculation_area_m2)}</p></div>
+              <div><p className="mono-label">Site area</p><p className="display mt-1 text-3xl tnum" data-testid="far-area">{area(far.far_calculation_area_m2)}</p></div>
               <div><p className="mono-label">Floor area capacity</p><p className="display mt-1 text-3xl tnum" data-testid="far-capacity">{area(far.maximum_far_area_m2)}</p></div>
               <div><p className="mono-label">Limited by</p><p className="display mt-1 text-3xl">{humanise(String(details.limiting_factor ?? "table rule"))}</p></div>
             </div>
