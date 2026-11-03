@@ -14,7 +14,7 @@ export function OptionsStep({ study, set, report }: { study: Study; set: (p: Par
         <AnimatePresence initial={false}>
           {study.options.map((option, index) => {
             const result = report?.scenarios[index];
-            const failures = report?.compliance_checks.filter((c) => c.option === result?.name && c.status === "FAIL") ?? [];
+            const failures = report?.compliance_checks.filter((c) => !!result && (c.options ?? []).includes(result.name) && c.status === "FAIL") ?? [];
             return (
               <motion.article key={option.id} layout initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }} data-testid={`option-${index}`} className="flex flex-col border border-rule bg-sheet">
                 <header className="flex items-center justify-between gap-3 border-b border-rule px-5 py-3">
@@ -58,6 +58,14 @@ export function OptionsStep({ study, set, report }: { study: Study; set: (p: Par
                       <Field label="Basement sides" type="number" unit="m" value={option.manualBasementSide} onChange={(v) => update(option.id, { manualBasementSide: v })} />
                     </div>
                     <p className="mt-2 text-xs text-soft">These replace the rule for this option and are labelled as your assumption.</p>
+                    {result?.height_for_setback && (
+                      <div className="mt-4 border-l-2 border-ink pl-3" data-testid={`height-suggestion-${index}`}>
+                        <p className="text-[13px] leading-relaxed">{result.height_for_setback.max_height_m != null ? <>Up to <strong className="font-mono">{result.height_for_setback.max_height_m} m</strong>. </> : null}{result.height_for_setback.message}</p>
+                        {result.height_for_setback.max_height_m != null && String(result.height_for_setback.max_height_m) !== option.height && (
+                          <button type="button" data-testid={`use-height-${index}`} className="mt-1.5 text-[13px] underline underline-offset-4" onClick={() => update(option.id, { height: String(result.height_for_setback!.max_height_m) })}>Use {result.height_for_setback.max_height_m} m as this option's height</button>
+                        )}
+                      </div>
+                    )}
                   </details>
                 </div>
                 {result && (

@@ -28,7 +28,7 @@ def payload(**overrides):
 
 
 def check(report, check_id, option=None):
-    return next(c for c in report["compliance_checks"] if c["id"] == check_id and (option is None or c["option"] == option))
+    return next(c for c in report["compliance_checks"] if c["id"] == check_id and (option is None or option in (c.get("options") or [])))
 
 
 # C3: rule status gate
@@ -355,12 +355,12 @@ def test_road_below_9m_limits_height(road, height, expected):
 ])
 def test_apartment_rules_follow_the_2026_amendment(area, ring, units, expected):
     report = assess(payload(site_area_m2=float(area), road_width_m=12.0, rmp_ring=ring, dwelling_units=units))
-    assert check(report, "option.apartment", "A")["status"] == expected
+    assert check(report, "site.apartment")["status"] == expected
 
 
 def test_apartment_needs_a_9m_road():
     report = assess(payload(road_width_m=8.0, rmp_ring="I"))
-    assert check(report, "option.apartment", "A")["status"] == "FAIL"
+    assert check(report, "site.apartment")["status"] == "FAIL"
 
 
 @pytest.mark.parametrize("drain,required", [("primary", 15.0), ("secondary", 10.0), ("tertiary", 5.0)])
@@ -478,11 +478,11 @@ def test_lpa_large_plots_need_at_least_5m_all_round(name):
 @pytest.mark.parametrize("area,road,expected", [(800.0, 12.0, "PASS"), (750.0, 12.0, "FAIL"), (800.0, 9.0, "FAIL")])
 def test_lpa_apartment_rule(area, road, expected):
     report = assess(payload(authority_key="kanakapura_planning_authority", land_use_category="Residential", site_area_m2=area, road_width_m=road))
-    assert check(report, "option.apartment", "A")["status"] == expected
+    assert check(report, "site.apartment")["status"] == expected
 
 
 def test_hoskote_apartment_rule_between_360_and_750_depends_on_cmc_limits():
-    make = lambda area: check(assess(payload(authority_key="hoskote_planning_authority", land_use_category="Residential", site_area_m2=area, road_width_m=12.0)), "option.apartment", "A")["status"]
+    make = lambda area: check(assess(payload(authority_key="hoskote_planning_authority", land_use_category="Residential", site_area_m2=area, road_width_m=12.0)), "site.apartment")["status"]
     assert (make(300.0), make(500.0), make(800.0)) == ("FAIL", "REFER", "PASS")
 
 
@@ -737,3 +737,103 @@ def test_pdf_loose_lines_are_joined():
     candidates, _ = parse_pdf(doc.tobytes())
     joined = [c for c in candidates if "joined" in c["label"]]
     assert joined and polygon_from_candidate(joined[0], scale_to_m=1.0)[1]["area_m2"] == pytest.approx(20000, rel=0.01)
+
+
+# v0.7.1: inputs that apply, constraint metrics, height from setback, grouped register
+from siteiq.inputs import relevant_inputs
+
+
+@pytest.mark.parametrize("use,units,area,ring", [
+    ("Residential apartments", True, True, True), ("Commercial / office", True, False, False), ("Mixed use", True, False, False),
+    ("Industrial / warehouse", False, False, False), ("Individual house / villa", False, False, False),
+])
+def test_inputs_follow_the_use(use, units, area, ring):
+    result = relevant_inputs(load_rule_profile(RMP), "Residential (Main)", use, 18.0)
+    assert (result["dwelling_units"]["relevant"], result["average_unit_area_m2"]["relevant"], result["rmp_ring"]["relevant"]) == (units, area, ring)
+
+
+def test_units_are_labelled_for_sale_outside_housing():
+    assert relevant_inputs(load_rule_profile(RMP), "Commercial (Business)", "Commercial / office", 18.0)["dwelling_units"]["label"] == "Units for sale"
+
+
+def test_ring_only_applies_in_its_category_and_guidance_value_only_on_wide_roads():
+    profile = load_rule_profile(RMP)
+    assert relevant_inputs(profile, "Commercial (Business)", "Residential apartments", 18.0)["rmp_ring"]["relevant"] is False
+    assert relevant_inputs(profile, "Residential (Main)", "Residential apartments", 10.0)["guidance_value_per_m2"]["relevant"] is False
+    assert relevant_inputs(profile, "Residential (Main)", "Residential apartments", 12.0)["guidance_value_per_m2"]["relevant"] is True
+    assert relevant_inputs(None, None, "Residential apartments", 18.0)["guidance_value_per_m2"]["relevant"] is False
+
+
+def test_leftover_units_no_longer_affect_rera_for_industry():
+    report = assess(payload(land_use_category="Industrial (General)", proposed_use="Industrial / warehouse", dwelling_units=50, site_area_m2=400.0))
+    assert check(report, "project.rera")["status"] == "NEEDS_INPUT"
+    assert report["site"]["dwelling_units"] is None
+
+
+def test_every_input_a_check_reads_is_shown_when_that_check_can_use_it():
+    result = relevant_inputs(load_rule_profile(RMP), "Residential (Main)", "Residential apartments", 18.0)
+    assert all(result[k]["relevant"] for k in ("dwelling_units", "average_unit_area_m2", "rmp_ring", "guidance_value_per_m2"))
+
+
+@pytest.mark.parametrize("limit,status", [(14.0, "FAIL"), (15.0, "PASS")])
+def test_airport_height_is_checked_per_option(limit, status):
+    report = assess(payload(overlays={"airport": {"status": "present", "max_height_m": limit}}, scenarios=[{"name": "A", "height_m": 15, "floors": 5, "footprint_m2": 500}]))
+    assert check(report, "option.airport_height", "A")["status"] == status
+    assert check(report, "overlay.airport")["status"] == "REFER"
+
+
+def test_airport_without_a_height_needs_input():
+    assert check(assess(payload(overlays={"airport": {"status": "present"}})), "overlay.airport")["status"] == "NEEDS_INPUT"
+
+
+@pytest.mark.parametrize("distance,status", [(50.0, "FAIL"), (150.0, "REFER"), (300.0, "PASS")])
+def test_heritage_distance(distance, status):
+    assert check(assess(payload(overlays={"heritage": {"status": "present", "distance_m": distance}})), "overlay.heritage")["status"] == status
+
+
+def test_flood_level_and_distances_are_reported():
+    report = assess(payload(overlays={"flood_prone": {"status": "present", "flood_level_m": 1.2}, "railway": {"status": "present", "distance_m": 25.0}}))
+    assert "1.2 m above ground" in check(report, "overlay.flood_prone")["message"]
+    assert "25 m away" in check(report, "overlay.railway")["message"]
+
+
+@pytest.mark.parametrize("setback,height", [(5.0, 15.0), (6.0, 18.0), (7.5, 21.0), (4.0, 12.0)])
+def test_height_allowed_by_a_what_if_setback(setback, height):
+    report = assess(payload(scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 500, "manual_all_round_setback_m": setback}]))
+    assert report["scenarios"][0]["height_for_setback"]["max_height_m"] == height
+
+
+def test_largest_setback_reaches_the_open_top_band():
+    report = assess(payload(scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 500, "manual_all_round_setback_m": 16.0}]))
+    assert report["scenarios"][0]["height_for_setback"]["max_height_m"] is None
+
+
+def test_height_from_setback_is_capped_by_road_and_airport():
+    road = assess(payload(road_width_m=8.0, scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 500, "manual_all_round_setback_m": 9.0}]))
+    assert road["scenarios"][0]["height_for_setback"]["max_height_m"] == 15.0
+    airport = assess(payload(overlays={"airport": {"status": "present", "max_height_m": 20.0}}, scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 500, "manual_all_round_setback_m": 9.0}]))
+    assert airport["scenarios"][0]["height_for_setback"]["max_height_m"] == 20.0
+
+
+def test_too_small_a_setback_on_a_large_plot_allows_no_height():
+    report = assess(payload(site_area_m2=5000.0, road_width_m=18.0, scenarios=[{"name": "A", "height_m": 12, "floors": 4, "footprint_m2": 500, "manual_all_round_setback_m": 3.0}]))
+    assert report["scenarios"][0]["height_for_setback"]["max_height_m"] is None
+    assert "too small" in report["scenarios"][0]["height_for_setback"]["message"]
+
+
+def test_no_suggestion_without_a_what_if_setback():
+    assert assess(payload())["scenarios"][0]["height_for_setback"] is None
+
+
+def test_register_names_each_shared_finding_once():
+    report = assess(payload(scenarios=[{"name": n, "height_m": 12, "floors": 4, "footprint_m2": 500} for n in ("A", "B", "C")]))
+    parking = [c for c in report["compliance_checks"] if c["id"] == "option.parking"]
+    assert len(parking) == 1 and parking[0]["options"] == ["A", "B", "C"] and parking[0]["option"] == "A, B, C"
+    assert len([c for c in report["compliance_checks"] if c["id"] == "site.apartment"]) == 1
+    assert report["verdict"]["total"] == len(report["compliance_checks"])
+
+
+def test_different_findings_per_option_stay_separate():
+    report = assess(payload(scenarios=[{"name": "Low", "height_m": 12, "floors": 4, "footprint_m2": 100}, {"name": "High", "height_m": 12, "floors": 4, "footprint_m2": 2000}]))
+    far = [c for c in report["compliance_checks"] if c["id"] == "option.far"]
+    assert {c["status"] for c in far} == {"PASS", "FAIL"}

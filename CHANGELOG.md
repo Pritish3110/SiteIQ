@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.7.1 — 2026-11-03
+**Changed results.** Inputs that don't apply to the chosen use are now ignored, so a unit count left over from an earlier choice no longer affects the RERA check. Apartment eligibility is assessed once for the site, and a finding shared by several options appears once, naming them all. Status counts fall accordingly.
+
+**Planning controls.** Units, unit area, RMP ring and guidance value appear only where the authority, category, use and road make them count, each with its reason. Commercial and mixed use ask for units for sale. Constraints ask for their own measure: permitted height for an airport zone (checked against every option), distance from a protected monument (100 m prohibited and 200 m regulated under the AMASR Act), distances from lakes, railways and defence land, and flood level.
+
+**Fixes.** A boundary file checked but not applied was lost on leaving the Boundary sheet, so the next sheet asked for the plot area again. It is now kept, and Planning controls points back to it.
+
+**Options.** A what-if all-round setback shows the tallest building it allows under the height table, within road, plot and airport limits, with a button to use it.
+
 ## v0.7.0 — 2026-11-03
 **Changed results.** Bengaluru now shows Premium FAR scenarios, and side edges tagged left or right use their own setback.
 

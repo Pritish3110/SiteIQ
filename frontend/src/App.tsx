@@ -7,7 +7,7 @@ import { Button, CountUp } from "./components/ui";
 import { api } from "./lib/api";
 import { area, SOURCE_STATUS_LABEL, VERDICT_LABEL } from "./lib/format";
 import { deleteProject, downloadProject, listProjects, loadProject, newProjectId, parseProjectFile, saveProject, type ProjectSummary, type Revision } from "./lib/projects";
-import { effectiveArea, emptyStudy, missing as missingInputs, nandiSample, toPayload, type Study } from "./lib/study";
+import { effectiveArea, emptyBoundaryDraft, emptyStudy, type BoundaryDraft, missing as missingInputs, nandiSample, toPayload, type Study } from "./lib/study";
 import type { AuthorityDetail, CheckStatus, Meta, Report } from "./lib/types";
 import { BoundaryStep } from "./steps/Boundary";
 import { ControlsStep } from "./steps/Controls";
@@ -44,6 +44,7 @@ export default function App() {
   const [revisions, setRevisions] = useState<Revision[]>([]);
   const [recent, setRecent] = useState<ProjectSummary[]>(listProjects);
   const [openError, setOpenError] = useState<string | null>(null);
+  const [boundaryDraft, setBoundaryDraft] = useState<BoundaryDraft>(emptyBoundaryDraft);
   const main = useRef<HTMLElement>(null);
 
   useEffect(() => { document.documentElement.dataset.theme = theme; writeStorage("siteiq.theme", theme); }, [theme]);
@@ -93,7 +94,7 @@ export default function App() {
   if (bootError) return <div className="flex min-h-full items-center justify-center p-10"><div className="max-w-md"><p className="display text-4xl">SiteIQ could not start.</p><p className="mt-4 text-soft">{bootError}</p></div></div>;
   if (!meta) return <div className="flex min-h-full items-center justify-center"><span className="mono-label">Loading rules…</span></div>;
   if (!entered) {
-    const begin = (next: Study, nextRevisions: Revision[], id: string, startSheet: number) => { setStudy(next); setRevisions(nextRevisions); setProjectId(id); setSheet(startSheet); setOpenError(null); setEntered(true); };
+    const begin = (next: Study, nextRevisions: Revision[], id: string, startSheet: number) => { setBoundaryDraft(emptyBoundaryDraft()); setStudy(next); setRevisions(nextRevisions); setProjectId(id); setSheet(startSheet); setOpenError(null); setEntered(true); };
     return <Hero version={meta.version} recent={recent} openError={openError}
       onStart={() => begin(emptyStudy(), [], newProjectId(), 0)}
       onSample={() => begin(nandiSample(), [], newProjectId(), 5)}
@@ -148,8 +149,8 @@ export default function App() {
               </header>
               {assessError && <div className="mb-8 border border-ink p-4 text-[13px] font-medium" role="alert" data-testid="assess-error">The assessment could not run: {assessError}</div>}
               {sheet === 0 && <SiteStep study={study} set={set} meta={meta} />}
-              {sheet === 1 && <BoundaryStep study={study} set={set} onIdentify={identifyFromBoundary} />}
-              {sheet === 2 && <ControlsStep study={study} set={set} meta={meta} detail={detail} />}
+              {sheet === 1 && <BoundaryStep study={study} set={set} onIdentify={identifyFromBoundary} draft={boundaryDraft} setDraft={setBoundaryDraft} />}
+              {sheet === 2 && <ControlsStep study={study} set={set} meta={meta} detail={detail} pendingBoundary={boundaryDraft.validated?.valid && boundaryDraft.parsed ? boundaryDraft.parsed.filename : null} onGoToBoundary={() => setSheet(1)} />}
               {sheet === 3 && <FarStep report={report} missing={gaps} />}
               {sheet === 4 && <OptionsStep study={study} set={set} report={report} />}
               {sheet === 5 && <DossierStep study={study} report={report} payload={payload} stale={stale} missing={gaps} revisionPanel={report && <RevisionPanel study={study} report={report} payload={payload} revisions={revisions} onChange={setRevisions} onRestore={setStudy} stale={stale} />} />}

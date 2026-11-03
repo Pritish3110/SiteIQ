@@ -1,4 +1,4 @@
-import type { AuthorityDetail, Candidate, LocationResult, Meta, ParsedFile, Report, ValidatedBoundary } from "./types";
+import type { InputRelevance, AuthorityDetail, Candidate, LocationResult, Meta, ParsedFile, Report, ValidatedBoundary } from "./types";
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   let response: Response;
@@ -24,6 +24,7 @@ export const api = {
   validate: (candidate: Candidate, scale: number | null, closeOpen: boolean) => post<ValidatedBoundary>("/api/boundary/validate", { candidate, scale_to_m: scale, close_open: closeOpen }),
   layers: () => request<{ authority: boolean; zone: boolean }>("/api/admin/layers"),
   installLayer: (layer: "authority" | "zone", file: File) => { const form = new FormData(); form.append("file", file); return request<{ feature_count: number; valid_polygon_count: number }>(`/api/admin/layers/${layer}`, { method: "POST", body: form }); },
+  inputs: (body: Record<string, unknown>) => post<InputRelevance>("/api/inputs", body),
   assess: (payload: unknown, signal?: AbortSignal) => post<Report>("/api/assess", payload, signal),
   async download(kind: string, payload: unknown) {
     const response = await fetch(`/api/export/${kind}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });

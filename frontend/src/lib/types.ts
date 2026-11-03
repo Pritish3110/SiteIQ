@@ -30,10 +30,12 @@ export interface Validation { status: string; message: string; area_m2?: number;
 export interface ValidatedBoundary { valid: boolean; validation: Validation; points_m?: Point[]; holes_m?: Point[][]; edges?: { edge_index: number; length: number }[] }
 export interface Geometry { type: "Polygon" | "MultiPolygon"; coordinates: number[][][] | number[][][][] }
 export interface Envelope { status: string; message?: string; area_m2?: number | null; geometry?: Geometry | null; component_count?: number; warnings?: string[]; has_narrow_neck?: boolean; is_split?: boolean }
-export interface Check { id: string; group: string; title: string; status: CheckStatus; message: string; source?: RuleSource | null; option?: string | null; value?: unknown }
+export interface Check { id: string; group: string; title: string; status: CheckStatus; message: string; source?: RuleSource | null; option?: string | null; options?: string[]; value?: unknown }
+export type InputRelevance = Record<string, { relevant: boolean; label: string; reason: string }>;
 export interface ScenarioResult {
   name: string; height_m?: number | null; floors?: number | null; footprint_m2?: number | null; footprint_source?: string; gross_concept_area_m2?: number | null; far_counted_area_m2?: number | null; far_excluded_m2?: number | null;
   achieved_far_ratio?: number | null; far_ratio_basis?: string; scenario_headroom_m2?: number | null; setback_summary?: string; basement_setback_summary?: string; basement_levels?: number; stilt?: boolean;
+  height_for_setback?: { max_height_m: number | null; message: string } | null;
   boundary_envelope?: Envelope; basement_boundary_envelope?: Envelope; far_capacity_m2?: number | null;
 }
 export interface FarResult {

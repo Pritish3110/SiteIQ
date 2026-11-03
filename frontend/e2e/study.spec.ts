@@ -195,6 +195,60 @@ test("exclusions and a floor schedule change the counted area", async ({ page })
   await shot(page, "16-schedule");
 });
 
+test("inputs follow the use, constraints ask for their own measure, and an unapplied boundary is kept", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("start-study").click();
+  await page.getByTestId("sheet-1").click();
+  await page.getByTestId("file-input").setInputFiles({ name: "hoskote.kml", mimeType: "application/xml", buffer: Buffer.from(KML) });
+  await expect(page.getByTestId("preview-area")).toContainText("m²");
+  await page.getByTestId("edge-0").click();
+  await page.getByTestId("sheet-2").click();
+  await expect(page.getByTestId("pending-boundary")).toContainText("hoskote.kml");
+  await page.getByTestId("pending-boundary").getByRole("button").click();
+  await expect(page.getByTestId("edge-0")).toHaveAttribute("data-role", "road");
+  await page.getByTestId("apply-boundary").click();
+  await page.getByTestId("sheet-2").click();
+  await expect(page.getByTestId("pending-boundary")).toHaveCount(0);
+  await pick(page, "authority-select", /Bengaluru/);
+  await pick(page, "category-select", /Residential \(Main\)/);
+  await page.getByTestId("road-width").fill("18");
+  await expect(page.getByTestId("units")).toBeVisible();
+  await expect(page.getByTestId("ring")).toBeVisible();
+  await pick(page, "use-select", "Industrial / warehouse");
+  await expect(page.getByTestId("units")).toHaveCount(0);
+  await expect(page.getByTestId("ring")).toHaveCount(0);
+  await expect(page.getByTestId("hidden-inputs")).toContainText("dwelling units");
+  await pick(page, "use-select", "Commercial / office");
+  await expect(page.getByTestId("units")).toBeVisible();
+  await page.getByTestId("overlay-airport").getByRole("radio", { name: "Affects site" }).click();
+  await expect(page.getByTestId("overlay-airport-metric")).toBeVisible();
+  await page.getByTestId("overlay-airport-metric").fill("12");
+  await shot(page, "17-controls-relevance");
+});
+
+test("a what-if setback suggests the height it allows", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("load-sample").click();
+  await page.getByTestId("sheet-4").click();
+  const card = page.getByTestId("option-0");
+  await card.locator("summary", { hasText: "What-if setbacks" }).click();
+  await page.getByTestId("manual-setback-0").fill("6");
+  await expect(page.getByTestId("height-suggestion-0")).toContainText("18 m");
+  await page.getByTestId("use-height-0").click();
+  await expect(page.getByTestId("height-0")).toHaveValue("18");
+  await shot(page, "18-height-suggestion");
+});
+
+test("the register names a shared finding once", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("load-sample").click();
+  await expect(page.getByTestId("register")).toBeVisible();
+  await expect(page.getByTestId("register").locator("li", { hasText: "Enter the number of dwelling units and their average floor area" })).toHaveCount(1);
+  await expect(page.getByTestId("register").locator("li", { hasText: "Apartment eligibility" })).toHaveCount(1);
+  await page.getByTestId("register").scrollIntoViewIfNeeded();
+  await shot(page, "19-register-grouped");
+});
+
 test("the rule library shows coverage honestly", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("start-study").click();

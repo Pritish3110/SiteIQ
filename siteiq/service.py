@@ -13,8 +13,9 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString, Polygon
 
 from .boundary import DEFAULT_MIN_CLEAR_WIDTH_M, calculate_setback_envelope
-from .checks import calculation_checks, jurisdiction_checks, option_checks, overlay_checks, project_checks, rule_checks, site_checks, summarise
+from .checks import calculation_checks, group_checks, jurisdiction_checks, option_checks, overlay_checks, project_checks, rule_checks, site_checks, summarise
 from .engine import build_report, far_counted_area, find_authority, load_authority_registry, load_rule_profile, load_statewide_rules
+from .inputs import drop_irrelevant
 from .location import parcel_jurisdiction_diagnostics
 
 
@@ -99,6 +100,79 @@ def premium_charge_estimate(far: dict, guidance_value: Optional[float]) -> Optio
     return {"guidance_value_per_m2": float(guidance_value), "additional_area_m2": float(additional), "notional_site_area_m2": round(notional_site, 2), "estimated_charge_inr": round(max(by_site, floor)), "note": rule["note"], "source": rule["source"]}
 
 
+def height_caps(profile: Optional[dict], site: dict, scenario: dict) -> list[dict]:
+    """Every height limit that applies to this site, from the rules and from declared constraints."""
+    caps = []
+    area = float(site.get("site_area_m2") or 0)
+    road = float(site.get("road_width_m") or 0)
+    for limit in (profile or {}).get("height_limits", []):
+        if limit.get("categories") and site.get("land_use_category") not in limit["categories"]:
+            continue
+        if limit.get("road_width_max_exclusive_m") is not None and not road < float(limit["road_width_max_exclusive_m"]):
+            continue
+        if limit.get("site_area_max_m2") is not None and not area <= float(limit["site_area_max_m2"]):
+            continue
+        height = float(limit["max_height_m"])
+        if not limit.get("includes_stilt") and scenario.get("stilt"):
+            height += float(scenario.get("stilt_height_m") or 0)
+        caps.append({"height_m": height, "reason": limit["note"]})
+    airport = (site.get("overlays") or {}).get("airport") or {}
+    if airport.get("status") == "present" and airport.get("max_height_m"):
+        caps.append({"height_m": float(airport["max_height_m"]), "reason": "Airport height zone, as entered from the AAI NOC or colour-coded map."})
+    return caps
+
+
+def height_for_setback(profile: Optional[dict], site: dict, scenario: dict) -> Optional[dict]:
+    """The tallest building a what-if all-round setback allows under the height table, within every cap."""
+    distance = scenario.get("manual_all_round_setback_m")
+    if not distance or not profile:
+        return None
+    distance = float(distance)
+    minimum = profile.get("minimum_all_round_setback") or {}
+    area = float(site.get("site_area_m2") or 0)
+    if minimum:
+        forced = float(minimum["setback_m"]) if area >= float(minimum["site_area_min_m2"]) else 0.0
+    else:
+        forced = 5.0 if area > 4000 and profile.get("force_minimum_all_round_for_area_above_4000", True) else 0.0
+    if distance < forced:
+        return {"max_height_m": None, "message": f"At least {forced:g} m all round is needed on a plot this size, so {distance:g} m is too small at any height."}
+    stilt = bool(scenario.get("stilt"))
+    bands = [b for b in sorted(profile.get("setback_table9_height_bands", []), key=lambda b: b["height_min_exclusive"])
+             if b.get("all_round_m") is not None and ("stilt" not in b or bool(b["stilt"]) == stilt)]
+    top = None
+    for band in bands:
+        # Bands are in height order: stop at the first one this setback is too small for.
+        if float(band["all_round_m"]) > distance:
+            break
+        top = band
+    table8_max = float(profile.get("setback_table8_max_height_m", 12.0))
+    if top is None:
+        base_height, basis = table8_max, f"Below the height table's first row, so up to {table8_max:g} m, where the low-rise table must also be met."
+    else:
+        if top.get("height_max") is None:
+            base_height, basis = None, "The height table sets no upper limit at this setback."
+        else:
+            base_height = float(top["height_max"])
+            basis = f"The height table allows up to {base_height:g} m with {distance:g} m all round."
+    caps = [c for c in height_caps(profile, site, scenario) if base_height is None or c["height_m"] < base_height]
+    if caps:
+        cap = min(caps, key=lambda c: c["height_m"])
+        return {"max_height_m": cap["height_m"], "message": f"{basis} A lower limit applies: {cap['reason']}"}
+    return {"max_height_m": base_height, "message": basis + " Basement setbacks do not change this."}
+
+
+def height_cap_checks(site: dict, scenario: dict) -> list[dict]:
+    """Check each option's height against a declared airport limit."""
+    from .checks import FAIL, PASS, _check
+    airport = (site.get("overlays") or {}).get("airport") or {}
+    height = scenario.get("height_m")
+    if airport.get("status") != "present" or not airport.get("max_height_m") or not height:
+        return []
+    limit = float(airport["max_height_m"])
+    status = FAIL if float(height) > limit else PASS
+    return [_check("option.airport_height", "Options", "Airport height", status, f"{float(height):g} m against the {limit:g} m permitted in the airport height zone.", option=scenario.get("name"), value=limit)]
+
+
 def _overlay_edge_extras(site: dict) -> dict[int, float]:
     """Combine declared no-build depths per edge; the deepest constraint on an edge governs."""
     extras: dict[int, float] = {}
@@ -172,6 +246,7 @@ def assess(payload: dict, registry: Optional[dict] = None) -> dict:
     registry = registry or load_authority_registry()
     authority = find_authority(registry, site["authority_key"])
     profile = load_rule_profile(authority["rule_profile"]) if authority.get("rule_profile") else None
+    site = drop_irrelevant(site, profile)
 
     parcel_diagnostics = None
     if boundary:
@@ -211,6 +286,10 @@ def assess(payload: dict, registry: Optional[dict] = None) -> dict:
         checks += option_checks(site, profile, far, scenario, report.get("boundary_analysis"))
     checks += calculation_checks(report)
     checks += project_checks(site, profile, report.get("scenarios", []))
+    for scenario in report.get("scenarios", []):
+        scenario["height_for_setback"] = height_for_setback(profile, site, scenario)
+        checks += height_cap_checks(site, scenario)
+    checks = group_checks(checks)
     report["compliance_checks"] = checks
     report["verdict"] = summarise(checks)
     report["input_fingerprint"] = input_fingerprint(payload)

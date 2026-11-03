@@ -81,5 +81,17 @@
       "status": "Read from a quoted excerpt. The gazette link has since gone dead, so confirm the current rate.",
       "url": "https://data.opencity.in/dataset/bengaluru-floor-area-ratio-far-rules-notification-2025/resource/ee9259b2-3bbf-407f-8868-7ef6daa7318f"
     }
+  },
+  "heritage": {
+    "prohibited_m": 100.0,
+    "regulated_m": 200.0,
+    "note": "Distances are from the limit of a centrally protected monument under the AMASR Act. State-protected monuments and any site-specific heritage bye-laws may differ.",
+    "source": {
+      "id": "amasr_1958",
+      "title": "Ancient Monuments and Archaeological Sites and Remains Act 1958, sections 20A to 20C",
+      "clause": "Sections 20A and 20B",
+      "status": "Taken from secondary summaries and a report of the Karnataka High Court judgment upholding them. A proposed amendment to section 20A was not confirmed.",
+      "url": "https://lawchakra.in/high-court/karnataka-high-court/karnataka-hc-amasr-act/"
+    }
   }
 }

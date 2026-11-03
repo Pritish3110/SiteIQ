@@ -210,6 +210,34 @@ def overlay_checks(site: dict, authority: Optional[dict], profile: Optional[dict
             continue
         extra = item.get("extra_setback_m")
         edge_note = f" A {float(extra):g} m no-build depth is applied along edge {int(item['edge']) + 1}." if extra and item.get("edge") is not None else " Tag the affected edge and depth so it is removed from the envelope."
+        if key == "airport":
+            if not item.get("max_height_m"):
+                out.append(_check(cid, "Overlays", label, NEEDS_INPUT, "Enter the maximum height permitted here, from the AAI colour-coded zoning map or the height NOC. Each option is then checked against it."))
+            else:
+                out.append(_check(cid, "Overlays", label, REFER, f"Maximum height of {float(item['max_height_m']):g} m above ground, as you entered it. Confirm the reference level the NOC uses.", value=float(item["max_height_m"])))
+            continue
+        if key == "heritage":
+            rule = statewide["heritage"]
+            distance = item.get("distance_m")
+            if distance is None:
+                out.append(_check(cid, "Overlays", label, NEEDS_INPUT, "Enter the distance from the protected monument's boundary.", rule["source"]))
+            elif float(distance) < rule["prohibited_m"]:
+                out.append(_check(cid, "Overlays", label, FAIL, f"{float(distance):g} m is inside the {rule['prohibited_m']:g} m prohibited area, where new construction is not allowed. {rule['note']}", rule["source"], value=float(distance)))
+            elif float(distance) < rule["prohibited_m"] + rule["regulated_m"]:
+                out.append(_check(cid, "Overlays", label, REFER, f"{float(distance):g} m is inside the regulated area, so construction needs permission from the competent authority. {rule['note']}", rule["source"], value=float(distance)))
+            else:
+                out.append(_check(cid, "Overlays", label, PASS, f"{float(distance):g} m is beyond the prohibited and regulated areas. {rule['note']}", rule["source"], value=float(distance)))
+            continue
+        if key == "flood_prone" and item.get("flood_level_m") is not None:
+            out.append(_check(cid, "Overlays", label, REFER, f"Flood level {float(item['flood_level_m']):g} m above ground, as you entered it. Keep the plinth and openings above it. Basements are not permitted in notified flood-prone or low-lying areas under the 2026 Bengaluru amendment.", value=float(item["flood_level_m"])))
+            continue
+        if key in {"railway", "defence", "lake"} and item.get("distance_m") is not None:
+            if key == "lake":
+                agency = statewide["lake_buffer"]["message"] if _bmr_scope(authority) else "Confirm the lake buffer that applies in this planning area."
+            else:
+                agency = OVERLAY_AGENCY[key]
+            out.append(_check(cid, "Overlays", label, REFER, f"{float(item['distance_m']):g} m away, as you entered it. {agency}" + edge_note, value=float(item["distance_m"])))
+            continue
         if key == "drain":
             rule = statewide["drain_buffers"]
             if not _bmr_scope(authority):
@@ -288,6 +316,9 @@ def option_checks(site: dict, profile: Optional[dict], far: dict, scenario: dict
     category = site.get("land_use_category")
     def add(cid, title, status, message, source=None, value=None):
         out.append(_check(f"{cid}", "Options", title, status, message, source, name, value))
+
+    def add_site(cid, title, status, message, source=None, value=None):
+        out.append(_check(cid, "Site", title, status, message, source, None, value))
 
     if not height or not floors:
         add("option.inputs", "Height and floors", NEEDS_INPUT, "Enter a height and floor count.")
@@ -368,17 +399,17 @@ def option_checks(site: dict, profile: Optional[dict], far: dict, scenario: dict
         ring = site.get("rmp_ring")
         if "bands" not in apartment:
             if road <= float(apartment["road_width_min_exclusive_m"]):
-                add("option.apartment", "Apartment eligibility", FAIL, f"{apartment['note']} The road is {road:g} m.", src)
+                add_site("site.apartment", "Apartment eligibility", FAIL, f"{apartment['note']} The road is {road:g} m.", src)
             elif area <= float(apartment.get("municipal_plot_min_exclusive_m2", apartment["plot_min_exclusive_m2"])):
-                add("option.apartment", "Apartment eligibility", FAIL, f"{apartment['note']} The plot is {area:,.0f} m².", src)
+                add_site("site.apartment", "Apartment eligibility", FAIL, f"{apartment['note']} The plot is {area:,.0f} m².", src)
             elif area <= float(apartment["plot_min_exclusive_m2"]):
-                add("option.apartment", "Apartment eligibility", REFER, f"{apartment['note']} At {area:,.0f} m² this depends on whether the plot is within CMC limits.", src)
+                add_site("site.apartment", "Apartment eligibility", REFER, f"{apartment['note']} At {area:,.0f} m² this depends on whether the plot is within CMC limits.", src)
             else:
-                add("option.apartment", "Apartment eligibility", PASS, f"Plot and road meet the rule. {apartment['note']}", src)
+                add_site("site.apartment", "Apartment eligibility", PASS, f"Plot and road meet the rule. {apartment['note']}", src)
         elif road < float(apartment["minimum_road_width_m"]):
-            add("option.apartment", "Apartment eligibility", FAIL, f"Apartments need a road of at least {apartment['minimum_road_width_m']:g} m.", src)
+            add_site("site.apartment", "Apartment eligibility", FAIL, f"Apartments need a road of at least {apartment['minimum_road_width_m']:g} m.", src)
         elif ring not in {"I", "II", "III"}:
-            add("option.apartment", "Apartment eligibility", NEEDS_INPUT, "Select the RMP ring. Apartment rules differ between Rings I, II and III.", src)
+            add_site("site.apartment", "Apartment eligibility", NEEDS_INPUT, "Select the RMP ring. Apartment rules differ between Rings I, II and III.", src)
         else:
             match = None
             for band in apartment["bands"]:
@@ -395,13 +426,13 @@ def option_checks(site: dict, profile: Optional[dict], far: dict, scenario: dict
                 match = band
                 break
             if match is None:
-                add("option.apartment", "Apartment eligibility", FAIL, f"Apartments are not listed for a {area:,.0f} m² plot in Ring {ring}.", src)
+                add_site("site.apartment", "Apartment eligibility", FAIL, f"Apartments are not listed for a {area:,.0f} m² plot in Ring {ring}.", src)
             elif match.get("max_units") and not site.get("dwelling_units"):
-                add("option.apartment", "Apartment eligibility", NEEDS_INPUT, f"Up to {match['max_units']} units are allowed here. Enter the unit count.", src)
+                add_site("site.apartment", "Apartment eligibility", NEEDS_INPUT, f"Up to {match['max_units']} units are allowed here. Enter the unit count.", src)
             elif match.get("max_units") and int(site["dwelling_units"]) > int(match["max_units"]):
-                add("option.apartment", "Apartment eligibility", FAIL, f"{int(site['dwelling_units'])} units exceed the limit of {match['max_units']} at this plot size in Ring {ring}.", src)
+                add_site("site.apartment", "Apartment eligibility", FAIL, f"{int(site['dwelling_units'])} units exceed the limit of {match['max_units']} at this plot size in Ring {ring}.", src)
             else:
-                add("option.apartment", "Apartment eligibility", PASS, f"Apartments are listed for this plot size in Ring {ring}.", src)
+                add_site("site.apartment", "Apartment eligibility", PASS, f"Apartments are listed for this plot size in Ring {ring}.", src)
 
     envelope = scenario.get("boundary_envelope") or {}
     if boundary:
@@ -528,6 +559,23 @@ VERDICTS = {
     "PROVISIONAL": "No check fails, but some could not be confirmed. Not for design freeze or sanction.",
     "READY_FOR_REVIEW": "Every check passes on a verified rule profile. A registered architect must still review it.",
 }
+
+
+def group_checks(checks: list[dict]) -> list[dict]:
+    """Merge checks that say the same thing for several options into one entry naming them all."""
+    grouped: dict[tuple, dict] = {}
+    for check in checks:
+        key = (check["id"], check["status"], check["message"], check["group"])
+        if key not in grouped:
+            grouped[key] = {**check, "options": [check["option"]] if check.get("option") else []}
+        elif check.get("option") and check["option"] not in grouped[key]["options"]:
+            grouped[key]["options"].append(check["option"])
+    out = []
+    for check in grouped.values():
+        names = check["options"]
+        check["option"] = None if not names else ", ".join(names)
+        out.append(check)
+    return out
 
 
 def summarise(checks: list[dict]) -> dict:

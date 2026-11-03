@@ -5,21 +5,23 @@ import { Button, Check, Field, Note, Panel, Row, Segmented, Select } from "../co
 import { api } from "../lib/api";
 import { area, metres, positive } from "../lib/format";
 import { edgeLengths } from "../lib/geometry";
-import type { AppliedBoundary, Study } from "../lib/study";
-import type { Candidate, EdgeRole, ParsedFile, ValidatedBoundary } from "../lib/types";
+import { emptyBoundaryDraft, type AppliedBoundary, type BoundaryDraft, type Study } from "../lib/study";
+import type { Candidate, EdgeRole, ParsedFile } from "../lib/types";
 
 const UNITS: Record<string, number> = { Metres: 1, Millimetres: 0.001, Centimetres: 0.01, Feet: 0.3048, Inches: 0.0254 };
 const NEXT_ROLE: Record<EdgeRole, EdgeRole> = { side: "road", road: "rear", rear: "left", left: "right", right: "side" };
 
-export function BoundaryStep({ study, set, onIdentify }: { study: Study; set: (p: Partial<Study>) => void; onIdentify: (lonLat: [number, number]) => void }) {
-  const [parsed, setParsed] = useState<ParsedFile | null>(null);
-  const [candidateId, setCandidateId] = useState("");
-  const [unit, setUnit] = useState("");
-  const [calibrateEdge, setCalibrateEdge] = useState("");
-  const [calibrateLength, setCalibrateLength] = useState("");
-  const [closeOpen, setCloseOpen] = useState(false);
-  const [validated, setValidated] = useState<ValidatedBoundary | null>(null);
-  const [roles, setRoles] = useState<Record<number, EdgeRole>>({});
+export function BoundaryStep({ study, set, onIdentify, draft, setDraft }: { study: Study; set: (p: Partial<Study>) => void; onIdentify: (lonLat: [number, number]) => void; draft: BoundaryDraft; setDraft: (f: (d: BoundaryDraft) => BoundaryDraft) => void }) {
+  const { parsed, candidateId, unit, calibrateEdge, calibrateLength, closeOpen, validated, roles } = draft;
+  const update = (patch: Partial<BoundaryDraft>) => setDraft((d) => ({ ...d, ...patch }));
+  const setParsed = (v: ParsedFile | null) => update({ parsed: v });
+  const setCandidateId = (v: string) => update({ candidateId: v });
+  const setUnit = (v: string) => update({ unit: v });
+  const setCalibrateEdge = (v: string) => update({ calibrateEdge: v });
+  const setCalibrateLength = (v: string) => update({ calibrateLength: v });
+  const setCloseOpen = (v: boolean) => update({ closeOpen: v });
+  const setRoles = (next: Record<number, EdgeRole> | ((r: Record<number, EdgeRole>) => Record<number, EdgeRole>)) =>
+    setDraft((d) => ({ ...d, roles: typeof next === "function" ? next(d.roles) : next }));
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -35,16 +37,18 @@ export function BoundaryStep({ study, set, onIdentify }: { study: Study; set: (p
     return null;
   }, [candidate, unit, calibrateEdge, calibrateLength]);
 
+  const validationKey = `${parsed?.fingerprint ?? ""}|${candidateId}|${scale ?? ""}|${closeOpen}`;
   useEffect(() => {
-    if (!candidate) { setValidated(null); return; }
-    setRoles({});
+    if (!candidate) { if (validated) update({ validated: null, validatedFor: "" }); return; }
+    // Coming back to this sheet must not re-check the outline or clear the edges already tagged.
+    if (draft.validatedFor === validationKey) return;
     let live = true;
-    api.validate(candidate, scale, closeOpen).then((r) => { if (live) setValidated(r); }).catch((e) => { if (live) setError(e.message); });
+    api.validate(candidate, scale, closeOpen).then((r) => { if (live) update({ validated: r, validatedFor: validationKey, roles: {} }); }).catch((e) => { if (live) setError(e.message); });
     return () => { live = false; };
-  }, [candidate, scale, closeOpen]);
+  }, [validationKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function upload(file: File) {
-    setBusy(true); setError(null); setParsed(null); setCandidateId(""); setUnit(""); setCalibrateEdge(""); setCalibrateLength(""); setCloseOpen(false); setValidated(null);
+    setBusy(true); setError(null); setDraft(() => emptyBoundaryDraft());
     try {
       const result = await api.parse(file);
       setParsed(result);
@@ -62,7 +66,7 @@ export function BoundaryStep({ study, set, onIdentify }: { study: Study; set: (p
       useComputedArea: true, roles, roadWidths: {},
     };
     set({ boundary: next, overlays: Object.fromEntries(Object.entries(study.overlays).map(([k, o]) => [k, { ...o, edge: "" }])) });
-    setParsed(null); setCandidateId(""); setValidated(null);
+    setDraft(() => emptyBoundaryDraft());
     const point = candidate.source_location_point_wgs84;
     if (point) onIdentify([point[0], point[1]]);
   }

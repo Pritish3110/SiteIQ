@@ -18,6 +18,7 @@ from . import __version__
 from .boundary import candidate_edge_lengths, export_boundary_dxf, parse_uploaded_boundary, polygon_from_candidate
 from .engine import find_authority, land_use_categories, load_authority_registry, load_rule_profile, rule_status_problem
 from .exporters import build_a3_comparison_board_pdf, build_a3_comparison_board_pptx, build_pdf_report, build_pptx_report
+from .inputs import relevant_inputs
 from .location import AUTHORITY_LAYER, ZONE_LAYER, auto_identify_site, save_geojson_layer
 from .service import assess, far_preview, parcel_from_boundary
 
@@ -113,6 +114,9 @@ class Overlay(Strict):
     extra_setback_m: Optional[float] = Field(None, gt=0, le=500)
     drain_class: Optional[Literal["primary", "secondary", "tertiary"]] = None
     line_kv: Optional[Literal["LT", "11", "33", "66", "110", "220", "400"]] = None
+    max_height_m: Optional[float] = Field(None, gt=0, le=1000)
+    distance_m: Optional[float] = Field(None, ge=0, le=100000)
+    flood_level_m: Optional[float] = Field(None, ge=0, le=50)
 
 
 class RoadEdge(Strict):
@@ -262,6 +266,24 @@ def validate_boundary(body: ValidateRequest) -> dict:
         return {"valid": False, "validation": validation}
     coords = [list(p) for p in list(poly.exterior.coords)[:-1]]
     return {"valid": True, "validation": validation, "points_m": coords, "holes_m": [[list(p) for p in list(r.coords)[:-1]] for r in poly.interiors], "edges": candidate_edge_lengths(coords)}
+
+
+class InputsRequest(Strict):
+    authority_key: str = Field(max_length=100)
+    land_use_category: Optional[str] = Field(None, max_length=200)
+    proposed_use: Optional[str] = Field(None, max_length=100)
+    road_width_m: Optional[float] = Field(None, ge=0)
+
+
+@app.post("/api/inputs")
+def inputs(body: InputsRequest) -> dict:
+    """Which optional inputs apply to this authority, category, use and road."""
+    try:
+        authority = find_authority(load_authority_registry(), body.authority_key)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown authority.") from exc
+    profile = load_rule_profile(authority["rule_profile"]) if authority.get("rule_profile") else None
+    return relevant_inputs(profile, body.land_use_category, body.proposed_use, body.road_width_m)
 
 
 @app.post("/api/far/preview")

@@ -96,3 +96,9 @@ def test_export_values_match_the_assessment():
     assert f"{report['maximum_far_area_m2']:,.0f}" in technical and f"{report['maximum_far_area_m2']:,.0f}" in client_report
     assert "COMPLIANCE REGISTER" in technical and "CALCULATION TRACE" in technical
     assert "COMPLIANCE REGISTER" not in client_report and "Still open" in client_report
+
+
+def test_inputs_endpoint():
+    data = client.post("/api/inputs", json={"authority_key": "bengaluru_rmp2015", "land_use_category": "Residential (Main)", "proposed_use": "Industrial / warehouse", "road_width_m": 18}).json()
+    assert data["dwelling_units"]["relevant"] is False and data["dwelling_units"]["reason"]
+    assert client.post("/api/inputs", json={"authority_key": "nope"}).status_code == 404

@@ -43,7 +43,7 @@ describe("toPayload", () => {
   it("sends a declared overlay with its edge and depth", () => {
     const sample = nandiSample();
     sample.overlays.drain = { status: "present", edge: "1", depth: "15", drainClass: "primary" };
-    expect(toPayload(sample).overlays.drain).toEqual({ status: "present", edge: 1, extra_setback_m: 15, drain_class: "primary", line_kv: null });
+    expect(toPayload(sample).overlays.drain).toEqual({ status: "present", edge: 1, extra_setback_m: 15, drain_class: "primary", line_kv: null, max_height_m: null, distance_m: null, flood_level_m: null });
   });
   it("marks an option manual only when a manual setback is entered", () => {
     const sample = nandiSample();

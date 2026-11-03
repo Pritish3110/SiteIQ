@@ -7,7 +7,20 @@ export interface OptionDraft {
   schedule: FloorRow[]; corePerFloor: string; parking: string;
   id: string; name: string; height: string; floors: string; footprint: string; stilt: boolean; stiltHeight: string; manualSetback: string; basements: string; manualBasementFront: string; manualBasementSide: string;
 }
-export interface OverlayDraft { status: "unknown" | "absent" | "present"; edge: string; depth: string; drainClass: "" | "primary" | "secondary" | "tertiary"; lineKv?: string }
+export interface OverlayDraft { status: "unknown" | "absent" | "present"; edge: string; depth: string; drainClass: "" | "primary" | "secondary" | "tertiary"; lineKv?: string; maxHeight?: string; distance?: string; floodLevel?: string }
+/** Extra measure each constraint needs, and whether a no-build edge applies to it. */
+export const OVERLAY_METRIC: Record<string, { field?: "maxHeight" | "distance" | "floodLevel"; label?: string; hint?: string; edge: boolean }> = {
+  lake: { field: "distance", label: "Distance from lake edge", edge: true },
+  drain: { edge: true },
+  ht_line: { edge: true },
+  airport: { field: "maxHeight", label: "Maximum permitted height", hint: "From the AAI colour-coded map or height NOC.", edge: false },
+  heritage: { field: "distance", label: "Distance from monument", hint: "From the protected limit of the monument.", edge: false },
+  railway: { field: "distance", label: "Distance from railway land", edge: true },
+  defence: { field: "distance", label: "Distance from defence land", edge: false },
+  highway: { edge: true },
+  flood_prone: { field: "floodLevel", label: "Flood level above ground", edge: false },
+  road_widening: { edge: true },
+};
 export interface AppliedBoundary {
   sourceFile: string; sourceType: string; sourceUnits?: string; scale?: number | null; fingerprint?: string; candidateId?: string; illustrative?: boolean;
   points: Point[]; holes: Point[][]; area: number; perimeter: number; convex: boolean; notes: string[]; wgs84?: Point[]; holesWgs84?: Point[][];
@@ -56,7 +69,7 @@ export const toPayload = (s: Study) => {
   for (const [key] of OVERLAYS) {
     const o = s.overlays[key];
     if (!o || o.status === "unknown") continue;
-    overlays[key] = { status: o.status, edge: o.status === "present" && o.edge !== "" ? Number(o.edge) : null, extra_setback_m: o.status === "present" ? positive(o.depth) : null, drain_class: key === "drain" && o.drainClass ? o.drainClass : null, line_kv: key === "ht_line" && o.lineKv ? o.lineKv : null };
+    overlays[key] = { status: o.status, edge: o.status === "present" && o.edge !== "" ? Number(o.edge) : null, extra_setback_m: o.status === "present" ? positive(o.depth) : null, drain_class: key === "drain" && o.drainClass ? o.drainClass : null, line_kv: key === "ht_line" && o.lineKv ? o.lineKv : null, max_height_m: o.status === "present" ? positive(o.maxHeight ?? "") : null, distance_m: o.status === "present" && (o.distance ?? "").trim() !== "" && Number(o.distance) >= 0 ? Number(o.distance) : null, flood_level_m: o.status === "present" && (o.floodLevel ?? "").trim() !== "" && Number(o.floodLevel) >= 0 ? Number(o.floodLevel) : null };
   }
   const location = s.location ? JSON.parse(JSON.stringify(s.location)) : null;
   return {
@@ -96,3 +109,10 @@ export const nandiSample = (): Study => ({
     newOption(2, { height: "18", floors: "6", footprint: "1106", basements: "1" }),
   ],
 });
+
+/** A boundary file being checked on the Boundary sheet but not yet applied. It survives a change of sheet. */
+export interface BoundaryDraft {
+  parsed: import("./types").ParsedFile | null; candidateId: string; unit: string; calibrateEdge: string; calibrateLength: string; closeOpen: boolean;
+  validated: import("./types").ValidatedBoundary | null; validatedFor: string; roles: Record<number, import("./types").EdgeRole>;
+}
+export const emptyBoundaryDraft = (): BoundaryDraft => ({ parsed: null, candidateId: "", unit: "", calibrateEdge: "", calibrateLength: "", closeOpen: false, validated: null, validatedFor: "", roles: {} });
