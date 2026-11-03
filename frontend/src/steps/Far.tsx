@@ -15,6 +15,7 @@ export function FarStep({ report, missing }: { report: Report | null; missing: s
   const details = far.matched_rule?.details ?? {};
   const bands = far.matched_rule?.matched_bands ?? [];
   const hasFar = far.maximum_far != null;
+  const deductionPct = Number(details.deduction_pct ?? 0);
   return (
     <div className="grid gap-x-16 gap-y-12 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
       <div className="space-y-12">
@@ -23,7 +24,11 @@ export function FarStep({ report, missing }: { report: Report | null; missing: s
             <p className="mono-label">Maximum base FAR, candidate</p>
             <p className="display mt-1 text-[clamp(6rem,13vw,11rem)] leading-[0.95]"><CountUp value={far.maximum_far!} digits={2} testId="far-value" /></p>
             <div className="mt-8 grid gap-8 border-t border-rule pt-5 sm:grid-cols-3">
-              <div><p className="mono-label">Site area</p><p className="display mt-1 text-3xl tnum" data-testid="far-area">{area(far.far_calculation_area_m2)}</p></div>
+              <div>
+                <p className="mono-label" data-testid="far-area-label">{deductionPct > 0 ? "Net plot area" : "Plot area"}</p>
+                <p className="display mt-1 text-3xl tnum" data-testid="far-area">{area(far.far_calculation_area_m2)}</p>
+                {deductionPct > 0 && <p className="mt-1.5 text-xs leading-relaxed text-soft" data-testid="far-area-note">After a {deductionPct}% deduction from {area(far.matched_rule?.gross_site_area_m2)}</p>}
+              </div>
               <div><p className="mono-label">Floor area capacity</p><p className="display mt-1 text-3xl tnum" data-testid="far-capacity">{area(far.maximum_far_area_m2)}</p></div>
               <div><p className="mono-label">Limited by</p><p className="display mt-1 text-3xl">{humanise(String(details.limiting_factor ?? "table rule"))}</p></div>
             </div>

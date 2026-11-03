@@ -46,6 +46,8 @@ test("the sample study reaches a dossier with a blocking status and envelopes", 
   await shot(page, "04-options");
   await page.getByTestId("sheet-3").click();
   await expect(page.getByTestId("far-capacity")).toBeVisible();
+  await expect(page.getByTestId("far-area-label")).toHaveText("Plot area");
+  await expect(page.getByTestId("far-area-note")).toHaveCount(0);
   await shot(page, "05-far");
   await page.getByTestId("sheet-2").click();
   await shot(page, "06-controls");
@@ -93,6 +95,8 @@ test("full manual flow: KML upload, edge tagging, rules, options, live results",
   await page.getByTestId("road-width").fill("20");
   await page.getByTestId("sheet-3").click();
   await expect(page.getByTestId("far-value")).toHaveAttribute("data-value", "2.5");
+  await expect(page.getByTestId("far-area-label")).toHaveText("Net plot area");
+  await expect(page.getByTestId("far-area-note")).toContainText("5% deduction");
   await page.getByTestId("sheet-4").click();
   await page.getByTestId("height-0").fill("15");
   await page.getByTestId("floors-0").fill("5");
